@@ -1,0 +1,8 @@
+name: "your-mod"
+displayName: "Your mod name"
+author: "YourNickName"
+main: "yourmod.YourMod"
+description: "Your own mod"
+version: 0.1
+minGameVersion: 133
+
