@@ -29,8 +29,6 @@ import static mindustry.type.ItemStack.with;
 public class olBlocks implements ContentList {
 
 	public static Block
-	//Environment
-	iceSpikes,
 	//Defence
 	omaliteAlloyWall, omaliteAlloyWallLarge,
 	//Distribution
@@ -49,9 +47,6 @@ public class olBlocks implements ContentList {
 
         @Override
 	public void load() {
-		//region Environment
-        iceSpikes = new TreeBlock("ice-spikes");
-
 		//endregion
 		//region Defence
 		omaliteAlloyWall = new olColdWall("omalite-alloy-wall"){{
