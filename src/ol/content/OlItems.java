@@ -22,7 +22,7 @@ public class OlItems {
             cost = 2;
             hardness = 6;
         }};
-        omaliteAlloy = new OlItem("omalite-alloy", Color.valueOf("00ffff")) {{
+        omaliteAlloy = new OlItem("omalite-alloy", Color.valueOf("abcdef")) {{
             radioactivity = 0.10f;
             cost = 2;
             charge = 0.02f;
