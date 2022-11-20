@@ -160,6 +160,7 @@ public class PressureConduit extends Block {
             if(pressure > maxPressure && canExplode) {
                 explodeEffect.at(x, y);
 
+                kill();
                 net(this).filter(b -> ((PressureAble) b).online()).each(Building::kill);
             }
         }
