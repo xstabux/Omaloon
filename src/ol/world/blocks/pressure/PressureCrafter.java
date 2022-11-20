@@ -1,7 +1,15 @@
 package ol.world.blocks.pressure;
 
+import arc.graphics.Color;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
+import mindustry.content.Fx;
+import mindustry.entities.Effect;
 import mindustry.gen.Building;
+import mindustry.ui.Bar;
 import ol.world.blocks.crafting.OlCrafter;
+
+import static ol.graphics.OlPal.*;
 
 public class PressureCrafter extends OlCrafter {
     //how many pressure crafter consumes
@@ -10,13 +18,65 @@ public class PressureCrafter extends OlCrafter {
     //how many pressure crafter
     public float pressureProduce;
 
+    public float maxPressure, dangerPressure;
+    public boolean canExplode = true;
+
+    //boom
+    public Effect explodeEffect = Fx.none;
+
     public PressureCrafter(String name) {
         super(name);
+    }
+
+    @Override
+    public void setBars() {
+        super.setBars();
+
+        addBar("pressure", (PressureCrafterBuild b) -> {
+            float pressure = b.pressure / maxPressure;
+
+            return new Bar(
+                    () -> "pressure",
+                    () -> {
+                        if(b.isDanger()) {
+                            return mixcol(Color.black, OLPressureDanger, b.jumpDelta() / 30);
+                        }
+
+                        return mixcol(OLPressureMin, OLPressure, pressure);
+                    },
+                    () -> pressure
+            );
+        });
     }
 
     public class PressureCrafterBuild extends OlCrafter.olCrafterBuild implements PressureAble {
         public float pressure;
         public float effect;
+        public float dt = 0;
+
+        @Override
+        public void write(Writes write) {
+            super.write(write);
+            write.f(pressure);
+        }
+
+        @Override
+        public void read(Reads read, byte revision) {
+            super.read(read, revision);
+            pressure = read.f();
+        }
+
+        public boolean isDanger() {
+            if(dangerPressure == -1) {
+                return false;
+            }
+
+            return pressure > dangerPressure && canExplode;
+        }
+
+        public float jumpDelta() {
+            return dt > 30 ? 60 - dt : dt;
+        }
 
         @Override
         @SuppressWarnings("unchecked")
@@ -65,6 +125,18 @@ public class PressureCrafter extends OlCrafter {
                         effect = 0;
                     }
                 }
+            }
+
+            if(pressure > maxPressure && canExplode) {
+                explodeEffect.at(x, y);
+
+                kill();
+                net(this).filter(b -> ((PressureAble) b).online()).each(Building::kill);
+            }
+
+            dt++;
+            if(dt >= 60) {
+                dt = 0;
             }
         }
     }
