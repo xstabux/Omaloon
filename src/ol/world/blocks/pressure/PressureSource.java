@@ -4,7 +4,6 @@ import arc.Core;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
-import arc.scene.ui.Slider;
 import arc.scene.ui.layout.Table;
 import arc.struct.FloatSeq;
 import arc.util.io.Reads;

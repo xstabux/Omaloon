@@ -4,16 +4,13 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
-import arc.math.Mathf;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
-import arc.util.Log;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
 import mindustry.gen.Building;
-import mindustry.graphics.Layer;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.Tile;
@@ -148,7 +145,6 @@ public class PressureConduit extends Block {
                 dt = 0;
             }
 
-            int len = 1;
             FloatSeq sum_arr = new FloatSeq();
             Seq<PressureAble> prox = new Seq<>();
             for(Building b : net(this)) {
