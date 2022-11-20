@@ -7,6 +7,7 @@ import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
+import arc.util.Log;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.content.Fx;
@@ -89,7 +90,7 @@ public class PressureConduit extends Block {
                     () -> "pressure",
                     () -> {
                         if(b.isDanger()) {
-                            mixcol(Color.black, OLPressureDanger, b.jumpDelta(20) / 10);
+                            return mixcol(Color.black, OLPressureDanger, b.jumpDelta() / 30);
                         }
 
                         return mixcol(OLPressureMin, OLPressure, pressure);
@@ -108,26 +109,20 @@ public class PressureConduit extends Block {
         }
     }
 
-    public float cut(float val, float len) {
-        return (val - len) > len ? cut(val - len, len) : len;
-    }
-
     public class PressureConduitBuild extends Building implements PressureAble {
         public float pressure;
-        public int baseTime = 0;
+        public float dt = 0;
 
         @Override
         public void write(Writes write) {
             super.write(write);
             write.f(pressure);
-            write.i(baseTime);
         }
 
         @Override
         public void read(Reads read, byte revision) {
             super.read(read, revision);
             pressure = read.f();
-            baseTime = read.i();
         }
 
         public boolean isDanger() {
@@ -138,9 +133,8 @@ public class PressureConduit extends Block {
             return pressure > dangerPressure && canExplode;
         }
 
-        public float jumpDelta(float period) {
-            float val = cut(baseTime, period);
-            return val > (period / 2) ? period - val : val;
+        public float jumpDelta() {
+            return dt > 30 ? 60 - dt : dt;
         }
 
         public float sumx(FloatSeq arr, int len) {
@@ -149,7 +143,10 @@ public class PressureConduit extends Block {
 
         @Override
         public void updateTile() {
-            baseTime++;
+            dt++;
+            if(dt >= 60) {
+                dt = 0;
+            }
 
             int len = 1;
             FloatSeq sum_arr = new FloatSeq();
