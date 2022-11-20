@@ -92,13 +92,23 @@ public class PressureSource extends PressureGraph {
         }
 
         @Override
+        public boolean storageOnly() {
+            return false;
+        }
+
+        @Override
+        public float pressureThread() {
+            return voidMode() ? Integer.MIN_VALUE : val;
+        }
+
+        @Override
         public void read(Reads read, byte revision) {
             super.read(read, revision);
             val = read.f();
         }
 
         @Override
-        public float sumx(FloatSeq arr, int len) {
+        public float sumx(FloatSeq arr) {
             return val;
         }
 
@@ -111,11 +121,8 @@ public class PressureSource extends PressureGraph {
         public void buildConfiguration(Table table) {
             table.pane(t -> {
                 t.setBackground(Styles.black5);
-                t.add("pressure").center().update(l -> {
-                    l.setText("pressure: " + pressure);
-                }).row();
-
-                t.slider(0, maxPressure, 1, pressure, this::configure).growX();
+                t.add("pressure").center().row();
+                t.slider(0, maxPressure, 1, val, this::configure).growX();
             }).size(200f, 75f);
         }
     }

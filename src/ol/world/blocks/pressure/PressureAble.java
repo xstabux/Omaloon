@@ -27,6 +27,14 @@ public interface PressureAble {
         return buildings;
     }
 
+    default boolean storageOnly() {
+        return true;
+    }
+
+    default float pressureThread() {
+        return 0;
+    }
+
     default boolean alignX(int rotation) {
         return rotation == 0 || rotation == 2;
     }

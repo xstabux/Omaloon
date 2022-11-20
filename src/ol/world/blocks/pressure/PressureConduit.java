@@ -137,8 +137,8 @@ public class PressureConduit extends Block {
             return dt > 30 ? 60 - dt : dt;
         }
 
-        public float sumx(FloatSeq arr, int len) {
-            return arr.sum() / len;
+        public float sumx(FloatSeq arr) {
+            return arr.sum();
         }
 
         @Override
@@ -153,16 +153,20 @@ public class PressureConduit extends Block {
             Seq<PressureAble> prox = new Seq<>();
             for(Building b : net(this)) {
                 PressureAble p = (PressureAble) b;
-                len++;
+                if(!p.storageOnly()) {
+                    sum_arr.add(p.pressureThread());
+                }
 
-                sum_arr.add(p.pressure());
                 prox.add(p);
             }
 
-            float sum = sumx(sum_arr, len);
-            pressure = sum;
+            float sum = sumx(sum_arr);
+            if(sum < 0) {
+                sum = 0;
+            }
 
-            prox.each(p -> p.pressure(sum));
+            pressure = sum;
+            prox.each(p -> p.pressure(pressure));
             if(pressure > maxPressure && canExplode) {
                 explodeEffect.at(x, y);
                 kill();
