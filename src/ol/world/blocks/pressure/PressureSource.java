@@ -111,7 +111,10 @@ public class PressureSource extends PressureGraph {
         public void buildConfiguration(Table table) {
             table.pane(t -> {
                 t.setBackground(Styles.black5);
-                t.add("pressure").center().row();
+                t.add("pressure").center().update(l -> {
+                    l.setText("pressure: " + pressure);
+                }).row();
+
                 t.slider(0, maxPressure, 1, pressure, this::configure).growX();
             }).size(200f, 75f);
         }
