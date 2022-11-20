@@ -1,6 +1,7 @@
 package ol.graphics;
 
 import arc.func.Boolf;
+import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 

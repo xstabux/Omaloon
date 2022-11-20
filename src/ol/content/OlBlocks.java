@@ -30,6 +30,9 @@ import ol.world.blocks.crafting.multicraft.Recipe;
 import ol.world.blocks.defense.OlJoinWall;
 import ol.world.blocks.defense.OlWall;
 import ol.world.blocks.power.OlPanel;
+import ol.world.blocks.pressure.PressureConduit;
+import ol.world.blocks.pressure.PressureGraph;
+import ol.world.blocks.pressure.PressureSource;
 import ol.world.draw.DrawCentryfuge;
 
 import static mindustry.type.ItemStack.with;
@@ -50,9 +53,11 @@ public class OlBlocks{
 	        //Production
 	        multiFactory, fuser, lowTemperatureSmelter,
 	        //Turrets
-	        blueNight, zone;
+	        blueNight, zone,
 	        //Storages
 	        //Units
+			//Pressure
+			pressureConduit, pressureCounter, pressureSource;
 
 	public static void load() {
 		//region Ores
@@ -372,6 +377,28 @@ public class OlBlocks{
 			liquidCapacity = 56;
 			consumeLiquid(OlLiquids.liquidOmalite, 12f / 920f);
 		}};
+
+		//endregion
+		//region Pressure
+		pressureConduit = new PressureConduit("pressure-conduit") {{
+			requirements(Category.distribution, with());
+			maxPressure = 200;
+			dangerPressure = 150;
+		}};
+
+		pressureCounter = new PressureGraph("pressure-counter") {{
+			requirements(Category.distribution, with());
+			maxPressure = 200;
+			dangerPressure = 150;
+		}};
+
+		pressureSource = new PressureSource("pressure-source") {{
+			requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+			maxPressure = 1000;
+
+			voidable = true;
+		}};
+
 		/*powerTower = new olPowerNode("power-tower"){{
         }};*/
 

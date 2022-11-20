@@ -1,0 +1,191 @@
+package ol.world.blocks.pressure;
+
+import arc.Core;
+import arc.graphics.Color;
+import arc.graphics.g2d.Draw;
+import arc.graphics.g2d.TextureRegion;
+import arc.math.Mathf;
+import arc.struct.FloatSeq;
+import arc.struct.Seq;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
+import mindustry.content.Fx;
+import mindustry.entities.Effect;
+import mindustry.gen.Building;
+import mindustry.graphics.Layer;
+import mindustry.ui.Bar;
+import mindustry.world.Block;
+import mindustry.world.Tile;
+
+import static ol.graphics.OlPal.*;
+
+public class PressureConduit extends Block {
+    //max pressure that can store block. if pressure is bigger when boom
+    public float maxPressure;
+
+    //joints or no
+    public boolean mapDraw = false;
+
+    //when pressure need in the block to alert
+    public float dangerPressure = -1;
+
+    //if false when conduit sandbox block
+    public boolean canExplode = true;
+
+    //boom
+    public Effect explodeEffect = Fx.none;
+    public TextureRegion mapRegion;
+
+    public void drawT(int x, int y, int rotation) {
+        TextureRegion pressureIcon = Core.atlas.find("ol-pressure-icon");
+
+        float dx = x * 8;
+        float dy = y * 8;
+        float ds = size * 8;
+
+        if(rotation == 1 || rotation == 3) {
+            Draw.rect(pressureIcon, dx, dy + ds);
+            Draw.rect(pressureIcon, dx, dy - ds);
+        }
+
+        if(rotation == 0 || rotation == 2) {
+            Draw.rect(pressureIcon, dx + ds, dy);
+            Draw.rect(pressureIcon, dx - ds, dy);
+        }
+    }
+
+    @Override
+    public void drawPlace(int x, int y, int rotation, boolean valid) {
+        super.drawPlace(x, y, rotation, valid);
+        drawT(x, y, rotation);
+    }
+
+    public PressureConduit(String name) {
+        super(name);
+
+        rotate = true;
+        update = true;
+        solid = true;
+        drawArrow = false;
+    }
+
+    @Override
+    public void load() {
+        super.load();
+
+        if(mapDraw) {
+            mapRegion = Core.atlas.find(name + "-map");
+        }
+    }
+
+    @Override
+    public void setBars() {
+        super.setBars();
+
+        addBar("pressure", (PressureConduitBuild b) -> {
+            float pressure = b.pressure / maxPressure;
+
+            return new Bar(
+                    () -> "pressure",
+                    () -> {
+                        if(b.isDanger()) {
+                            mixcol(Color.black, OLPressureDanger, b.jumpDelta(20) / 10);
+                        }
+
+                        return mixcol(OLPressureMin, OLPressure, pressure);
+                    },
+                    () -> pressure
+            );
+        });
+    }
+
+    @Override
+    public void drawBase(Tile tile) {
+        if(mapDraw) {
+            //TODO joints
+        } else {
+            super.drawBase(tile);
+        }
+    }
+
+    public float cut(float val, float len) {
+        return (val - len) > len ? cut(val - len, len) : len;
+    }
+
+    public class PressureConduitBuild extends Building implements PressureAble {
+        public float pressure;
+        public int baseTime = 0;
+
+        @Override
+        public void write(Writes write) {
+            super.write(write);
+            write.f(pressure);
+            write.i(baseTime);
+        }
+
+        @Override
+        public void read(Reads read, byte revision) {
+            super.read(read, revision);
+            pressure = read.f();
+            baseTime = read.i();
+        }
+
+        public boolean isDanger() {
+            if(dangerPressure == -1) {
+                return false;
+            }
+
+            return pressure > dangerPressure && canExplode;
+        }
+
+        public float jumpDelta(float period) {
+            float val = cut(baseTime, period);
+            return val > (period / 2) ? period - val : val;
+        }
+
+        public float sumx(FloatSeq arr, int len) {
+            return arr.sum() / len;
+        }
+
+        @Override
+        public void updateTile() {
+            baseTime++;
+
+            int len = 1;
+            FloatSeq sum_arr = new FloatSeq();
+            Seq<PressureAble> prox = new Seq<>();
+            for(Building b : net(this)) {
+                PressureAble p = (PressureAble) b;
+                len++;
+
+                sum_arr.add(p.pressure());
+                prox.add(p);
+            }
+
+            float sum = sumx(sum_arr, len);
+            pressure = sum;
+
+            prox.each(p -> p.pressure(sum));
+            if(pressure > maxPressure && canExplode) {
+                explodeEffect.at(x, y);
+                kill();
+            }
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public PressureConduitBuild self() {
+            return this;
+        }
+
+        @Override
+        public float pressure() {
+            return pressure;
+        }
+
+        @Override
+        public void pressure(float pressure) {
+            this.pressure = pressure;
+        }
+    }
+}
