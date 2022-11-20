@@ -17,7 +17,7 @@ public interface PressureAble {
         Seq<Building> buildings = new Seq<>();
 
         for(Building b : proximity()) {
-            if(b != source && b instanceof PressureAble p && inNet(b, p)) {
+            if(b != source && b instanceof PressureAble p && inNet(b, p) && !buildings.contains(b)) {
                 buildings.add(b);
 
                 buildings.addAll(p.net(self()));
@@ -25,6 +25,10 @@ public interface PressureAble {
         }
 
         return buildings;
+    }
+
+    default boolean online() {
+        return true;
     }
 
     default boolean storageOnly() {
@@ -63,6 +67,6 @@ public interface PressureAble {
             return alignY(self.rotation) || alignY(b.rotation);
         }
 
-        return false;
+        return p.online();
     }
 }

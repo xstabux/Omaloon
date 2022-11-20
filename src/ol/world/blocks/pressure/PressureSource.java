@@ -8,6 +8,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.FloatSeq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import mindustry.gen.Building;
 import mindustry.ui.Styles;
 import mindustry.world.Tile;
 
@@ -129,6 +130,11 @@ public class PressureSource extends PressureGraph {
                 t.add("pressure").center().row();
                 t.slider(0, maxPressure, 1, val, this::configure).growX();
             }).size(200f, 75f);
+        }
+
+        @Override
+        public boolean inNet(Building b, PressureAble p) {
+            return true;
         }
     }
 }

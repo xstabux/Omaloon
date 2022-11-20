@@ -31,6 +31,7 @@ import ol.world.blocks.defense.OlJoinWall;
 import ol.world.blocks.defense.OlWall;
 import ol.world.blocks.power.OlPanel;
 import ol.world.blocks.pressure.PressureConduit;
+import ol.world.blocks.pressure.PressureCrafter;
 import ol.world.blocks.pressure.PressureGraph;
 import ol.world.blocks.pressure.PressureSource;
 import ol.world.draw.DrawCentryfuge;
@@ -384,6 +385,8 @@ public class OlBlocks{
 			requirements(Category.distribution, with());
 			maxPressure = 200;
 			dangerPressure = 150;
+
+			mapDraw = true;
 		}};
 
 		pressureCounter = new PressureGraph("pressure-counter") {{

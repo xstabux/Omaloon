@@ -15,9 +15,12 @@ import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 
+import static mindustry.Vars.world;
 import static ol.graphics.OlPal.*;
 
 public class PressureConduit extends Block {
+    public TextureRegion[] regions;
+
     //max pressure that can store block. if pressure is bigger when boom
     public float maxPressure;
 
@@ -32,7 +35,6 @@ public class PressureConduit extends Block {
 
     //boom
     public Effect explodeEffect = Fx.none;
-    public TextureRegion mapRegion;
 
     public void drawT(int x, int y, int rotation) {
         TextureRegion pressureIcon = Core.atlas.find("ol-pressure-icon");
@@ -53,6 +55,16 @@ public class PressureConduit extends Block {
     }
 
     @Override
+    public void load() {
+        super.load();
+
+        regions = new TextureRegion[4];
+        for(int i = 0; i < regions.length; i++) {
+            regions[i] = Core.atlas.find(name + "-base" + (i + 1));
+        }
+    }
+
+    @Override
     public void drawPlace(int x, int y, int rotation, boolean valid) {
         super.drawPlace(x, y, rotation, valid);
         drawT(x, y, rotation);
@@ -65,15 +77,6 @@ public class PressureConduit extends Block {
         update = true;
         solid = true;
         drawArrow = false;
-    }
-
-    @Override
-    public void load() {
-        super.load();
-
-        if(mapDraw) {
-            mapRegion = Core.atlas.find(name + "-map");
-        }
     }
 
     @Override
@@ -95,15 +98,6 @@ public class PressureConduit extends Block {
                     () -> pressure
             );
         });
-    }
-
-    @Override
-    public void drawBase(Tile tile) {
-        if(mapDraw) {
-            //TODO joints
-        } else {
-            super.drawBase(tile);
-        }
     }
 
     public class PressureConduitBuild extends Building implements PressureAble {
@@ -165,7 +159,8 @@ public class PressureConduit extends Block {
             prox.each(p -> p.pressure(pressure));
             if(pressure > maxPressure && canExplode) {
                 explodeEffect.at(x, y);
-                kill();
+
+                net(this).filter(b -> ((PressureAble) b).online()).each(Building::kill);
             }
         }
 
