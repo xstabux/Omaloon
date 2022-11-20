@@ -41,6 +41,12 @@ public class PressureSource extends PressureGraph {
         }
     }
 
+    @Override
+    public void setBars() {
+        super.setBars();
+        removeBar("pressure");
+    }
+
     public PressureSource(String name) {
         super(name);
 
