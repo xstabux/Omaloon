@@ -30,10 +30,7 @@ import ol.world.blocks.crafting.multicraft.Recipe;
 import ol.world.blocks.defense.OlJoinWall;
 import ol.world.blocks.defense.OlWall;
 import ol.world.blocks.power.OlPanel;
-import ol.world.blocks.pressure.PressureConduit;
-import ol.world.blocks.pressure.PressureCrafter;
-import ol.world.blocks.pressure.PressureGraph;
-import ol.world.blocks.pressure.PressureSource;
+import ol.world.blocks.pressure.*;
 import ol.world.draw.DrawCentryfuge;
 
 import static mindustry.type.ItemStack.with;
@@ -58,7 +55,7 @@ public class OlBlocks{
 	        //Storages
 	        //Units
 			//Pressure
-			pressureConduit, pressureCounter, pressureSource;
+			pressureConduit, pressureCounter, pressureSource, pressureJunction;
 
 	public static void load() {
 		//region Ores
@@ -397,9 +394,11 @@ public class OlBlocks{
 
 		pressureSource = new PressureSource("pressure-source") {{
 			requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-			maxPressure = 1000;
-
 			voidable = true;
+		}};
+
+		pressureJunction = new PressureJunction("pressure-junction") {{
+			requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
 		}};
 
 		/*powerTower = new olPowerNode("power-tower"){{

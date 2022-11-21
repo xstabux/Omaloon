@@ -13,12 +13,10 @@ import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
-import mindustry.world.Tile;
 
-import static mindustry.Vars.world;
 import static ol.graphics.OlPal.*;
 
-public class PressureConduit extends Block {
+public class PressureConduit extends Block implements PressureReplaceable {
     public TextureRegion[] regions;
 
     //max pressure that can store block. if pressure is bigger when boom
@@ -65,6 +63,11 @@ public class PressureConduit extends Block {
     }
 
     @Override
+    public boolean canReplace(Block other) {
+        return canBeReplaced(other);
+    }
+
+    @Override
     public void drawPlace(int x, int y, int rotation, boolean valid) {
         super.drawPlace(x, y, rotation, valid);
         drawT(x, y, rotation);
@@ -77,6 +80,8 @@ public class PressureConduit extends Block {
         update = true;
         solid = true;
         drawArrow = false;
+
+        replaceable = true;
     }
 
     @Override
@@ -160,8 +165,11 @@ public class PressureConduit extends Block {
             if(pressure > maxPressure && canExplode) {
                 explodeEffect.at(x, y);
 
+                net(this, PressureJunction.PressureJunctionBuild::netKill)
+                        .filter(b -> ((PressureAble) b).online()).each(Building::kill);
+
+
                 kill();
-                net(this).filter(b -> ((PressureAble) b).online()).each(Building::kill);
             }
         }
 

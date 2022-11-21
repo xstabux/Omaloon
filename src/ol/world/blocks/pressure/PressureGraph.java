@@ -10,6 +10,7 @@ import ol.graphics.OlPal;
 public class PressureGraph extends PressureConduit {
     public TextureRegion arrowRegion;
     public boolean fullRadius = false;
+    public boolean noNetDestroy = true;
 
     public PressureGraph(String name) {
         super(name);
@@ -27,7 +28,7 @@ public class PressureGraph extends PressureConduit {
 
     public class PressureGraphBuild extends PressureConduitBuild {
         public float angle() {
-            return !isDanger() ? ((pressure / maxPressure) * 360) : Mathf.random(0, 360);
+            return !isDanger() ? ((pressure / dangerPressure) * 360) : Mathf.random(0, 360);
         }
 
         public boolean visibleArrow() {
@@ -44,12 +45,24 @@ public class PressureGraph extends PressureConduit {
             drawArrow();
         }
 
+        @Override
+        public void updateTile() {
+            super.updateTile();
+
+            if(noNetDestroy && net(this).isEmpty()) {
+                kill();
+            }
+        }
+
         public void drawArrow() {
             if(visibleArrow()) {
                 Draw.draw(Layer.blockBuilding + 5, () -> {
                     float angle = angle();
 
                     Color color = OlPal.mixcol(Color.green, Color.red, angle / 360);
+                    if(isDanger()) {
+                        color = Color.white;
+                    }
 
                     Draw.color(color);
                     Draw.rect(arrowRegion, x, y, fullRad() ? angle : (angle / 360) * -180);

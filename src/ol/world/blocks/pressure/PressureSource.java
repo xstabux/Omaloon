@@ -4,6 +4,7 @@ import arc.Core;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
+import arc.scene.ui.TextField;
 import arc.scene.ui.layout.Table;
 import arc.struct.FloatSeq;
 import arc.util.io.Reads;
@@ -12,7 +13,6 @@ import mindustry.gen.Building;
 import mindustry.ui.Styles;
 import mindustry.world.Tile;
 
-//maxPressure in this block is max value in the config (!!!)
 public class PressureSource extends PressureGraph {
     public boolean voidable, drawArrow = true;
     public TextureRegion voidRegion;
@@ -51,6 +51,8 @@ public class PressureSource extends PressureGraph {
         super(name);
 
         canExplode = false;
+        drawArrow = false;
+        noNetDestroy = false;
     }
 
     @Override
@@ -127,13 +129,25 @@ public class PressureSource extends PressureGraph {
         public void buildConfiguration(Table table) {
             table.pane(t -> {
                 t.setBackground(Styles.black5);
-                t.add("pressure").center().row();
-                t.slider(0, maxPressure, 1, val, this::configure).growX();
-            }).size(200f, 75f);
+                TextField f = t.field("pressure", str -> {
+                    try {
+                        configure(Float.parseFloat(str));
+                    } catch(Exception ignored) {}
+                }).valid(val -> {
+                    try {
+                        return Float.parseFloat(val) >= 0;
+                    } catch(Exception ignored) {
+                        return false;
+                    }
+                }).pad(6f).get();
+
+                f.setText(val + "");
+                t.add("pressure").pad(6f).growY();
+            });
         }
 
         @Override
-        public boolean inNet(Building b, PressureAble p) {
+        public boolean inNet(Building b, PressureAble p, boolean j) {
             return true;
         }
     }
