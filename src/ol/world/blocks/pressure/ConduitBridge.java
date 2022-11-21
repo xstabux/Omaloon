@@ -67,14 +67,13 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
     public void drawBridge(Building self, Building other) {
         float sx = self.x, sy = self.y;
         float ox = other.x, oy = other.y;
-        float len = len(sx, ox, sy, oy);
+
         int segments = length(sx, sy, ox, oy) + 1;
 
         float sa = self.angleTo(other);
         float oa = other.angleTo(self);
 
         OlDraw.l(Layer.power - 5);
-        Draw.alpha(Renderer.bridgeOpacity);
         Lines.stroke(4);
 
         Draw.rect(bridgeEnd, sx, sy, sa);
