@@ -1,6 +1,8 @@
 package ol.world.blocks.pressure;
 
 import arc.graphics.Color;
+import arc.struct.Seq;
+import arc.util.Log;
 import arc.util.io.*;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
@@ -116,6 +118,19 @@ public class PressureCrafter extends OlCrafter {
             }
 
             super.craft();
+        }
+
+        @Override
+        public boolean inNet(Building b, PressureAble p, boolean j) {
+            if(b.x == x || b.y == y) {
+                return false;
+            }
+
+            return !(b.proximity == proximity && b.health == b.health && b.block == block && b.wasDamaged == wasDamaged &&
+                b.rotation == rotation && b.items == items && b.team == team && b.cdump == cdump && b.liquids == liquids &&
+                    b.enabled == enabled && b.hitTime == hitTime && b.dead == dead && b.wasVisible == wasVisible &&
+                    b.efficiency == efficiency && b.healSuppressionTime == healSuppressionTime &&
+                    b.optionalEfficiency == optionalEfficiency && b.timer == timer && b.maxHealth == maxHealth);
         }
 
         @Override

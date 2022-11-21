@@ -102,8 +102,6 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         super(name);
         solid = true;
         configurable = true;
-        rotate = quickRotate = true;
-        rotateDraw = false;
 
         config(Integer.class, (ConduitBridgeBuild c, Integer link) -> {
             if(c.link == link) {
@@ -200,6 +198,11 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
             super.write(write);
             write.f(pressure);
             write.i(link);
+        }
+
+        @Override
+        public boolean inNet(Building b, PressureAble p, boolean j) {
+            return true;
         }
 
         @Override

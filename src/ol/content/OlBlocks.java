@@ -409,6 +409,7 @@ public class OlBlocks{
 			dangerPressure = 150;
 		}};
 
+		//throws StackOverflowException
 		if(Omaloon.experimental) {
 			new PressureCrafter("test-A") {{
 				requirements(Category.crafting, BuildVisibility.sandboxOnly, with());

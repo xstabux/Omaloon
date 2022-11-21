@@ -34,7 +34,7 @@ public interface PressureAble {
                 jun = true;
             }
 
-            if(b2 != source && b2 instanceof PressureAble p && inNet(b2, p, jun) && !buildings.contains(b2)) {
+            if(b2 != source && b2 instanceof PressureAble p && inNet(b2, p, jun) && p.inNet(self(), jun) && !buildings.contains(b2) && b2 != self()) {
                 buildings.add(b2);
 
                 buildings.addAll(p.net(self(), cons));
@@ -42,6 +42,10 @@ public interface PressureAble {
         }
 
         return buildings;
+    }
+
+    default boolean inNet(Building b, boolean junction) {
+        return inNet(b, (PressureAble) b, junction);
     }
 
     default boolean online() {
