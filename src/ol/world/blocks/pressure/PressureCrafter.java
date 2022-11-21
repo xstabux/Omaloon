@@ -12,10 +12,10 @@ import static ol.graphics.OlPal.*;
 
 public class PressureCrafter extends OlCrafter {
     //how many pressure crafter consumes
-    public float pressureConsume;
+    public float pressureConsume = 0;
 
     //how many pressure crafter
-    public float pressureProduce;
+    public float pressureProduce = 0;
 
     public float maxPressure, dangerPressure;
     public boolean canExplode = true;
@@ -100,7 +100,7 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public boolean storageOnly() {
-            return !(pressureConsume > 0);
+            return !(pressureProduce > 0);
         }
 
         @Override
@@ -109,8 +109,21 @@ public class PressureCrafter extends OlCrafter {
         }
 
         @Override
+        public void craft() {
+            //HA
+            if(pressure < pressureConsume && pressureConsume > 0) {
+                return;
+            }
+
+            super.craft();
+        }
+
+        @Override
         public void updateTile() {
             super.updateTile();
+            if(net(this).filter(b -> b != this).isEmpty()) {
+                pressure = pressureThread();
+            }
 
             if(canConsume() && effect < 100) {
                 effect++;

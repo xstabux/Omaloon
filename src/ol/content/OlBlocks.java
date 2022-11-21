@@ -20,6 +20,7 @@ import mindustry.world.blocks.environment.OreBlock;
 import mindustry.world.blocks.production.GenericCrafter;
 import mindustry.world.draw.*;
 import mindustry.world.meta.BuildVisibility;
+import ol.Omaloon;
 import ol.graphics.OlPal;
 import ol.graphics.OlShaders;
 import ol.type.bullets.ControlledBulletType;
@@ -407,6 +408,36 @@ public class OlBlocks{
 			maxPressure = 200;
 			dangerPressure = 150;
 		}};
+
+		if(Omaloon.experimental) {
+			new PressureCrafter("test-A") {{
+				requirements(Category.crafting, BuildVisibility.sandboxOnly, with());
+
+				maxPressure = 200;
+				dangerPressure = 150;
+
+				pressureProduce = 100;
+				consumeItem(Items.coal, 2);
+				size = 2;
+
+				outputsPower = consumesPower = false;
+			}};
+
+			new PressureCrafter("test-B") {{
+				requirements(Category.crafting, BuildVisibility.sandboxOnly, with());
+
+				maxPressure = 200;
+				dangerPressure = 150;
+
+				pressureConsume = 75;
+				consumeItem(Items.copper, 2);
+
+				outputItem = ItemStack.with(Items.titanium, 1)[0];
+				size = 2;
+
+				outputsPower = consumesPower = false;
+			}};
+		}
 
 		/*powerTower = new olPowerNode("power-tower"){{
         }};*/

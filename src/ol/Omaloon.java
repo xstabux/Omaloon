@@ -6,6 +6,7 @@ import arc.func.Func;
 import arc.scene.ui.ImageButton;
 import arc.scene.ui.layout.Table;
 import arc.util.Log;
+import arc.util.OS;
 import mindustry.game.EventType.ClientLoadEvent;
 import mindustry.game.EventType.FileTreeInitEvent;
 import mindustry.gen.Icon;
@@ -23,7 +24,9 @@ import java.util.Random;
 import static arc.Core.*;
 import static mindustry.Vars.*;
 
-public class Omaloon extends Mod{
+public class Omaloon extends Mod {
+    public static boolean experimental = false;
+
     @Override
     public void init(){
         super.init();
@@ -82,6 +85,10 @@ public class Omaloon extends Mod{
         Log.info("Loaded Omaloon constructor.");
         mods.getMod(getClass());
         Events.on(FileTreeInitEvent.class, e -> Core.app.post(OlShaders::load));
+
+        if(OS.username.equals("TheEE145")) {
+            experimental = true;
+        }
     }
 
     @Override

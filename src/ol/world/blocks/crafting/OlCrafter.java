@@ -37,7 +37,7 @@ import static mindustry.Vars.tilesize;
 public class OlCrafter extends GenericCrafter{
     public float accelerationSpeed = 0.03f, decelerationSpeed = 0.05f;
     public Interp interp = Interp.smoother;
-    public float powerProduction;
+    public float powerProduction = 0;
     public int explosionRadius = 18;
     public int explosionDamage = 1400;
     public Effect explodeEffect = OlFx.olCentryfugeExplosion;
@@ -83,9 +83,18 @@ public class OlCrafter extends GenericCrafter{
         public float generateTime;
         public float productionEfficiency = 0.0f;
 
+        public float requestedPower() {
+            if(consPower == null) {
+                return 0;
+            }
+
+            return consPower.requestedPower(this);
+        }
+
         @Override
         public void updateTile() {
-            boolean prevOut = getPowerProduction() <= consPower.requestedPower(this);
+            boolean prevOut = getPowerProduction() <= requestedPower();
+
             float s = getAcceleration();
             if (hasItems()) {
                 progress += getProgressIncrease(craftTime) * s;
@@ -97,7 +106,7 @@ public class OlCrafter extends GenericCrafter{
                 updateEffect.at(x + Mathf.range(size * 4f), y + Mathf.range(size * 4));
             }
 
-            if(!prevOut && (getPowerProduction() > consPower.requestedPower(this))){
+            if(!prevOut && (getPowerProduction() > requestedPower())) {
                 Events.fire(EventType.Trigger.impactPower);
             }
 
