@@ -55,7 +55,7 @@ public class OlBlocks{
 	        //Storages
 	        //Units
 			//Pressure
-			pressureConduit, pressureCounter, pressureSource, pressureJunction;
+			pressureConduit, pressureCounter, pressureSource, pressureJunction, pressureBridge;
 
 	public static void load() {
 		//region Ores
@@ -399,6 +399,13 @@ public class OlBlocks{
 
 		pressureJunction = new PressureJunction("pressure-junction") {{
 			requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+		}};
+
+		pressureBridge = new ConduitBridge("pressure-bridge") {{
+			requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+
+			maxPressure = 200;
+			dangerPressure = 150;
 		}};
 
 		/*powerTower = new olPowerNode("power-tower"){{
