@@ -4,8 +4,13 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.*;
 import arc.math.Mathf;
+import mindustry.game.Team;
+import mindustry.gen.Building;
 import mindustry.graphics.Layer;
+import mindustry.world.Tile;
 import ol.graphics.OlPal;
+
+import static mindustry.Vars.world;
 
 public class PressureGraph extends PressureConduit {
     public TextureRegion arrowRegion;
@@ -17,6 +22,27 @@ public class PressureGraph extends PressureConduit {
 
         mapDraw = false;
         rotateDraw = false;
+    }
+
+    @Override
+    public boolean canPlaceOn(Tile tile, Team team, int rotation) {
+        int tx = (int) (tile.drawx() / 8);
+        int ty = (int) (tile.drawy() / 8);
+
+        Building left = world.tile(tx - 1, ty).build;
+        Building right = world.tile(tx + 1, ty).build;
+        Building bottom = world.tile(tx, ty - 1).build;
+        Building top = world.tile(tx, ty + 1).build;
+
+        if(rotation == 0 || rotation == 2) {
+            return left instanceof PressureAble || right instanceof PressureAble;
+        }
+
+        if(rotation == 1 || rotation == 3) {
+            return top instanceof PressureAble || bottom instanceof PressureAble;
+        }
+
+        return false;
     }
 
     @Override
