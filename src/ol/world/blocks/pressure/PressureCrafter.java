@@ -135,6 +135,11 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public BlockStatus status() {
+            BlockStatus SUPER = super.status();
+            if(SUPER == BlockStatus.logicDisable || SUPER == BlockStatus.noOutput) {
+                return SUPER;
+            }
+
             return pressure < pressureConsume ? BlockStatus.noInput : super.status();
         }
 
