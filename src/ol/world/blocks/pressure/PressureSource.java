@@ -107,7 +107,7 @@ public class PressureSource extends PressureGraph {
 
         @Override
         public float pressureThread() {
-            return voidMode() ? Integer.MIN_VALUE : val;
+            return enabled ? (voidMode() ? Integer.MIN_VALUE : val) : 0;
         }
 
         @Override
