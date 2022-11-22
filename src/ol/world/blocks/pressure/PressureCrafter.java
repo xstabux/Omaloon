@@ -1,5 +1,6 @@
 package ol.world.blocks.pressure;
 
+import arc.func.Cons;
 import arc.graphics.Color;
 import arc.struct.Seq;
 import arc.util.Log;
@@ -8,6 +9,7 @@ import mindustry.content.Fx;
 import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
+import mindustry.world.meta.BlockStatus;
 import ol.world.blocks.crafting.OlCrafter;
 
 import static ol.graphics.OlPal.*;
@@ -21,12 +23,38 @@ public class PressureCrafter extends OlCrafter {
 
     public float maxPressure, dangerPressure;
     public boolean canExplode = true;
+    public boolean transfer = false;
+
+    //when block works pressure is make lower
+    public boolean downPressure;
+    public float downPercent = 0.25f;
 
     //boom
     public Effect explodeEffect = Fx.none;
 
     public PressureCrafter(String name) {
         super(name);
+    }
+
+    @Override
+    public void setBars() {
+        super.setBars();
+
+        addBar("pressure", (PressureCrafterBuild b) -> {
+            float pressure = b.pressure / maxPressure;
+
+            return new Bar(
+                    () -> "pressure",
+                    () -> {
+                        if(b.isDanger()) {
+                            return mixcol(Color.black, OLPressureDanger, b.jumpDelta() / 30);
+                        }
+
+                        return mixcol(OLPressureMin, OLPressure, pressure);
+                    },
+                    () -> pressure
+            );
+        });
     }
 
     public class PressureCrafterBuild extends OlCrafter.olCrafterBuild implements PressureAble {
@@ -86,7 +114,8 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public float pressureThread() {
-            return pressureProduce * (effect / 100);
+            return (pressureProduce * (effect / 100)) -
+                    (downPressure ? (pressureConsume * (effect / 100) * downPercent) : 0);
         }
 
         @Override
@@ -97,6 +126,16 @@ public class PressureCrafter extends OlCrafter {
             }
 
             super.craft();
+        }
+
+        @Override
+        public Seq<Building> net(Building building, Cons<PressureJunction.PressureJunctionBuild> cons, Seq<Building> buildings) {
+            return transfer ? PressureAble.super.net(building, cons, buildings) : buildings;
+        }
+
+        @Override
+        public BlockStatus status() {
+            return pressure < pressureConsume ? BlockStatus.noInput : super.status();
         }
 
         @Override
