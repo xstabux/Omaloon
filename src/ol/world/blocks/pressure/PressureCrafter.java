@@ -109,7 +109,7 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public boolean storageOnly() {
-            return !(pressureProduce > 0);
+            return !(pressureProduce > 0) || (downPressure && downPercent > 0);
         }
 
         @Override
