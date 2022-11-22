@@ -17,14 +17,24 @@ public interface PressureAble {
     float pressure();
     void pressure(float pressure);
 
-    default Seq<Building> net(Building source) {
-        return net(source, j -> {});
+    default boolean sdx(Building b2, Seq<Building> buildings, boolean jun) {
+        return b2 instanceof PressureAble p && inNet(b2, p, jun) && p.inNet(self(), jun) && !buildings.contains(b2) && b2 != self();
     }
 
-    default Seq<Building> net(Building source, Cons<PressureJunctionBuild> cons) {
-        Seq<Building> buildings = new Seq<>();
+    default Seq<Building> net(Building building, Cons<PressureJunctionBuild> cons) {
+        return net(building, cons, new Seq<>());
+    }
 
-        for(Building b : proximity()) {
+    default Seq<Building> net(Building building) {
+        return net(building, j -> {});
+    }
+
+    default Seq<Building> net() {
+        return net(self());
+    }
+
+    default Seq<Building> net(Building building, Cons<PressureJunctionBuild> cons, Seq<Building> buildings) {
+        for(Building b : building.proximity) {
             Building b2 = b;
 
             boolean jun = false;
@@ -34,23 +44,15 @@ public interface PressureAble {
                 jun = true;
             }
 
-            if(b2 != source && b2 instanceof PressureAble p && inNet(b2, p, jun) && p.inNet(self(), jun) && !buildings.contains(b2) && b2 != self()) {
+            if(sdx(b2, buildings, jun)) {
                 buildings.add(b2);
-
-                try {
-                    for(Building bx : p.net(self(), cons)) {
-                        if(!buildings.contains(bx)) {
-                            buildings.add(bx);
-                        }
-                    }
-                } catch(StackOverflowError ignored) {
-                    break;
-                }
+                ((PressureAble) b2).net(b2, cons, buildings);
             }
         }
 
         return buildings;
     }
+
 
     default boolean inNet(Building b, boolean junction) {
         return inNet(b, (PressureAble) b, junction);

@@ -351,23 +351,17 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         }
 
         @Override
-        public Seq<Building> net(Building source, Cons<PressureJunction.PressureJunctionBuild> cons) {
-            Seq<Building> buildings = PressureAble.super.net(source, cons);
+        public Seq<Building> net(Building building, Cons<PressureJunction.PressureJunctionBuild> cons, Seq<Building> buildings) {
             for(ConduitBridgeBuild b : validLinks(b -> b.linked(this) || linked(b))) {
-                if(b == this || b == source) {
+                if(b == this || b == building || buildings.contains(b)) {
                     continue;
                 }
 
                 buildings.add(b);
-
-                try {
-                    buildings.add(b.net(this));
-                } catch(StackOverflowError ignored) {
-                    unlink();
-                }
+                b.net(b, cons, buildings);
             }
 
-            return buildings;
+            return PressureAble.super.net(building, cons, buildings);
         }
 
         @Override

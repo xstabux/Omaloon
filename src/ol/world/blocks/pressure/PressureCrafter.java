@@ -100,19 +100,6 @@ public class PressureCrafter extends OlCrafter {
         }
 
         @Override
-        public boolean inNet(Building b, PressureAble p, boolean j) {
-            if(b.x == x || b.y == y) {
-                return false;
-            }
-
-            return !(b.proximity == proximity && b.health == b.health && b.block == block && b.wasDamaged == wasDamaged &&
-                b.rotation == rotation && b.items == items && b.team == team && b.cdump == cdump && b.liquids == liquids &&
-                    b.enabled == enabled && b.hitTime == hitTime && b.dead == dead && b.wasVisible == wasVisible &&
-                    b.efficiency == efficiency && b.healSuppressionTime == healSuppressionTime &&
-                    b.optionalEfficiency == optionalEfficiency && b.timer == timer && b.maxHealth == maxHealth);
-        }
-
-        @Override
         public void updateTile() {
             super.updateTile();
             if(net(this).filter(b -> b != this).isEmpty()) {
