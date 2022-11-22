@@ -54,6 +54,7 @@ public class PressureSource extends PressureGraph {
         drawArrow = false;
         noNetDestroy = false;
         rotate = false;
+        copyConfig = true;
     }
 
     @Override
