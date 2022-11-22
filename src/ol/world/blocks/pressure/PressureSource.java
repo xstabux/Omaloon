@@ -136,7 +136,8 @@ public class PressureSource extends PressureGraph {
                     } catch(Exception ignored) {}
                 }).valid(val -> {
                     try {
-                        return Float.parseFloat(val) >= 0;
+                        Float.parseFloat(val);
+                        return true;
                     } catch(Exception ignored) {
                         return false;
                     }

@@ -86,7 +86,7 @@ public class Omaloon extends Mod {
         mods.getMod(getClass());
         Events.on(FileTreeInitEvent.class, e -> Core.app.post(OlShaders::load));
 
-        if(OS.username.equals("TheEE145")) {
+        if(OS.username.equals("TheEE145") /*|| OS.username.equals("stabu user name")*/) {
             experimental = true;
         }
     }
