@@ -4,6 +4,7 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
+import arc.math.Mathf;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
 import arc.util.io.Reads;
@@ -13,12 +14,12 @@ import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
+import ol.world.blocks.RegionAble;
 
+import static mindustry.Vars.world;
 import static ol.graphics.OlPal.*;
 
-public class PressureConduit extends Block implements PressureReplaceable {
-    public TextureRegion[] regions;
-
+public class PressureConduit extends Block implements PressureReplaceable, RegionAble {
     //max pressure that can store block. if pressure is bigger when boom
     public float maxPressure;
 
@@ -49,16 +50,6 @@ public class PressureConduit extends Block implements PressureReplaceable {
         if(rotation == 0 || rotation == 2) {
             Draw.rect(pressureIcon, dx + ds, dy);
             Draw.rect(pressureIcon, dx - ds, dy);
-        }
-    }
-
-    @Override
-    public void load() {
-        super.load();
-
-        regions = new TextureRegion[4];
-        for(int i = 0; i < regions.length; i++) {
-            regions[i] = Core.atlas.find(name + "-base" + (i + 1));
         }
     }
 
@@ -103,6 +94,11 @@ public class PressureConduit extends Block implements PressureReplaceable {
                     () -> pressure
             );
         });
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     public class PressureConduitBuild extends Building implements PressureAble {
@@ -171,6 +167,36 @@ public class PressureConduit extends Block implements PressureReplaceable {
 
                 kill();
             }
+        }
+
+        @Override
+        public void draw() {
+            if(mapDraw && net(this).any()) {
+                int tx = tileX();
+                int ty = tileY();
+
+                Building left = world.tile(tx - 1, ty).build;
+                Building right = world.tile(tx + 1, ty).build;
+                Building bottom = world.tile(tx, ty - 1).build;
+                Building top = world.tile(tx, ty + 1).build;
+
+                boolean bLeft = (left instanceof PressureAble && inNet(left, false)) || left instanceof PressureJunction.PressureJunctionBuild;
+                boolean bRight = (right instanceof PressureAble && inNet(right, false)) || right instanceof PressureJunction.PressureJunctionBuild;
+                boolean bTop = (top instanceof PressureAble && inNet(top, false)) || top instanceof PressureJunction.PressureJunctionBuild;
+                boolean bBottom = (bottom instanceof PressureAble && inNet(bottom, false)) || bottom instanceof PressureJunction.PressureJunctionBuild;
+
+                int l = bLeft ? 1 : 0;
+                int r = bRight ? 1 : 0;
+                int t = bTop ? 1 : 0;
+                int b = bBottom ? 1 : 0;
+
+                String sprite = "-" + l + "" + r + "" + t + "" + b;
+                Draw.rect(loadRegion(sprite), this.x, this.y);
+            } else {
+                super.draw();
+            }
+
+            this.drawTeamTop();
         }
 
         @Override

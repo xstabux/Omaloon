@@ -14,7 +14,7 @@ import mindustry.ui.Styles;
 import mindustry.world.Tile;
 
 public class PressureSource extends PressureGraph {
-    public boolean voidable, drawArrow = true;
+    public boolean voidable, drawArrow;
     public TextureRegion voidRegion;
 
     @Override
@@ -53,6 +53,7 @@ public class PressureSource extends PressureGraph {
         canExplode = false;
         drawArrow = false;
         noNetDestroy = false;
+        rotate = false;
     }
 
     @Override

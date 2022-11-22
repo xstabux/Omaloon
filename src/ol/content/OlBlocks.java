@@ -392,6 +392,8 @@ public class OlBlocks{
 				requirements(Category.distribution, with());
 				maxPressure = 200;
 				dangerPressure = 150;
+
+				noNetDestroy = false;
 			}};
 
 			pressureSource = new PressureSource("pressure-source") {{

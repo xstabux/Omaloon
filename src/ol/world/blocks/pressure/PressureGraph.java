@@ -22,7 +22,7 @@ public class PressureGraph extends PressureConduit implements RegionAble {
         super(name);
 
         mapDraw = false;
-        rotateDraw = false;
+        rotateDraw = true;
     }
 
     @Override
@@ -109,6 +109,47 @@ public class PressureGraph extends PressureConduit implements RegionAble {
                     Draw.reset();
                 });
             }
+        }
+
+        @Override
+        public float drawrot() {
+            if(!quickRotate || !rotate || alignX(rotation)) {
+                return 0;
+            }
+
+            if(alignY(rotation)) {
+                return -90;
+            }
+
+            return 0;
+        }
+
+        @Override
+        public boolean inNet(Building b, PressureAble p, boolean junction) {
+            Building self = self();
+            int delta = 1;
+            if(junction) {
+                delta++;
+            }
+
+            int tx = self.tileX();
+            int ty = self.tileY();
+
+            Tile left = world.tile(tx - delta, ty);
+            Tile right = world.tile(tx + delta, ty);
+
+            if((left.build == b || right.build == b) && !alignX(rotation)) {
+                return false;
+            }
+
+            Tile top = world.tile(tx, ty + delta);
+            Tile bottom = world.tile(tx, ty - delta);
+
+            if((top.build == b || bottom.build == b) && !alignY(rotation)) {
+                return false;
+            }
+
+            return p.online();
         }
     }
 }

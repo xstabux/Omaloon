@@ -29,27 +29,6 @@ public class PressureCrafter extends OlCrafter {
         super(name);
     }
 
-    @Override
-    public void setBars() {
-        super.setBars();
-
-        addBar("pressure", (PressureCrafterBuild b) -> {
-            float pressure = b.pressure / maxPressure;
-
-            return new Bar(
-                    () -> "pressure",
-                    () -> {
-                        if(b.isDanger()) {
-                            return mixcol(Color.black, OLPressureDanger, b.jumpDelta() / 30);
-                        }
-
-                        return mixcol(OLPressureMin, OLPressure, pressure);
-                    },
-                    () -> pressure
-            );
-        });
-    }
-
     public class PressureCrafterBuild extends OlCrafter.olCrafterBuild implements PressureAble {
         public float pressure;
         public float effect;

@@ -6,9 +6,11 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
+import mindustry.game.Team;
 import mindustry.gen.Building;
 import mindustry.graphics.Pal;
 import mindustry.world.Block;
+import mindustry.world.Tile;
 import ol.world.blocks.defense.OlWall;
 
 import static mindustry.Vars.*;
@@ -16,6 +18,7 @@ import static mindustry.Vars.*;
 public class PressureJunction extends OlWall implements PressureReplaceable {
     public boolean canExplode = true;
     public Effect boomEffect = Fx.none;
+    public boolean noNetDestroy = true;
 
     public PressureJunction(String name) {
         super(name);
@@ -30,6 +33,31 @@ public class PressureJunction extends OlWall implements PressureReplaceable {
     @Override
     public boolean canReplace(Block other) {
         return canBeReplaced(other);
+    }
+
+    @Override
+    public boolean canPlaceOn(Tile tile, Team team, int rotation) {
+        if(!noNetDestroy) {
+            return super.canPlaceOn(tile, team, rotation);
+        }
+
+        int tx = (int) (tile.drawx() / 8);
+        int ty = (int) (tile.drawy() / 8);
+
+        Building left = world.tile(tx - 1, ty).build;
+        Building right = world.tile(tx + 1, ty).build;
+        Building bottom = world.tile(tx, ty - 1).build;
+        Building top = world.tile(tx, ty + 1).build;
+
+        if(rotation == 0 || rotation == 2) {
+            return left instanceof PressureAble || right instanceof PressureAble;
+        }
+
+        if(rotation == 1 || rotation == 3) {
+            return top instanceof PressureAble || bottom instanceof PressureAble;
+        }
+
+        return false;
     }
 
     @Override
@@ -89,6 +117,24 @@ public class PressureJunction extends OlWall implements PressureReplaceable {
             }
 
             kill();
+        }
+
+        public boolean notValid(Building b) {
+            return !(b instanceof PressureAble);
+        }
+
+        @Override
+        public void updateTile() {
+            super.updateTile();
+
+            Building left = world.tile(tileX() - 1, tileY()).build;
+            Building right = world.tile(tileX() + 1, tileY()).build;
+            Building bottom = world.tile(tileX(), tileY() - 1).build;
+            Building top = world.tile(tileX(), tileY() + 1).build;
+
+            if(noNetDestroy && notValid(left) && notValid(right) && notValid(bottom) && notValid(top)) {
+                kill();
+            }
         }
     }
 }

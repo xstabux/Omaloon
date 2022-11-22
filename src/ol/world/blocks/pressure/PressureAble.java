@@ -77,6 +77,10 @@ public interface PressureAble {
     }
 
     default boolean inNet(Building b, PressureAble p, boolean junction) {
+        if(b == null) {
+            return false;
+        }
+
         Building self = self();
         int delta = 1;
         if(junction) {

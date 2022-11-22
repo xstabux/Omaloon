@@ -1,0 +1,7 @@
+pipes name based on connections <name>-[L][R][T][B]
+
+example: if connected to all sides when loaded 1111
+if connected only right when loaded 0100
+...
+if connected only right and left when loaded 1100
+...

@@ -363,7 +363,7 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
                 try {
                     buildings.add(b.net(this));
                 } catch(StackOverflowError ignored) {
-                    break;
+                    unlink();
                 }
             }
 
