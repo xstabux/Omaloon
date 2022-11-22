@@ -68,10 +68,27 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         float sx = self.x, sy = self.y;
         float ox = other.x, oy = other.y;
 
-        int segments = length(sx, sy, ox, oy) + 1;
-
         float sa = self.angleTo(other);
         float oa = other.angleTo(self);
+
+        boolean line = sx == ox || sy == oy;
+        int segments = length(sx, sy, ox, oy) + 1;
+
+        if(line) {
+            if(sy == oy) {
+                Building a = sx < ox ? other : self;
+                Building b = sx < ox ? self : other;
+
+                segments = a.tileX() - b.tileX();
+            }
+
+            if(sx == ox) {
+                Building a = sy < oy ? other : self;
+                Building b = sy < oy ? self : other;
+
+                segments = a.tileY() - b.tileY();
+            }
+        }
 
         OlDraw.l(Layer.power - 5);
         Lines.stroke(4);
@@ -342,7 +359,12 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
                 }
 
                 buildings.add(b);
-                buildings.add(b.net(this));
+
+                try {
+                    buildings.add(b.net(this));
+                } catch(StackOverflowError ignored) {
+                    break;
+                }
             }
 
             return buildings;

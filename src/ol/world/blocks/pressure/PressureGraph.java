@@ -9,11 +9,12 @@ import mindustry.gen.Building;
 import mindustry.graphics.Layer;
 import mindustry.world.Tile;
 import ol.graphics.OlPal;
+import ol.world.blocks.RegionAble;
 
 import static mindustry.Vars.world;
 
-public class PressureGraph extends PressureConduit {
-    public TextureRegion arrowRegion;
+public class PressureGraph extends PressureConduit implements RegionAble {
+    public TextureRegion arrowRegion, topRegion;
     public boolean fullRadius = false;
     public boolean noNetDestroy = true;
 
@@ -26,6 +27,10 @@ public class PressureGraph extends PressureConduit {
 
     @Override
     public boolean canPlaceOn(Tile tile, Team team, int rotation) {
+        if(!noNetDestroy) {
+            return super.canPlaceOn(tile, team, rotation);
+        }
+
         int tx = (int) (tile.drawx() / 8);
         int ty = (int) (tile.drawy() / 8);
 
@@ -49,7 +54,15 @@ public class PressureGraph extends PressureConduit {
     public void load() {
         super.load();
 
-        arrowRegion = Core.atlas.find(name + "-arrow");
+        arrowRegion = loadRegion("-arrow");
+        topRegion = loadRegion("-top");
+
+        uiIcon = loadRegion("-preview", uiIcon);
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     public class PressureGraphBuild extends PressureConduitBuild {
@@ -92,6 +105,7 @@ public class PressureGraph extends PressureConduit {
 
                     Draw.color(color);
                     Draw.rect(arrowRegion, x, y, fullRad() ? angle : (angle / 360) * -180);
+                    Draw.rect(topRegion, x, y);
                     Draw.reset();
                 });
             }

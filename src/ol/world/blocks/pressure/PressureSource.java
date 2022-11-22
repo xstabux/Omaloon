@@ -60,7 +60,7 @@ public class PressureSource extends PressureGraph {
         super.load();
 
         if(voidable) {
-            voidRegion = Core.atlas.find(name + "-void");
+            voidRegion = loadRegion("-void");
         }
 
         configurable = true;

@@ -379,38 +379,37 @@ public class OlBlocks{
 
 		//endregion
 		//region Pressure
-		pressureConduit = new PressureConduit("pressure-conduit") {{
-			requirements(Category.distribution, with());
-			maxPressure = 200;
-			dangerPressure = 150;
-
-			mapDraw = true;
-		}};
-
-		pressureCounter = new PressureGraph("pressure-counter") {{
-			requirements(Category.distribution, with());
-			maxPressure = 200;
-			dangerPressure = 150;
-		}};
-
-		pressureSource = new PressureSource("pressure-source") {{
-			requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-			voidable = true;
-		}};
-
-		pressureJunction = new PressureJunction("pressure-junction") {{
-			requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-		}};
-
-		pressureBridge = new ConduitBridge("pressure-bridge") {{
-			requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-
-			maxPressure = 200;
-			dangerPressure = 150;
-		}};
-
-		//throws StackOverflowException
 		if(Omaloon.experimental) {
+			pressureConduit = new PressureConduit("pressure-conduit") {{
+				requirements(Category.distribution, with());
+				maxPressure = 200;
+				dangerPressure = 150;
+
+				mapDraw = true;
+			}};
+
+			pressureCounter = new PressureGraph("pressure-counter") {{
+				requirements(Category.distribution, with());
+				maxPressure = 200;
+				dangerPressure = 150;
+			}};
+
+			pressureSource = new PressureSource("pressure-source") {{
+				requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+				voidable = true;
+			}};
+
+			pressureJunction = new PressureJunction("pressure-junction") {{
+				requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+			}};
+
+			pressureBridge = new ConduitBridge("pressure-bridge") {{
+				requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+
+				maxPressure = 200;
+				dangerPressure = 150;
+			}};
+
 			new PressureCrafter("test-A") {{
 				requirements(Category.crafting, BuildVisibility.sandboxOnly, with());
 

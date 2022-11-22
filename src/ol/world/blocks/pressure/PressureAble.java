@@ -37,7 +37,15 @@ public interface PressureAble {
             if(b2 != source && b2 instanceof PressureAble p && inNet(b2, p, jun) && p.inNet(self(), jun) && !buildings.contains(b2) && b2 != self()) {
                 buildings.add(b2);
 
-                buildings.addAll(p.net(self(), cons));
+                try {
+                    for(Building bx : p.net(self(), cons)) {
+                        if(!buildings.contains(bx)) {
+                            buildings.add(bx);
+                        }
+                    }
+                } catch(StackOverflowError ignored) {
+                    break;
+                }
             }
         }
 
