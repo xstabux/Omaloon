@@ -8,12 +8,15 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
+import arc.math.geom.Intersector;
 import arc.math.geom.Point2;
 import arc.math.geom.Position;
 import arc.scene.ui.layout.Table;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
 import arc.util.Eachable;
+import arc.util.Nullable;
+import arc.util.Tmp;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.Vars;
@@ -26,10 +29,12 @@ import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
+import mindustry.input.Placement;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.distribution.ItemBridge;
+import mindustry.world.blocks.power.PowerNode;
 import mindustry.world.meta.BlockGroup;
 import ol.graphics.OlDraw;
 import ol.world.blocks.Ranged;
@@ -37,6 +42,8 @@ import ol.world.blocks.defense.OlWall;
 
 import static arc.graphics.g2d.Draw.scl;
 import static arc.graphics.g2d.Draw.xscl;
+import static mindustry.Vars.tilesize;
+import static mindustry.Vars.world;
 import static ol.graphics.OlPal.*;
 import static ol.graphics.OlPal.OLPressure;
 
@@ -143,17 +150,18 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         copyConfig = false;
         allowConfigInventory = false;
         priority = TargetPriority.transport;
+        swapDiagonalPlacement = true;
 
         config(Integer.class, (ConduitBridgeBuild c, Integer link) -> {
             if(c.link == link) {
                 c.unlink();
+            } else {
+                c.link = link;
             }
-
-            c.link = link;
         });
 
         config(Point2.class, (ConduitBridgeBuild tile, Point2 i) -> {
-            tile.link = Point2.pack(i.x + tile.tileX(), i.y + tile.tileY());
+            tile.configure(Point2.pack(i.x + tile.tileX(), i.y + tile.tileY()));
         });
     }
 
@@ -235,6 +243,18 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         });
     }
 
+    @Override
+    public void changePlacementPath(Seq<Point2> points, int rotation){
+        Placement.calculateNodes(points, this, rotation, (point, other) -> overlaps(world.tile(point.x, point.y), world.tile(other.x, other.y)));
+    }
+
+    public boolean overlaps(@Nullable Tile src, @Nullable Tile other){
+        if(src == null || other == null) return true;
+
+        return Intersector.overlaps(Tmp.cr1.set(src.worldx() + offset, src.worldy() + offset, range - 8),
+                Tmp.r1.setSize(size * 8).setCenter(other.worldx() + offset, other.worldy() + offset));
+    }
+
     public class ConduitBridgeBuild extends OlWall.olWallBuild implements PressureAble, Ranged {
         public int link = -1;
 
@@ -247,6 +267,12 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         @Override
         public void drawSelect() {
             super.drawSelect();
+
+            validLinks(b -> b.linked(this) || linked(b) || b == this).each(b -> {
+                Drawf.line(Color.sky, b.x, b.y, x, y);
+                Drawf.square(b.x, b.y, 4, 45, Color.sky);
+            });
+
             drawRange();
         }
 
@@ -371,7 +397,7 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         }
 
         public boolean linked() {
-            return link != -1 && link() != null;
+            return link != -1 && link() instanceof ConduitBridgeBuild;
         }
 
         public void unlink() {
@@ -381,20 +407,15 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         @Override
         public boolean onConfigureBuildTapped(Building other) {
             if(this == other) {
-                this.deselect();
+                deselect();
                 return false;
             }
 
             if(other instanceof ConduitBridgeBuild b && validLink(other, x, y)) {
                 configure(b.pos());
-                if(b.link() == this) {
-                    b.unlink();
-                }
-
-                return true;
             }
 
-            return super.onConfigureBuildTapped(other);
+            return true;
         }
 
         @Override
@@ -402,7 +423,7 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
             float s = size * 8 / 2f + 2f + (jumpDelta() / 30);
 
             validLinks(b -> true).each(b -> {
-                Drawf.select(b.x, b.y, s, b.linked(this) || linked(this) ? Pal.place : Pal.accent);
+                Drawf.select(b.x, b.y, s, b.linked(this) || linked(b) ? Pal.heal : Pal.accent);
             });
 
             Drawf.select(x, y, s, Pal.place);
