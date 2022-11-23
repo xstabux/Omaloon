@@ -49,6 +49,7 @@ import static ol.graphics.OlPal.OLPressure;
 
 public class ConduitBridge extends OlWall implements PressureReplaceable {
     private static BuildPlan otherReq;
+    public int tier = -1;
 
     //max pressure that can store block. if pressure is bigger when boom
     public float maxPressure;
@@ -262,6 +263,11 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         @SuppressWarnings("unchecked")
         public ConduitBridgeBuild self() {
             return this;
+        }
+
+        @Override
+        public int tier() {
+            return tier;
         }
 
         @Override

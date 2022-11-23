@@ -53,6 +53,9 @@ public interface PressureAble {
         return buildings;
     }
 
+    default int tier() {
+        return -1;
+    }
 
     default boolean inNet(Building b, boolean junction) {
         return inNet(b, (PressureAble) b, junction);
@@ -106,6 +109,6 @@ public interface PressureAble {
             return alignY(self.rotation) || alignY(b.rotation);
         }
 
-        return p.online();
+        return p.online() && (tier() == -1 || p.tier() == tier());
     }
 }

@@ -386,6 +386,7 @@ public class OlBlocks{
 				dangerPressure = 150;
 
 				mapDraw = true;
+				tier = 1;
 			}};
 
 			pressureCounter = new PressureGraph("pressure-counter") {{
@@ -394,6 +395,15 @@ public class OlBlocks{
 				dangerPressure = 150;
 
 				noNetDestroy = false;
+				tier = 1;
+			}};
+
+			pressureBridge = new ConduitBridge("pressure-bridge") {{
+				requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+
+				maxPressure = 200;
+				dangerPressure = 150;
+				tier = 1;
 			}};
 
 			pressureSource = new PressureSource("pressure-source") {{
@@ -403,13 +413,6 @@ public class OlBlocks{
 
 			pressureJunction = new PressureJunction("pressure-junction") {{
 				requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-			}};
-
-			pressureBridge = new ConduitBridge("pressure-bridge") {{
-				requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-
-				maxPressure = 200;
-				dangerPressure = 150;
 			}};
 
 			new PressureCrafter("test-A") {{

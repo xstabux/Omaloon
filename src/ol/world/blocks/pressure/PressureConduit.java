@@ -22,6 +22,7 @@ import static ol.graphics.OlPal.*;
 public class PressureConduit extends Block implements PressureReplaceable, RegionAble {
     //max pressure that can store block. if pressure is bigger when boom
     public float maxPressure;
+    public int tier = -1;
 
     //joints or no
     public boolean mapDraw = false;
@@ -104,6 +105,11 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
     public class PressureConduitBuild extends Building implements PressureAble {
         public float pressure;
         public float dt = 0;
+
+        @Override
+        public int tier() {
+            return tier;
+        }
 
         @Override
         public void write(Writes write) {
