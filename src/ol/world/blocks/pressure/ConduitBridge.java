@@ -8,6 +8,7 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
+import arc.math.geom.Geometry;
 import arc.math.geom.Intersector;
 import arc.math.geom.Point2;
 import arc.math.geom.Position;
@@ -33,6 +34,7 @@ import mindustry.input.Placement;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.Tile;
+import mindustry.world.blocks.power.PowerNode;
 import ol.graphics.OlDraw;
 import ol.world.blocks.Ranged;
 import ol.world.blocks.defense.OlWall;
@@ -433,11 +435,19 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
 
         public Seq<ConduitBridgeBuild> validLinks(Boolf<ConduitBridgeBuild> boolf) {
             Seq<ConduitBridgeBuild> builds = new Seq<>();
-            Vars.world.tiles.eachTile(t -> {
-                if(validLink(t.build, x, y) && t.build instanceof ConduitBridgeBuild b && boolf.get(b)) {
-                    builds.add(b);
+
+            int range = (int) (this.range()*2 / 8);
+            for(int x = tileX() - range; x < tileX() + range; x++) {
+                for(int y = tileY() - range; y < tileY() + range; y++) {
+                    Tile t = world.tile(x, y);
+
+                    if(t.build instanceof ConduitBridgeBuild b && boolf.get(b)) {
+                        if(validLink(t.build, this.x, this.y)) {
+                            builds.add(b);
+                        }
+                    }
                 }
-            });
+            }
 
             return builds;
         }
