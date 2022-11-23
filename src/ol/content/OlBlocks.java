@@ -395,6 +395,8 @@ public class OlBlocks{
 				maxPressure = 200;
 				dangerPressure = 150;
 				tier = 1;
+
+				range /= 2;
 			}};
 
 			pressureConduit = new PressureConduit("pressure-conduit") {{
