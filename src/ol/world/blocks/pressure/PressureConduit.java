@@ -130,7 +130,7 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
         }
 
         public float sumx(FloatSeq arr) {
-            return arr.sum();
+            return Math.max(arr.sum(), 0);
         }
 
         @Override

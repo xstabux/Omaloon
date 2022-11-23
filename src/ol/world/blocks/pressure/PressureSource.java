@@ -12,6 +12,7 @@ import arc.util.io.Writes;
 import mindustry.gen.Building;
 import mindustry.ui.Styles;
 import mindustry.world.Tile;
+import mindustry.world.blocks.logic.SwitchBlock;
 
 public class PressureSource extends PressureGraph {
     public boolean voidable, drawArrow;
@@ -55,16 +56,6 @@ public class PressureSource extends PressureGraph {
         noNetDestroy = false;
         rotate = false;
         copyConfig = true;
-    }
-
-    @Override
-    public void load() {
-        super.load();
-
-        if(voidable) {
-            voidRegion = loadRegion("-void");
-        }
-
         configurable = true;
 
         config(Float.class, (PressureSourceBuild b, Float i) -> {
@@ -74,10 +65,30 @@ public class PressureSource extends PressureGraph {
         config(Integer.class, (PressureSourceBuild b, Integer i) -> {
             b.val = i;
         });
+
+        config(String.class, (PressureSourceBuild b, String str) -> {
+            try {
+                b.val = Float.parseFloat(str);
+            } catch(Exception ignored) {};
+        });
+    }
+
+    @Override
+    public void load() {
+        super.load();
+
+        if(voidable) {
+            voidRegion = loadRegion("-void");
+        }
     }
 
     public class PressureSourceBuild extends PressureGraphBuild {
         public float val = 0;
+
+        @Override
+        public Float config() {
+            return val;
+        }
 
         @Override
         public void draw() {
@@ -119,7 +130,7 @@ public class PressureSource extends PressureGraph {
 
         @Override
         public float sumx(FloatSeq arr) {
-            return val;
+            return Math.max(val, 0);
         }
 
         @Override

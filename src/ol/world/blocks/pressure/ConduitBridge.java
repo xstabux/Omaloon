@@ -18,6 +18,7 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.Vars;
 import mindustry.content.Fx;
+import mindustry.core.Renderer;
 import mindustry.entities.Effect;
 import mindustry.entities.TargetPriority;
 import mindustry.entities.units.BuildPlan;
@@ -34,6 +35,8 @@ import ol.graphics.OlDraw;
 import ol.world.blocks.Ranged;
 import ol.world.blocks.defense.OlWall;
 
+import static arc.graphics.g2d.Draw.scl;
+import static arc.graphics.g2d.Draw.xscl;
 import static ol.graphics.OlPal.*;
 import static ol.graphics.OlPal.OLPressure;
 
@@ -93,7 +96,14 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
             }
         }
 
+        float sl = 0;
+        if(!line) {
+            sl = len(sx, ox, sy, oy) / segments;
+        }
+
         OlDraw.l(Layer.power - 5);
+
+        Draw.alpha(Renderer.bridgeOpacity);
         Lines.stroke(4);
 
         Draw.rect(bridgeEnd, sx, sy, sa);
@@ -103,7 +113,11 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
             float s_x = Mathf.lerp(sx, ox, (float) i / segments);
             float s_y = Mathf.lerp(sy, oy, (float) i / segments);
 
-            Draw.rect(bridge, s_x, s_y, sa);
+            if(line) {
+                Draw.rect(bridge, s_x, s_y, sa);
+            } else {
+                Draw.rect(bridge, s_x, s_y, sl, bridge.height * scl * xscl, sa);
+            }
         }
 
         Draw.reset();
@@ -300,7 +314,7 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         }
 
         public float sumx(FloatSeq arr) {
-            return arr.sum();
+            return Math.max(arr.sum(), 0);
         }
 
         @Override
@@ -336,10 +350,6 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
 
 
                 kill();
-            }
-
-            if(link != -1 && link() == null) {
-                unlink();
             }
         }
 
