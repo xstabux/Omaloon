@@ -33,16 +33,12 @@ import mindustry.input.Placement;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.Tile;
-import mindustry.world.blocks.distribution.ItemBridge;
-import mindustry.world.blocks.power.PowerNode;
-import mindustry.world.meta.BlockGroup;
 import ol.graphics.OlDraw;
 import ol.world.blocks.Ranged;
 import ol.world.blocks.defense.OlWall;
 
 import static arc.graphics.g2d.Draw.scl;
 import static arc.graphics.g2d.Draw.xscl;
-import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
 import static ol.graphics.OlPal.*;
 import static ol.graphics.OlPal.OLPressure;

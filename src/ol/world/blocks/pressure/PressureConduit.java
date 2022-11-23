@@ -4,7 +4,6 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
-import arc.math.Mathf;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
 import arc.util.io.Reads;

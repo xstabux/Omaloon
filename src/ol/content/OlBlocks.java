@@ -380,15 +380,6 @@ public class OlBlocks{
 		//endregion
 		//region Pressure
 		if(Omaloon.experimental) {
-			pressureConduit = new PressureConduit("pressure-conduit") {{
-				requirements(Category.distribution, with());
-				maxPressure = 200;
-				dangerPressure = 150;
-
-				mapDraw = true;
-				tier = 1;
-			}};
-
 			pressureCounter = new PressureGraph("pressure-counter") {{
 				requirements(Category.distribution, with());
 				maxPressure = 200;
@@ -403,6 +394,15 @@ public class OlBlocks{
 
 				maxPressure = 200;
 				dangerPressure = 150;
+				tier = 1;
+			}};
+
+			pressureConduit = new PressureConduit("pressure-conduit") {{
+				requirements(Category.distribution, with());
+				maxPressure = 200;
+				dangerPressure = 150;
+
+				mapDraw = true;
 				tier = 1;
 			}};
 
