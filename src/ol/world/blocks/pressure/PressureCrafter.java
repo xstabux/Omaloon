@@ -2,6 +2,7 @@ package ol.world.blocks.pressure;
 
 import arc.func.Cons;
 import arc.graphics.Color;
+import arc.struct.FloatSeq;
 import arc.struct.Seq;
 import arc.util.Log;
 import arc.util.io.*;
@@ -143,12 +144,13 @@ public class PressureCrafter extends OlCrafter {
             return pressure < pressureConsume ? BlockStatus.noInput : super.status();
         }
 
+        public float sumx(FloatSeq arr) {
+            return Math.max(arr.sum(), 0);
+        }
+
         @Override
         public void updateTile() {
             super.updateTile();
-            if(net(this).filter(b -> b != this).isEmpty()) {
-                pressure = pressureThread();
-            }
 
             if(canConsume() && effect < 100) {
                 effect++;
@@ -164,6 +166,24 @@ public class PressureCrafter extends OlCrafter {
                 }
             }
 
+            FloatSeq sum_arr = new FloatSeq();
+            Seq<PressureAble> prox = new Seq<>();
+            for(Building b : net(this)) {
+                PressureAble p = (PressureAble) b;
+                if(!p.storageOnly()) {
+                    sum_arr.add(p.pressureThread());
+                }
+
+                prox.add(p);
+            }
+
+            float sum = sumx(sum_arr);
+            if(sum < 0) {
+                sum = 0;
+            }
+
+            pressure = sum;
+            prox.each(p -> p.pressure(pressure));
             if(pressure > maxPressure && canExplode) {
                 explodeEffect.at(x, y);
 
