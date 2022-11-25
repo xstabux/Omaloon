@@ -8,6 +8,7 @@ import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.world.Tile;
 
+import ol.content.OlFx;
 import ol.world.blocks.pressure.PressureJunction.PressureJunctionBuild;
 
 import static mindustry.Vars.*;
@@ -51,6 +52,7 @@ public interface PressureAble {
             float y = self.y;
 
             self.damage(damageScl() * (pressure() / maxPressure));
+            OlFx.pressureDamage.at(x, y);
 
             if(self.health < damageScl() * 1.5f) {
                 explodeEffect.at(x, y);

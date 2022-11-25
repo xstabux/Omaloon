@@ -27,6 +27,7 @@ import mindustry.entities.Effect;
 import mindustry.entities.TargetPriority;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
+import mindustry.gen.Tex;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
@@ -112,17 +113,23 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         Draw.alpha(Renderer.bridgeOpacity);
         Lines.stroke(4);
 
-        Draw.rect(bridgeEnd, sx, sy, sa);
-        Draw.rect(bridgeEnd2, ox, oy, oa);
+        boolean reverse = sx > ox;
+        float r = sa + (reverse ? 180 : 0);
+
+        TextureRegion end = reverse ? bridgeEnd2 : bridgeEnd;
+        TextureRegion str = reverse ? bridgeEnd : bridgeEnd2;
+
+        Draw.rect(end, sx, sy, sa);
+        Draw.rect(str, ox, oy, oa);
 
         for(int i = 1; i < segments; i++) {
             float s_x = Mathf.lerp(sx, ox, (float) i / segments);
             float s_y = Mathf.lerp(sy, oy, (float) i / segments);
 
             if(line) {
-                Draw.rect(bridge, s_x, s_y, sa);
+                Draw.rect(bridge, s_x, s_y, r);
             } else {
-                Draw.rect(bridge, s_x, s_y, sl, bridge.height * scl * xscl, sa);
+                Draw.rect(bridge, s_x, s_y, sl, bridge.height * scl * xscl, r);
             }
         }
 
@@ -385,16 +392,12 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
 
         @Override
         public boolean onConfigureBuildTapped(Building other) {
-            if(this == other) {
-                deselect();
+            if(other instanceof ConduitBridgeBuild b && validLink(other, x, y) && other != this) {
+                configure(b.pos());
                 return false;
             }
 
-            if(other instanceof ConduitBridgeBuild b && validLink(other, x, y)) {
-                configure(b.pos());
-            }
-
-            return true;
+            return super.onConfigureBuildTapped(other);
         }
 
         @Override

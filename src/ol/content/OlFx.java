@@ -1,11 +1,13 @@
 package ol.content;
 
+import arc.files.Fi;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.math.Interp;
 import arc.util.Tmp;
 import mindustry.content.Liquids;
+import mindustry.entities.effect.ParticleEffect;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.graphics.Trail;
@@ -86,5 +88,19 @@ public class OlFx {
                 alpha(Mathf.clamp(e.fin() * 2f));
 
                 Fill.circle(e.x, e.y, e.fout());
-            }).layer(Layer.debris);
+            }).layer(Layer.debris),
+
+    //TODO change
+    pressureDamage = new ParticleEffect() {{
+        colorFrom = OlPal.OLPressureMin;
+        colorTo = OlPal.OLPressure;
+
+        particles = 3;
+        sizeFrom = 4;
+        sizeTo = 6;
+
+        lifetime = 15;
+        lenFrom = 0;
+        lenTo = 8;
+    }};
 }
