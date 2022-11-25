@@ -134,10 +134,6 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
             return dt > 30 ? 60 - dt : dt;
         }
 
-        public float sumx(FloatSeq arr) {
-            return Math.max(arr.sum(), 0);
-        }
-
         @Override
         public void updateTile() {
             dt++;
@@ -145,33 +141,7 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
                 dt = 0;
             }
 
-            FloatSeq sum_arr = new FloatSeq();
-            Seq<PressureAble> prox = new Seq<>();
-            for(Building b : net(this)) {
-                PressureAble p = (PressureAble) b;
-                if(!p.storageOnly()) {
-                    sum_arr.add(p.pressureThread());
-                }
-
-                prox.add(p);
-            }
-
-            float sum = sumx(sum_arr);
-            if(sum < 0) {
-                sum = 0;
-            }
-
-            pressure = sum;
-            prox.each(p -> p.pressure(pressure));
-            if(pressure > maxPressure && canExplode) {
-                explodeEffect.at(x, y);
-
-                net(this, PressureJunction.PressureJunctionBuild::netKill)
-                        .filter(b -> ((PressureAble) b).online()).each(Building::kill);
-
-
-                kill();
-            }
+            onUpdate(canExplode, maxPressure, explodeEffect);
         }
 
         @Override

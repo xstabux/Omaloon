@@ -91,6 +91,11 @@ public class PressureSource extends PressureGraph {
         }
 
         @Override
+        public boolean WTR() {
+            return true;
+        }
+
+        @Override
         public void draw() {
             Draw.rect(voidMode() ? voidRegion : region, this.x, this.y, this.drawrot());
             this.drawTeamTop();
@@ -126,11 +131,6 @@ public class PressureSource extends PressureGraph {
         public void read(Reads read, byte revision) {
             super.read(read, revision);
             val = read.f();
-        }
-
-        @Override
-        public float sumx(FloatSeq arr) {
-            return Math.max(val, 0);
         }
 
         @Override

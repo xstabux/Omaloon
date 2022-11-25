@@ -1,8 +1,10 @@
 package ol.world.blocks.pressure;
 
 import arc.func.Cons;
+import arc.struct.FloatSeq;
 import arc.struct.Seq;
 import arc.util.Log;
+import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.world.Tile;
 
@@ -31,6 +33,49 @@ public interface PressureAble {
 
     default Seq<Building> net() {
         return net(self());
+    }
+
+    default float sumx(FloatSeq arr) {
+        return Math.max(arr.sum(), 0);
+    }
+
+    default void onUpdate(boolean canExplode, float maxPressure, Effect explodeEffect) {
+        if(!storageOnly() || WTR()) {
+            FloatSeq sum_arr = new FloatSeq();
+            Seq<PressureAble> prox = new Seq<>();
+            for(Building b : net()) {
+                PressureAble p = (PressureAble) b;
+                if(!p.storageOnly()) {
+                    sum_arr.add(p.pressureThread());
+                }
+
+                prox.add(p);
+            }
+
+            float sum = sumx(sum_arr);
+
+            pressure(sum);
+            prox.each(p -> p.pressure(pressure()));
+        }
+
+        if(pressure() > maxPressure && canExplode) {
+            Building self = self();
+
+            float x = self.x;
+            float y = self.y;
+
+            explodeEffect.at(x, y);
+
+            net(self, PressureJunction.PressureJunctionBuild::netKill)
+                    .filter(b -> ((PressureAble) b).online()).each(Building::kill);
+
+
+            self.kill();
+        }
+    }
+
+    default boolean WTR() {
+        return false;
     }
 
     default Seq<Building> net(Building building, Cons<PressureJunctionBuild> cons, Seq<Building> buildings) {
