@@ -39,6 +39,10 @@ public interface PressureAble {
         return Math.max(arr.sum(), 0);
     }
 
+    default float damageScl() {
+        return 0.5f;
+    }
+
     default void onUpdate(boolean canExplode, float maxPressure, Effect explodeEffect) {
         if(pressure() > maxPressure && canExplode) {
             Building self = self();
@@ -46,13 +50,17 @@ public interface PressureAble {
             float x = self.x;
             float y = self.y;
 
-            explodeEffect.at(x, y);
+            self.damage(damageScl() * (pressure() / maxPressure));
 
-            net(self, PressureJunction.PressureJunctionBuild::netKill)
-                    .filter(b -> ((PressureAble) b).online()).each(Building::kill);
+            if(self.health < damageScl() * 1.5f) {
+                explodeEffect.at(x, y);
+
+                net(self, PressureJunction.PressureJunctionBuild::netKill)
+                        .filter(b -> ((PressureAble) b).online()).each(Building::kill);
 
 
-            self.kill();
+                self.kill();
+            }
         }
 
         if(!storageOnly() || WTR()) {
