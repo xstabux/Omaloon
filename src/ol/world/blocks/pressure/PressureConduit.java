@@ -204,8 +204,7 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
         @Override
         public void onDestroyed() {
             super.onDestroyed();
-
-            onUpdate(canExplode, maxPressure, explodeEffect);
+            onUpdate(false, maxPressure, explodeEffect);
         }
     }
 }

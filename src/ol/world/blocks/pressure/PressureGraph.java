@@ -93,13 +93,6 @@ public class PressureGraph extends PressureConduit implements RegionAble {
             }
         }
 
-        @Override
-        public void onDestroyed() {
-            super.onDestroyed();
-
-            onUpdate(canExplode, maxPressure, explodeEffect);
-        }
-
         public void drawArrow() {
             if(visibleArrow()) {
                 Draw.draw(Layer.blockBuilding + 5, () -> {

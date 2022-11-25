@@ -430,8 +430,7 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         @Override
         public void onDestroyed() {
             super.onDestroyed();
-
-            onUpdate(canExplode, maxPressure, explodeEffect);
+            onUpdate(false, maxPressure, explodeEffect);
         }
 
         @Override

@@ -101,8 +101,7 @@ public class PressureCrafter extends OlCrafter {
         @Override
         public void onDestroyed() {
             super.onDestroyed();
-
-            onUpdate(canExplode, maxPressure, explodeEffect);
+            onUpdate(false, maxPressure, explodeEffect);
         }
 
         @Override
