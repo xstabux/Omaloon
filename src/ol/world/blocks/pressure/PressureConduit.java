@@ -104,7 +104,6 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
     }
 
     public class PressureConduitBuild extends Building implements PressureAble {
-        public Seq<Building> net = new Seq<>();
         public float pressure;
         public float dt = 0;
 
@@ -144,7 +143,7 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
                 dt = 0;
             }
 
-            net = onUpdate(canExplode, maxPressure, explodeEffect);
+            onUpdate(canExplode, maxPressure, explodeEffect);
         }
 
         public boolean avalible(Building b) {
@@ -153,26 +152,27 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
 
         @Override
         public void draw() {
-            if(mapDraw && net.any()) {
+            if(mapDraw) {
                 int tx = tileX();
                 int ty = tileY();
 
-                Building left = world.tile(tx - 1, ty).build;
-                Building right = world.tile(tx + 1, ty).build;
-                Building bottom = world.tile(tx, ty - 1).build;
-                Building top = world.tile(tx, ty + 1).build;
+                Building left   = world.build(tx - 1, ty);
+                Building right  = world.build(tx + 1, ty);
+                Building bottom = world.build(tx, ty - 1);
+                Building top    = world.build(tx, ty + 1);
 
-                boolean bLeft =   avalible(left)   || left    instanceof PressureJunction.PressureJunctionBuild;
-                boolean bRight =  avalible(right)  || right   instanceof PressureJunction.PressureJunctionBuild;
-                boolean bTop =    avalible(top)    || top     instanceof PressureJunction.PressureJunctionBuild;
+                boolean bLeft   = avalible(left)   || left    instanceof PressureJunction.PressureJunctionBuild;
+                boolean bRight  = avalible(right)  || right   instanceof PressureJunction.PressureJunctionBuild;
+                boolean bTop    = avalible(top)    || top     instanceof PressureJunction.PressureJunctionBuild;
                 boolean bBottom = avalible(bottom) || bottom  instanceof PressureJunction.PressureJunctionBuild;
 
-                int l = bLeft ? 1 : 0;
-                int r = bRight ? 1 : 0;
-                int t = bTop ? 1 : 0;
+                int l = bLeft   ? 1 : 0;
+                int r = bRight  ? 1 : 0;
+                int t = bTop    ? 1 : 0;
                 int b = bBottom ? 1 : 0;
 
                 String sprite = "-" + l + "" + r + "" + t + "" + b;
+
                 if(cache.get(sprite) == null) {
                     cache.put(sprite, loadRegion(sprite));
                 }

@@ -39,13 +39,11 @@ public interface PressureAble {
         return Math.max(arr.sum(), 0);
     }
 
-    default Seq<Building> onUpdate(boolean canExplode, float maxPressure, Effect explodeEffect) {
-        Seq<Building> net = net();
-
+    default void onUpdate(boolean canExplode, float maxPressure, Effect explodeEffect) {
         if(!storageOnly() || WTR()) {
             FloatSeq sum_arr = new FloatSeq();
             Seq<PressureAble> prox = new Seq<>();
-            for(Building b : net) {
+            for(Building b : net()) {
                 PressureAble p = (PressureAble) b;
                 if(!p.storageOnly()) {
                     sum_arr.add(p.pressureThread());
@@ -74,8 +72,6 @@ public interface PressureAble {
 
             self.kill();
         }
-
-        return net;
     }
 
     default boolean WTR() {
