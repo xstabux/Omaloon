@@ -4,7 +4,7 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
-import arc.struct.FloatSeq;
+import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
@@ -19,6 +19,8 @@ import static mindustry.Vars.world;
 import static ol.graphics.OlPal.*;
 
 public class PressureConduit extends Block implements PressureReplaceable, RegionAble {
+    public final ObjectMap<String, TextureRegion> cache = new ObjectMap<>();
+
     //max pressure that can store block. if pressure is bigger when boom
     public float maxPressure;
     public int tier = -1;
@@ -102,6 +104,7 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
     }
 
     public class PressureConduitBuild extends Building implements PressureAble {
+        public Seq<Building> net = new Seq<>();
         public float pressure;
         public float dt = 0;
 
@@ -141,12 +144,16 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
                 dt = 0;
             }
 
-            onUpdate(canExplode, maxPressure, explodeEffect);
+            net = onUpdate(canExplode, maxPressure, explodeEffect);
+        }
+
+        public boolean avalible(Building b) {
+            return b instanceof PressureAble && inNet(b, false);
         }
 
         @Override
         public void draw() {
-            if(mapDraw && net(this).any()) {
+            if(mapDraw && net.any()) {
                 int tx = tileX();
                 int ty = tileY();
 
@@ -155,10 +162,10 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
                 Building bottom = world.tile(tx, ty - 1).build;
                 Building top = world.tile(tx, ty + 1).build;
 
-                boolean bLeft = (left instanceof PressureAble && inNet(left, false)) || left instanceof PressureJunction.PressureJunctionBuild;
-                boolean bRight = (right instanceof PressureAble && inNet(right, false)) || right instanceof PressureJunction.PressureJunctionBuild;
-                boolean bTop = (top instanceof PressureAble && inNet(top, false)) || top instanceof PressureJunction.PressureJunctionBuild;
-                boolean bBottom = (bottom instanceof PressureAble && inNet(bottom, false)) || bottom instanceof PressureJunction.PressureJunctionBuild;
+                boolean bLeft =   avalible(left)   || left    instanceof PressureJunction.PressureJunctionBuild;
+                boolean bRight =  avalible(right)  || right   instanceof PressureJunction.PressureJunctionBuild;
+                boolean bTop =    avalible(top)    || top     instanceof PressureJunction.PressureJunctionBuild;
+                boolean bBottom = avalible(bottom) || bottom  instanceof PressureJunction.PressureJunctionBuild;
 
                 int l = bLeft ? 1 : 0;
                 int r = bRight ? 1 : 0;
@@ -166,7 +173,11 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
                 int b = bBottom ? 1 : 0;
 
                 String sprite = "-" + l + "" + r + "" + t + "" + b;
-                Draw.rect(loadRegion(sprite), this.x, this.y);
+                if(cache.get(sprite) == null) {
+                    cache.put(sprite, loadRegion(sprite));
+                }
+
+                Draw.rect(cache.get(sprite), this.x, this.y);
             } else {
                 super.draw();
             }
