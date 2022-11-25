@@ -200,5 +200,12 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
         public void pressure(float pressure) {
             this.pressure = pressure;
         }
+
+        @Override
+        public void onDestroyed() {
+            super.onDestroyed();
+
+            onUpdate(canExplode, maxPressure, explodeEffect);
+        }
     }
 }

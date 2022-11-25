@@ -86,6 +86,13 @@ public class PressureSource extends PressureGraph {
         public float val = 0;
 
         @Override
+        public void onDestroyed() {
+            super.onDestroyed();
+
+            onUpdate(canExplode, maxPressure, explodeEffect);
+        }
+
+        @Override
         public Float config() {
             return val;
         }

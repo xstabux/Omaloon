@@ -99,6 +99,13 @@ public class PressureCrafter extends OlCrafter {
         }
 
         @Override
+        public void onDestroyed() {
+            super.onDestroyed();
+
+            onUpdate(canExplode, maxPressure, explodeEffect);
+        }
+
+        @Override
         public void pressure(float pressure) {
             this.pressure = pressure;
         }

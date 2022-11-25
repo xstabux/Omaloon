@@ -428,6 +428,13 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         }
 
         @Override
+        public void onDestroyed() {
+            super.onDestroyed();
+
+            onUpdate(canExplode, maxPressure, explodeEffect);
+        }
+
+        @Override
         public Seq<Building> net(Building building, Cons<PressureJunction.PressureJunctionBuild> cons, Seq<Building> buildings) {
             for(ConduitBridgeBuild b : validLinks(b -> b.linked(this) || linked(b))) {
                 if(b == this || b == building || buildings.contains(b)) {

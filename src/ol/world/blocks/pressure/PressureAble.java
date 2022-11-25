@@ -40,6 +40,21 @@ public interface PressureAble {
     }
 
     default void onUpdate(boolean canExplode, float maxPressure, Effect explodeEffect) {
+        if(pressure() > maxPressure && canExplode) {
+            Building self = self();
+
+            float x = self.x;
+            float y = self.y;
+
+            explodeEffect.at(x, y);
+
+            net(self, PressureJunction.PressureJunctionBuild::netKill)
+                    .filter(b -> ((PressureAble) b).online()).each(Building::kill);
+
+
+            self.kill();
+        }
+
         if(!storageOnly() || WTR()) {
             FloatSeq sum_arr = new FloatSeq();
             Seq<PressureAble> prox = new Seq<>();
@@ -56,21 +71,6 @@ public interface PressureAble {
 
             pressure(sum);
             prox.each(p -> p.pressure(pressure()));
-        }
-
-        if(pressure() > maxPressure && canExplode) {
-            Building self = self();
-
-            float x = self.x;
-            float y = self.y;
-
-            explodeEffect.at(x, y);
-
-            net(self, PressureJunction.PressureJunctionBuild::netKill)
-                    .filter(b -> ((PressureAble) b).online()).each(Building::kill);
-
-
-            self.kill();
         }
     }
 
