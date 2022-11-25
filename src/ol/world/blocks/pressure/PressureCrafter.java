@@ -24,7 +24,6 @@ public class PressureCrafter extends OlCrafter {
 
     public float maxPressure, dangerPressure;
     public boolean canExplode = true;
-    public boolean transfer = false;
 
     //when block works pressure is make lower
     public boolean downPressure;
@@ -115,6 +114,11 @@ public class PressureCrafter extends OlCrafter {
         }
 
         @Override
+        public boolean WTR() {
+            return true;
+        }
+
+        @Override
         public boolean storageOnly() {
             return !(pressureProduce > 0) || (downPressure && downPercent > 0);
         }
@@ -137,7 +141,7 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public Seq<Building> net(Building building, Cons<PressureJunction.PressureJunctionBuild> cons, Seq<Building> buildings) {
-            return transfer ? PressureAble.super.net(building, cons, buildings) : buildings;
+            return PressureAble.super.net(building, cons, buildings);
         }
 
         @Override
@@ -148,10 +152,6 @@ public class PressureCrafter extends OlCrafter {
             }
 
             return pressure < pressureConsume ? BlockStatus.noInput : super.status();
-        }
-
-        public float sumx(FloatSeq arr) {
-            return Math.max(arr.sum(), 0);
         }
 
         @Override
@@ -172,35 +172,12 @@ public class PressureCrafter extends OlCrafter {
                 }
             }
 
-            FloatSeq sum_arr = new FloatSeq();
-            Seq<PressureAble> prox = new Seq<>();
-            for(Building b : net(this)) {
-                PressureAble p = (PressureAble) b;
-                if(!p.storageOnly()) {
-                    sum_arr.add(p.pressureThread());
-                }
-
-                prox.add(p);
-            }
-
-            float sum = sumx(sum_arr);
-            if(sum < 0) {
-                sum = 0;
-            }
-
-            pressure = sum;
-            prox.each(p -> p.pressure(pressure));
-            if(pressure > maxPressure && canExplode) {
-                explodeEffect.at(x, y);
-
-                kill();
-                net(this).filter(b -> ((PressureAble) b).online()).each(Building::kill);
-            }
-
             dt++;
             if(dt >= 60) {
                 dt = 0;
             }
+
+            onUpdate(canExplode, maxPressure, explodeEffect);
         }
     }
 }
