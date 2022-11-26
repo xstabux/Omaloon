@@ -327,11 +327,6 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         }
 
         @Override
-        public boolean inNet(Building b, PressureAble p, boolean j) {
-            return true;
-        }
-
-        @Override
         public void read(Reads read, byte revision) {
             super.read(read, revision);
             pressure = read.f();
