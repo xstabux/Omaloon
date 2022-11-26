@@ -32,6 +32,7 @@ public class Omaloon extends Mod {
         super.init();
         SolarSystem.init();
         LoadedMod mod = mods.locateMod("ol");
+
         if(!headless){
             //forom Betamindy by sk7725
             Func<String, String> stringf = value -> bundle.get("mod." + value);

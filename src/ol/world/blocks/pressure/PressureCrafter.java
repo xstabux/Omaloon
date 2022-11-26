@@ -145,6 +145,11 @@ public class PressureCrafter extends OlCrafter {
         }
 
         @Override
+        public int tier() {
+            return -1;
+        }
+
+        @Override
         public BlockStatus status() {
             BlockStatus SUPER = super.status();
             if(SUPER == BlockStatus.logicDisable || SUPER == BlockStatus.noOutput) {

@@ -14,7 +14,6 @@ import ol.world.blocks.pressure.PressureJunction.PressureJunctionBuild;
 import static mindustry.Vars.*;
 
 public interface PressureAble {
-    Seq<Building> proximity();
     Building self();
 
     float pressure();
@@ -108,9 +107,7 @@ public interface PressureAble {
         return buildings;
     }
 
-    default int tier() {
-        return -1;
-    }
+    int tier();
 
     default boolean inNet(Building b, boolean junction) {
         return inNet(b, (PressureAble) b, junction);
@@ -147,6 +144,10 @@ public interface PressureAble {
             delta++;
         }
 
+        if(!(tier() == -1 || p.tier() == -1 || p.tier() == tier()) || !p.online()) {
+            return false;
+        }
+
         int tx = self.tileX();
         int ty = self.tileY();
 
@@ -164,6 +165,6 @@ public interface PressureAble {
             return alignY(self.rotation) || alignY(b.rotation);
         }
 
-        return p.online() && (tier() == -1 || p.tier() == tier());
+        return false;
     }
 }

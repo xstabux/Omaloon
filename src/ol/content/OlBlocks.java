@@ -390,7 +390,7 @@ public class OlBlocks{
 			}};
 
 			pressureBridge = new ConduitBridge("pressure-bridge") {{
-				requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+				requirements(Category.distribution, with());
 
 				maxPressure = 200;
 				dangerPressure = 150;
@@ -414,7 +414,7 @@ public class OlBlocks{
 			}};
 
 			pressureJunction = new PressureJunction("pressure-junction") {{
-				requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+				requirements(Category.distribution, with());
 			}};
 
 			new PressureCrafter("test-A") {{
