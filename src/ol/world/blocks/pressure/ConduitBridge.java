@@ -114,6 +114,11 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         Lines.stroke(4);
 
         boolean reverse = sx > ox;
+
+        if(line) {
+            reverse |= sy < oy;
+        }
+
         float r = sa + (reverse ? 180 : 0);
 
         TextureRegion end = reverse ? bridgeEnd2 : bridgeEnd;
@@ -208,14 +213,16 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         }
 
         return collision(x, y, other.x, other.y, range);
-    };
+    }
 
     public boolean validLink(Building other, float x, float y) {
         if(other == null) {
             return false;
         }
 
-        return collision(x, y, other.x, other.y, range);
+        ConduitBridgeBuild b2 = (ConduitBridgeBuild) world.build((int) (x / 8), (int) (y / 8));
+        return collision(x, y, other.x, other.y, range) && other instanceof ConduitBridgeBuild b &&
+                (b2.tier() == -1 || b.tier() == -1 || b.tier() == b2.tier());
     }
 
     @Override
