@@ -180,7 +180,7 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
     public void drawPlanConfigTop(BuildPlan plan, Eachable<BuildPlan> list){
         otherReq = null;
         list.each(other -> {
-            if(other.block == this && plan != other && plan.config instanceof Point2 p && p.equals(other.x - plan.x, other.y - plan.y)){
+            if(other.block == this && plan != other && plan.config instanceof Point2 p && p.equals(other.x - plan.x, other.y - plan.y)) {
                 otherReq = other;
             }
         });
@@ -197,7 +197,14 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
             var next = plans.get(i + 1);
 
             if(validLink(cur, next.x, next.y)){
-                cur.config = new Point2(next.x - cur.x, next.y - cur.y);
+                Point2 config = new Point2(next.x - cur.x, next.y - cur.y);
+                cur.config = config;
+
+                if(world.build(cur.x, cur.y) instanceof ConduitBridgeBuild bridgec) {
+                    if(validLink(next, cur.x, cur.y)) {
+                        bridgec.configure(config);
+                    }
+                }
             }
         }
     }
@@ -215,13 +222,13 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
         return collision(x, y, other.x, other.y, range);
     }
 
-    public boolean validLink(Building other, float x, float y) {
+    public boolean validLink(Building other, int x, int y) {
         if(other == null) {
             return false;
         }
 
-        ConduitBridgeBuild b2 = (ConduitBridgeBuild) world.build((int) (x / 8), (int) (y / 8));
-        return collision(x, y, other.x, other.y, range) && other instanceof ConduitBridgeBuild b &&
+        ConduitBridgeBuild b2 = (ConduitBridgeBuild) world.build(x, y);
+        return collision(b2.x, b2.y, other.x, other.y, range) && other instanceof ConduitBridgeBuild b &&
                 (b2.tier() == -1 || b.tier() == -1 || b.tier() == b2.tier());
     }
 
@@ -394,7 +401,7 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
 
         @Override
         public boolean onConfigureBuildTapped(Building other) {
-            if(other instanceof ConduitBridgeBuild b && validLink(other, x, y) && other != this) {
+            if(other instanceof ConduitBridgeBuild b && validLink(other, tileX(), tileY()) && other != this) {
                 configure(b.pos());
                 return false;
             }
@@ -422,7 +429,7 @@ public class ConduitBridge extends OlWall implements PressureReplaceable {
                     Tile t = world.tile(x, y);
 
                     if(t.build instanceof ConduitBridgeBuild b && boolf.get(b)) {
-                        if(validLink(t.build, this.x, this.y)) {
+                        if(validLink(t.build, tileX(), tileY())) {
                             builds.add(b);
                         }
                     }
