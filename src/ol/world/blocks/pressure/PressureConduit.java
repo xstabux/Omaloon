@@ -4,6 +4,7 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
+import arc.math.Mathf;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.util.io.Reads;
@@ -182,7 +183,14 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
                     cache.put(sprite, loadRegion(sprite));
                 }
 
-                Draw.rect(cache.get(sprite), this.x, this.y);
+                if(pressure > maxPressure && canExplode) {
+                    float dx = Mathf.random(-2, 2);
+                    float dy = Mathf.random(-2, 2);
+
+                    Draw.rect(cache.get(sprite), this.x + dx, this.y + dy);
+                } else {
+                    Draw.rect(cache.get(sprite), this.x, this.y);
+                }
             } else {
                 super.draw();
             }

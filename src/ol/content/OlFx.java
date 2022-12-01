@@ -95,12 +95,15 @@ public class OlFx {
         colorFrom = OlPal.OLPressureMin;
         colorTo = OlPal.OLPressure;
 
-        particles = 3;
-        sizeFrom = 4;
-        sizeTo = 6;
+        particles = 7;
+        sizeFrom = 0;
+        sizeTo = 1;
 
         lifetime = 15;
         lenFrom = 0;
-        lenTo = 8;
+        lenTo = 4;
+
+        strokeTo = 0;
+        strokeFrom = 1;
     }};
 }
