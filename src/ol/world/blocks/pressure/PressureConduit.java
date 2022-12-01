@@ -57,7 +57,12 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
 
     @Override
     public boolean canReplace(Block other) {
-        return canBeReplaced(other);
+        boolean valid = true;
+        if(other instanceof PressureConduit cond) {
+            valid = cond.tier == tier || cond.tier == -1 || tier == -1;
+        }
+
+        return canBeReplaced(other) && valid;
     }
 
     @Override
