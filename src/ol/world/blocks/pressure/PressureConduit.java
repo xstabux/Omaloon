@@ -14,6 +14,7 @@ import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
+import ol.content.OlFx;
 import ol.world.blocks.RegionAble;
 
 import static mindustry.Vars.world;
@@ -21,6 +22,7 @@ import static ol.graphics.OlPal.*;
 
 public class PressureConduit extends Block implements PressureReplaceable, RegionAble {
     public final ObjectMap<String, TextureRegion> cache = new ObjectMap<>();
+    public TextureRegion breakRegion;
 
     //max pressure that can store block. if pressure is bigger when boom
     public float maxPressure;
@@ -64,6 +66,13 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
         }
 
         return canBeReplaced(other) && valid;
+    }
+
+    @Override
+    public void load() {
+        super.load();
+
+        breakRegion = loadRegion("-break");
     }
 
     @Override
@@ -184,12 +193,15 @@ public class PressureConduit extends Block implements PressureReplaceable, Regio
                 }
 
                 if(pressure > maxPressure && canExplode) {
-                    float dx = Mathf.random(-2, 2);
-                    float dy = Mathf.random(-2, 2);
+                    float dx = Mathf.random(-0.5f, 0.5f);
+                    float dy = Mathf.random(-0.5f, 0.5f);
 
-                    Draw.rect(cache.get(sprite), this.x + dx, this.y + dy);
+                    Draw.rect(cache.get(sprite), x + dx, y + dy);
+                    Draw.rect(breakRegion, x, y);
+
+                    OlFx.pressureDamage.at(x - dx, y - dy);
                 } else {
-                    Draw.rect(cache.get(sprite), this.x, this.y);
+                    Draw.rect(cache.get(sprite), x, y);
                 }
             } else {
                 super.draw();

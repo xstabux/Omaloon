@@ -51,7 +51,10 @@ public interface PressureAble {
             float y = self.y;
 
             self.damage(damageScl() * (pressure() / maxPressure));
-            OlFx.pressureDamage.at(x, y);
+
+            if(!(self instanceof PressureConduit.PressureConduitBuild)) {
+                OlFx.pressureDamage.at(x, y);
+            }
 
             if(self.health < damageScl() * 1.5f) {
                 explodeEffect.at(x, y);
