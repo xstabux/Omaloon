@@ -91,11 +91,6 @@ public class PressureSource extends PressureGraph {
         }
 
         @Override
-        public boolean WTR() {
-            return true;
-        }
-
-        @Override
         public void draw() {
             Draw.rect(voidMode() ? voidRegion : region, this.x, this.y, this.drawrot());
             this.drawTeamTop();

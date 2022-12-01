@@ -1,13 +1,17 @@
 package ol.world.blocks.pressure;
 
+import arc.Events;
 import arc.func.Cons;
 import arc.graphics.Color;
+import arc.math.Mathf;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
 import arc.util.Log;
+import arc.util.Time;
 import arc.util.io.*;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
+import mindustry.game.EventType;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.meta.BlockStatus;
@@ -55,11 +59,24 @@ public class PressureCrafter extends OlCrafter {
                     () -> pressure
             );
         });
+
+        if(pressureConsume > 0) {
+            addBar("efficient", (PressureCrafterBuild b) -> {
+                float x = b.efficenty() * 100;
+
+                return new Bar(
+                        () -> "efficient: " + (int) Math.floor(x) + "%",
+                        () -> Color.orange,
+                        () -> Math.min(x / 100, 1)
+                );
+            });
+        }
     }
 
     public class PressureCrafterBuild extends OlCrafter.olCrafterBuild implements PressureAble {
         public float pressure;
         public float effect;
+        public float effectx;
         public float dt = 0;
 
         @Override
@@ -125,23 +142,18 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public float pressureThread() {
-            return (pressureProduce * (effect / 100)) -
+            return (pressureProduce * (effect / 100) * efficenty()) -
                     (downPressure ? (pressureConsume * (effect / 100) * downPercent) : 0);
         }
 
         @Override
         public void craft() {
             //HA
-            if(pressure < pressureConsume && pressureConsume > 0) {
+            if(pressureConsume > 0 && efficenty() == 0) {
                 return;
             }
 
             super.craft();
-        }
-
-        @Override
-        public Seq<Building> net(Building building, Cons<PressureJunction.PressureJunctionBuild> cons, Seq<Building> buildings) {
-            return PressureAble.super.net(building, cons, buildings);
         }
 
         @Override
@@ -156,26 +168,75 @@ public class PressureCrafter extends OlCrafter {
                 return SUPER;
             }
 
-            return pressure < pressureConsume ? BlockStatus.noInput : super.status();
+            return pressure <= 0 ? BlockStatus.noInput : SUPER;
+        }
+
+        public float efficenty() {
+            if(pressureConsume <= 0) {
+                return 1;
+            }
+
+            return Math.max(Math.min(pressure/pressureConsume, 2), 0);
         }
 
         @Override
         public void updateTile() {
-            super.updateTile();
+            boolean prevOut = getPowerProduction() <= requestedPower();
 
-            if(canConsume() && effect < 100) {
-                effect++;
-                if(effect > 100) {
-                    effect = 100;
+            float s = getAcceleration() * efficenty();
+            if (hasItems()) {
+                progress += getProgressIncrease(craftTime) * s;
+                totalProgress += delta() * s;
+            }
+            totalActivity += delta() * s;
+
+            if (Mathf.chanceDelta(updateEffectChance * s)) {
+                updateEffect.at(x + Mathf.range(size * 4f), y + Mathf.range(size * 4));
+            }
+
+            if(!prevOut && (getPowerProduction() > requestedPower())) {
+                Events.fire(EventType.Trigger.impactPower);
+            }
+
+            if (canConsume()) {
+                warmup = Mathf.approachDelta(warmup, 1f, warmupSpeed);
+                float e = efficiency;
+                if (acceleration <= e) {
+                    acceleration = Mathf.approachDelta(acceleration, e, accelerationSpeed * e);
+                } else {
+                    acceleration = Mathf.approachDelta(acceleration, e, decelerationSpeed);
                 }
             } else {
-                if(!canConsume() && effect > 0) {
-                    effect--;
-                    if(effect < 0) {
-                        effect = 0;
+                warmup = Mathf.approachDelta(warmup, 0f, warmupSpeed);
+                acceleration = Mathf.approachDelta(acceleration, 0f, decelerationSpeed);
+            }
+
+            if (progress >= 1f) {
+                craft();
+                onCraft.get(this);
+            }
+
+            totalProgress += acceleration * Time.delta;
+
+            productionEfficiency = Mathf.pow(acceleration, 5f);
+
+            dumpOutputs();
+
+            if(canConsume() && effectx < 100) {
+                effectx++;
+                if(effectx > 100) {
+                    effectx = 100;
+                }
+            } else {
+                if(!canConsume() && effectx > 0) {
+                    effectx--;
+                    if(effectx < 0) {
+                        effectx = 0;
                     }
                 }
             }
+
+            effect = effectx * efficenty();
 
             dt++;
             if(dt >= 60) {
@@ -183,6 +244,11 @@ public class PressureCrafter extends OlCrafter {
             }
 
             onUpdate(canExplode, maxPressure, explodeEffect);
+        }
+
+        @Override
+        public boolean inNet(Building b, PressureAble p, boolean j) {
+            return true;
         }
     }
 }

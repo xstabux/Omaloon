@@ -32,7 +32,7 @@ public class PressureJunction extends OlWall implements PressureReplaceable {
 
     @Override
     public boolean canReplace(Block other) {
-        return canBeReplaced(other);
+        return other instanceof PressureConduit;
     }
 
     @Override

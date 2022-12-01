@@ -93,6 +93,11 @@ public class PressureGraph extends PressureConduit implements RegionAble {
             }
         }
 
+        @Override
+        public boolean WTR() {
+            return true;
+        }
+
         public void drawArrow() {
             if(visibleArrow()) {
                 Draw.draw(Layer.blockBuilding + 5, () -> {
