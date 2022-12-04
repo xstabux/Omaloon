@@ -43,7 +43,7 @@ public class OlCrafter extends GenericCrafter{
     public Effect explodeEffect = OlFx.olCentryfugeExplosion;
     public Stat generationType = Stat.basePowerGeneration;
 
-    public Cons<olCrafterBuild> onCraft = tile -> {};
+    public Cons<OlCrafterBuild> onCraft = tile -> {};
 
     public OlCrafter(String name){
         super(name);
@@ -71,14 +71,14 @@ public class OlCrafter extends GenericCrafter{
     public void setBars(){
         super.setBars();
 
-        addBar("acceleration", (olCrafterBuild entity) -> new Bar(() ->
+        addBar("acceleration", (OlCrafterBuild entity) -> new Bar(() ->
                 Core.bundle.format("bar.acceleration",
                         Mathf.round(entity.getAcceleration() * 100f)),
-                ()-> OlPal.OLBlue.cpy().lerp(Pal.lightOrange, entity.getAcceleration() / 1.2f), entity::getAcceleration)
+                ()-> OlPal.oLBlue.cpy().lerp(Pal.lightOrange, entity.getAcceleration() / 1.2f), entity::getAcceleration)
         );
     }
 
-    public class olCrafterBuild extends GenericCrafterBuild {
+    public class OlCrafterBuild extends GenericCrafterBuild {
         public float acceleration, totalActivity;
         public float generateTime;
         public float productionEfficiency = 0.0f;
