@@ -447,6 +447,7 @@ public class OlBlocks{
 				showAcceleration = false;
 
 				craftTime = 60;
+				downPressure = true;
 			}};
 		}
 

@@ -137,13 +137,12 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public boolean storageOnly() {
-            return !(pressureProduce > 0) || (downPressure && downPercent > 0);
+            return false;
         }
 
         @Override
         public float pressureThread() {
-            return (pressureProduce * (effect / 100) * efficenty()) -
-                    (downPressure ? (pressureConsume * (effect / 100) * downPercent) : 0);
+            return (pressureProduce * (effect / 100) * efficenty()) - (downPressure ? (pressureConsume * downPercent) : 0);
         }
 
         @Override
