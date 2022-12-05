@@ -142,7 +142,8 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public float pressureThread() {
-            return (pressureProduce * (effect / 100) * efficenty()) - (downPressure ? (pressureConsume * downPercent) : 0);
+            return (pressureProduce * (effect / 100) * efficenty()) -
+                    (downPressure && status() == BlockStatus.active ? (pressureConsume * downPercent) : 0);
         }
 
         @Override
