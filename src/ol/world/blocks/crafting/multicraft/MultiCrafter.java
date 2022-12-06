@@ -1,6 +1,7 @@
 package ol.world.blocks.crafting.multicraft;
 
 import arc.Core;
+import arc.func.Floatf;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
@@ -42,13 +43,15 @@ import mindustry.world.draw.DrawBlock;
 import mindustry.world.draw.DrawDefault;
 import mindustry.world.meta.BlockFlag;
 import mindustry.world.meta.Stat;
+import ol.world.blocks.pressure.PressureCrafter;
 
 import static mindustry.Vars.tilesize;
 
-public class MultiCrafter extends GenericCrafter {
+public class MultiCrafter extends PressureCrafter {
     public float itemCapacityMultiplier = 1f;
     public float fluidCapacityMultiplier = 1f;
     public float powerCapacityMultiplier = 1f;
+
     /*
     [ ==> Seq
       { ==> ObjectMap
@@ -163,7 +166,7 @@ public class MultiCrafter extends GenericCrafter {
     @Nullable
     public static Table hoveredInfo;
 
-    public class MultiCrafterBuild extends Building implements HeatBlock, HeatConsumer {
+    public class MultiCrafterBuild extends PressureCrafterBuild implements HeatBlock, HeatConsumer {
         /**
          * For {@linkplain HeatConsumer}, only enabled when the multicrafter requires heat input
          */
@@ -192,6 +195,12 @@ public class MultiCrafter extends GenericCrafter {
             if (!Vars.headless) {
                 rebuildHoveredInfoIfNeed();
             }
+        }
+
+        @Override
+        public boolean online() {
+            Recipe recipe = getCurRecipe();
+            return recipe != null && recipe.hasPressure();
         }
 
         public Recipe getCurRecipe() {
@@ -225,6 +234,31 @@ public class MultiCrafter extends GenericCrafter {
             } else {
                 return this.efficiency * this.delta();
             }
+        }
+
+        private float getFrom(Floatf<Recipe> recipeHandler) {
+            Recipe recipe = getCurRecipe();
+            return recipe == null ? 0 : recipeHandler.get(recipe);
+        }
+
+        @Override
+        public float maxPressure() {
+            return getFrom(Recipe::maxPressure);
+        }
+
+        @Override
+        public float dangerPressure() {
+            return maxPressure() * 0.75f;
+        }
+
+        @Override
+        public float pressureConsume() {
+            return getFrom(r -> r.input.pressure);
+        }
+
+        @Override
+        public float pressureProduce() {
+            return getFrom(r -> r.output.pressure);
         }
 
         @Override
@@ -267,6 +301,29 @@ public class MultiCrafter extends GenericCrafter {
             }
 
             dumpOutputs();
+
+            if(canConsume() && effectx < 100) {
+                effectx++;
+                if(effectx > 100) {
+                    effectx = 100;
+                }
+            } else {
+                if(!canConsume() && effectx > 0) {
+                    effectx--;
+                    if(effectx < 0) {
+                        effectx = 0;
+                    }
+                }
+            }
+
+            effect = effectx * efficenty();
+
+            dt++;
+            if(dt >= 60) {
+                dt = 0;
+            }
+
+            onUpdate(canExplode && online(), maxPressure(), explodeEffect);
         }
 
         @Override
@@ -297,10 +354,15 @@ public class MultiCrafter extends GenericCrafter {
                     if (allFull) return false;
                 }
             }
-            return enabled;
+
+            return enabled && pressure <= pressureConsume();
         }
 
         public void craft() {
+            if(pressureConsume() > 0 && efficenty() == 0) {
+                return;
+            }
+
             consume();
             Recipe cur = getCurRecipe();
             if (cur.isOutputItem()) {
@@ -608,6 +670,17 @@ public class MultiCrafter extends GenericCrafter {
                     () -> Mathf.zero(consPower.requestedPower(entity)) && entity.power.graph.getPowerProduced() + entity.power.graph.getBatteryStored() > 0f ? 1f : entity.power.status)
             );
         }
+
+        removeBar("efficient");
+        addBar("efficient", (PressureCrafterBuild b) -> {
+            float x = b.efficenty() * 100;
+
+            return new Bar(
+                    () -> "efficient: " + (int) Math.floor(x) + "%",
+                    () -> Color.orange,
+                    () -> Math.min(x / 100, 1)
+            );
+        });
     }
 
     @Override

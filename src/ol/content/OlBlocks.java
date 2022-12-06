@@ -190,6 +190,27 @@ public class OlBlocks{
 			),
 			new Recipe(
 					new IOEntry(
+							Seq.with(ItemStack.with(
+									OlItems.omalite, 1,
+									OlItems.grumon, 1
+							)),
+							Seq.with(LiquidStack.with(
+									OlLiquids.dalanii, 12/60f
+							)),
+							1.2f) {{
+								pressure = 100;
+					}},
+					new IOEntry(
+							Seq.with(ItemStack.with(
+									Items.metaglass, 2
+							)),
+							Seq.with(LiquidStack.with(
+									Liquids.water, 12/60f
+							))),
+					160f
+			),
+			new Recipe(
+					new IOEntry(
 					Seq.with(ItemStack.with(
 							OlItems.omalite, 1,
 							OlItems.grumon, 1

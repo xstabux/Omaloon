@@ -55,6 +55,10 @@ public class Recipe {
         return isConsumeHeat() || isOutputHeat();
     }
 
+    public boolean hasPressure() {
+        return input.pressure > 0 || output.pressure > 0;
+    }
+
     public boolean hasItem() {
         return isConsumeItem() || isOutputItem();
     }
@@ -77,6 +81,10 @@ public class Recipe {
 
     public float maxHeat() {
         return Math.max(input.heat, output.heat);
+    }
+
+    public float maxPressure() {
+        return Math.max(input.maxPressure(), output.maxPressure());
     }
 
     @Override

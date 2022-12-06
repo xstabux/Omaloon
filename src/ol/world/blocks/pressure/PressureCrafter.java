@@ -85,6 +85,22 @@ public class PressureCrafter extends OlCrafter {
             write.f(pressure);
         }
 
+        public float maxPressure() {
+            return maxPressure;
+        }
+
+        public float dangerPressure() {
+            return dangerPressure;
+        }
+
+        public float pressureConsume() {
+            return pressureConsume;
+        }
+
+        public float pressureProduce() {
+            return pressureProduce;
+        }
+
         @Override
         public void read(Reads read, byte revision) {
             super.read(read, revision);
@@ -92,11 +108,11 @@ public class PressureCrafter extends OlCrafter {
         }
 
         public boolean isDanger() {
-            if(dangerPressure == -1) {
+            if(dangerPressure() == -1) {
                 return false;
             }
 
-            return pressure > dangerPressure && canExplode;
+            return pressure > dangerPressure() && canExplode;
         }
 
         public float jumpDelta() {
@@ -117,7 +133,7 @@ public class PressureCrafter extends OlCrafter {
         @Override
         public void onDestroyed() {
             super.onDestroyed();
-            onUpdate(false, maxPressure, explodeEffect);
+            onUpdate(false, maxPressure(), explodeEffect);
         }
 
         @Override
@@ -127,7 +143,7 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public boolean online() {
-            return pressureConsume > 0 || pressureProduce > 0;
+            return pressureConsume() > 0 || pressureProduce() > 0;
         }
 
         @Override
@@ -142,14 +158,14 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public float pressureThread() {
-            return (pressureProduce * (effect / 100) * efficenty()) -
-                    (downPressure && status() == BlockStatus.active ? (pressureConsume * downPercent) : 0);
+            return (pressureProduce() * (effect / 100) * efficenty()) -
+                    (downPressure && status() == BlockStatus.active ? (pressureConsume() * downPercent) : 0);
         }
 
         @Override
         public void craft() {
             //HA
-            if(pressureConsume > 0 && efficenty() == 0) {
+            if(pressureConsume() > 0 && efficenty() == 0) {
                 return;
             }
 
@@ -172,11 +188,11 @@ public class PressureCrafter extends OlCrafter {
         }
 
         public float efficenty() {
-            if(pressureConsume <= 0) {
+            if(pressureConsume() <= 0) {
                 return 1;
             }
 
-            return Math.max(Math.min(pressure/pressureConsume, 2), 0);
+            return Math.max(Math.min(pressure/pressureConsume(), 2), 0);
         }
 
         @Override
@@ -243,7 +259,7 @@ public class PressureCrafter extends OlCrafter {
                 dt = 0;
             }
 
-            onUpdate(canExplode, maxPressure, explodeEffect);
+            onUpdate(canExplode, maxPressure(), explodeEffect);
         }
 
         @Override
