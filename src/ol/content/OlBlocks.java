@@ -407,6 +407,7 @@ public class OlBlocks{
 				dangerPressure = 150;
 
 				noNetDestroy = false;
+				mapDraw = true;
 				tier = 1;
 			}};
 

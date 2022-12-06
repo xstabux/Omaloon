@@ -154,7 +154,7 @@ public class PressureGraph extends PressureConduit implements RegionAble {
                 return false;
             }
 
-            return p.online() && (tier() == -1 || p.tier() == tier());
+            return p.online() && (p.tier() == -1 || p.tier() == tier());
         }
     }
 }
