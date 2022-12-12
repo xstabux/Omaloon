@@ -451,6 +451,7 @@ public class OlBlocks{
 
 				outputsPower = consumesPower = false;
 				showAcceleration = false;
+				squareSprite = false;
 			}};
 
 			new PressureCrafter("test-B") {{
@@ -470,6 +471,7 @@ public class OlBlocks{
 
 				craftTime = 60;
 				downPressure = true;
+				squareSprite = false;
 			}};
 		}
 

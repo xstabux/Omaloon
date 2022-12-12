@@ -130,8 +130,14 @@ public class PressureGraph extends PressureConduit implements RegionAble {
         }
 
         @Override
+        public boolean avalible(Building b) {
+            return net().contains(b);
+        }
+
+        @Override
         public boolean inNet(Building b, PressureAble p, boolean junction) {
             Building self = self();
+
             int delta = 1;
             if(junction) {
                 delta++;

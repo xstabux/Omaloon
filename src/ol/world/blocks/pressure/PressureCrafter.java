@@ -3,6 +3,7 @@ package ol.world.blocks.pressure;
 import arc.Events;
 import arc.func.Cons;
 import arc.graphics.Color;
+import arc.graphics.g2d.Draw;
 import arc.math.Mathf;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
@@ -13,6 +14,7 @@ import mindustry.content.Fx;
 import mindustry.entities.Effect;
 import mindustry.game.EventType;
 import mindustry.gen.Building;
+import mindustry.graphics.Layer;
 import mindustry.ui.Bar;
 import mindustry.world.meta.BlockStatus;
 import ol.world.blocks.crafting.OlCrafter;
@@ -134,6 +136,26 @@ public class PressureCrafter extends OlCrafter {
         public void onDestroyed() {
             super.onDestroyed();
             onUpdate(false, maxPressure(), explodeEffect);
+        }
+
+        @Override
+        public void draw() {
+            if(!squareSprite) {
+                for(Building b : proximity) {
+                    if(b instanceof PressureAble pressureAble && pressureAble.inNet(b, false) && !(b instanceof PressureCrafterBuild)) {
+                        Draw.draw(Layer.max, () -> {
+                            Draw.rect(
+                                    b.block.region,
+                                    b.x + (b.x > x ? -8 : 8),
+                                    b.y + (b.y > y ? -8 : 8),
+                                    b.drawrot()
+                            );
+                        });
+                    }
+                }
+            }
+
+            super.draw();
         }
 
         @Override
@@ -264,7 +286,7 @@ public class PressureCrafter extends OlCrafter {
 
         @Override
         public boolean inNet(Building b, PressureAble p, boolean j) {
-            return true;
+            return !(b instanceof PressureCrafterBuild);
         }
     }
 }
