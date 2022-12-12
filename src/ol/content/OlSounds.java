@@ -1,22 +1,25 @@
 package ol.content;
 
-import arc.Core;
-import arc.assets.AssetDescriptor;
-import arc.assets.loaders.SoundLoader;
-import arc.audio.Sound;
-import mindustry.Vars;
+import arc.*;
+import arc.assets.*;
+import arc.assets.loaders.*;
+import arc.audio.*;
+import mindustry.*;
 
 public class OlSounds {
     public static Sound
+
     olShot = new Sound(),
     olCharge = new Sound(),
-    connect = new Sound();
+    centrifuge = new Sound(),
+    boiler = new Sound();
     //zoneShot = new Sound();
 
     public static void load(){
-        olShot = loadSound("olShot");
-        olCharge = loadSound("olCharge");
-        connect = loadSound("connect");
+        olShot     = loadSound("olShot");
+        olCharge   = loadSound("olCharge");
+        centrifuge = loadSound("centrifuge");
+        boiler     = loadSound("boiler");
         //zoneShot = loadSound("zoneShot");
     }
 
@@ -29,7 +32,10 @@ public class OlSounds {
 
             AssetDescriptor<?> desc = Core.assets.load(path, Sound.class, new SoundLoader.SoundParameter(sound));
             desc.errored = Throwable::printStackTrace;
+
             return sound;
-        }else return new Sound();
+        } else {
+            return new Sound();
+        }
     }
 }
