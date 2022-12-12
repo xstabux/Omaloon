@@ -45,10 +45,21 @@ public class PressureCrafter extends GenericCrafter {
     @Override
     public void setStats(){
         super.setStats();
-        if(showPressure)stats.remove(Stat.productionTime);
-        if(pressureProduce > 0)stats.add(OlStat.pressureProduction, (int) pressureProduce, OlStatUnit.pressure);
-        if(pressureConsume > 0)stats.add(OlStat.pressureConsume, (int) pressureConsume, OlStatUnit.pressure);
-        if(canExplode)stats.add(OlStat.maxPressure, maxPressure, OlStatUnit.pressure);
+        if(showPressure) {
+            stats.remove(Stat.productionTime);
+        }
+
+        if(pressureProduce > 0) {
+            stats.add(OlStat.pressureProduction, (int) pressureProduce, OlStatUnit.pressure);
+        }
+
+        if(pressureConsume > 0) {
+            stats.add(OlStat.pressureConsume, (int) pressureConsume, OlStatUnit.pressure);
+        }
+
+        if(canExplode) {
+            stats.add(OlStat.maxPressure, maxPressure, OlStatUnit.pressure);
+        }
     }
 
     @Override
@@ -145,6 +156,7 @@ public class PressureCrafter extends GenericCrafter {
             if(SUPER == BlockStatus.logicDisable || SUPER == BlockStatus.noOutput) {
                 return SUPER;
             }
+
             return pressure <= 0 ? BlockStatus.noInput : SUPER;
         }
 
@@ -206,7 +218,7 @@ public class PressureCrafter extends GenericCrafter {
 
         @Override
         public boolean inNet(Building b, PressureAble p, boolean j) {
-            return true;
+            return !(b instanceof PressureCrafterBuild);
         }
     }
 }
