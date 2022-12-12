@@ -100,6 +100,7 @@ public class PressureCrafter extends GenericCrafter {
             super.write(write);
             write.f(pressure);
         }
+
         @Override
         public void read(Reads read, byte revision) {
             super.read(read, revision);
@@ -111,6 +112,7 @@ public class PressureCrafter extends GenericCrafter {
         public PressureCrafterBuild self() {
             return this;
         }
+
         @Override
         public float pressure() {
             return pressure;
@@ -141,9 +143,11 @@ public class PressureCrafter extends GenericCrafter {
             this.pressure = pressure;
         }
         @Override
+
         public boolean online() {
             return pressureConsume > 0 || pressureProduce > 0;
         }
+        
         @Override
         public boolean storageOnly() {
             return false;
