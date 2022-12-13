@@ -1,6 +1,7 @@
 package ol.content.blocks;
 
 import arc.graphics.*;
+import arc.util.Tmp;
 import mindustry.content.*;
 import mindustry.entities.effect.RadialEffect;
 import mindustry.gen.Sounds;
@@ -11,6 +12,7 @@ import mindustry.world.blocks.production.*;
 import mindustry.world.draw.*;
 import mindustry.world.meta.BuildVisibility;
 import ol.content.*;
+import ol.graphics.OlPal;
 import ol.world.blocks.crafting.*;
 import ol.world.blocks.crafting.PressureCrafter;
 import ol.world.blocks.sandbox.SandboxCompressor;
@@ -289,36 +291,65 @@ public class OlProduction {
             consumePower(2.4f);
         }};
 
-        /*centrifuge = new OlImpactCrafter("centrifuge") {{
+        centrifuge = new OlImpactCrafter("centrifuge") {{
             size = 4;
             health = 540;
-            requirements(Category.crafting, ItemStack.with(OlItems.omalite, 80, Items.thorium, 80, Items.titanium, 100));
+
+            requirements(Category.crafting, with(
+                    OlItems.omalite, 80,
+                    Items.thorium, 80,
+                    Items.titanium, 100
+            ));
+
             craftTime = 270f;
             craftEffect = Fx.shieldBreak;
             updateEffectChance = 0.08f;
+
             ambientSound = OlSounds.centrifuge;
             ambientSoundVolume = 0.5f;
+
             accelerationSpeed = 0.0003f;
             decelerationSpeed = 0.006125f;
             powerProduction = 22f;
+
             drawer = new DrawMulti(
                     new DrawRegion("-bottom"),
-                    new DrawCentryfuge(){{
-                        plasma1 = Items.titanium.color;
-                        plasma2 = OlPal.oLDarkBlue;
-                    }}
+
+                    new DrawRegion("-rotator") {{
+                        rotateSpeed = 3;
+                        spinSprite = true;
+                    }},
+
+                    new DrawDefault(),
+                    new DrawRegion("-top")
             );
+
             onCraft = tile -> {
                 Tmp.v1.setToRandomDirection().setLength(27f / 3.4f);
+
                 Fx.pulverize.at(tile.x + Tmp.v1.x, tile.y + Tmp.v1.y);
                 Fx.hitLancer.at(tile.x + Tmp.v1.x, tile.y + Tmp.v1.y);
             };
+
             consumePower(7);
-            consumeItems(with(Items.titanium, 4, OlItems.omalite, 2));
-            consumeLiquid(OlLiquids.liquidOmalite, 0.18f);
-            outputItems = with(OlItems.omaliteAlloy, 5);
+
+            consumeItems(with(
+                    Items.titanium, 4,
+                    OlItems.omalite, 2
+            ));
+
+
+            consumeLiquid(
+                    OlLiquids.liquidOmalite,
+                    0.18f
+            );
+
+            outputItems = with(
+                    OlItems.omaliteAlloy, 5
+            );
+
             itemCapacity = 30;
-        }};*/
+        }};
         //end crafters
     }
 }
