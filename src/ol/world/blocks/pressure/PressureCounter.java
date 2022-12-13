@@ -8,6 +8,7 @@ import mindustry.core.GameState;
 import mindustry.gen.Building;
 import mindustry.graphics.Layer;
 import mindustry.world.Tile;
+import ol.world.blocks.RegionAble;
 
 import static mindustry.Vars.state;
 import static mindustry.Vars.world;
@@ -79,11 +80,6 @@ public class PressureCounter extends PressurePipe implements RegionAble {
         }
 
         @Override
-        public boolean WTR() {
-            return true;
-        }
-
-        @Override
         public float drawrot() {
             if(!quickRotate || !rotate || alignX(rotation)) {
                 return 0;
@@ -97,7 +93,7 @@ public class PressureCounter extends PressurePipe implements RegionAble {
         }
 
         @Override
-        public boolean inNet(Building b, PressureAble p, boolean junction) {
+        public boolean inNet(Building b, PressureAble<?> p, boolean junction) {
             Building self = self();
             int delta = 1;
             if(junction) {
@@ -122,11 +118,6 @@ public class PressureCounter extends PressurePipe implements RegionAble {
             }
 
             return p.online() && (p.tier() == -1 || p.tier() == tier());
-        }
-
-        @Override
-        public boolean avalible(Building b) {
-            return net().contains(b);
         }
     }
 }

@@ -4,7 +4,6 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
-import arc.struct.Seq;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
 import mindustry.game.Team;

@@ -15,7 +15,7 @@ public class OlBlocks implements Runnable {
 	}
 
 	@Override
-	public void run(){
+	public void run() {
 		load();
 	}
 }

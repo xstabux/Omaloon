@@ -3,8 +3,8 @@ package ol;
 import arc.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
+import arc.struct.Seq;
 import arc.util.*;
-import mindustry.Vars;
 import mindustry.core.GameState;
 import mindustry.ctype.*;
 import mindustry.game.EventType.*;
@@ -13,6 +13,7 @@ import mindustry.mod.Mods.*;
 import mma.*;
 import mma.utils.*;
 import ol.content.*;
+import ol.content.blocks.*;
 import ol.graphics.*;
 import ol.ui.*;
 import ol.ui.dialogs.*;
@@ -21,7 +22,7 @@ import static arc.Core.*;
 import static mindustry.Vars.*;
 
 public class Omaloon extends MMAMod {
-    public Omaloon(){
+    public Omaloon() {
         OlVars.load();
 
         Events.on(FileTreeInitEvent.class, e -> {
@@ -119,7 +120,7 @@ public class Omaloon extends MMAMod {
     }
 
     @Override
-    public void loadContent(){
+    public void loadContent() {
         ModVars.modLog("Loading some content.");
         super.loadContent();
     }

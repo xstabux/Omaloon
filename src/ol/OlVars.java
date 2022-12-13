@@ -8,7 +8,7 @@ import ol.content.*;
 import static arc.Core.*;
 
 
-public class OlVars extends ModVars{
+public class OlVars extends ModVars {
     //core region
     private static final Seq<Runnable> onLoad = new Seq<>();
 

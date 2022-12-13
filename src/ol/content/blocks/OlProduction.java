@@ -1,7 +1,6 @@
 package ol.content.blocks;
 
 import arc.graphics.*;
-import arc.util.*;
 import mindustry.content.*;
 import mindustry.entities.effect.RadialEffect;
 import mindustry.gen.Sounds;
@@ -12,10 +11,9 @@ import mindustry.world.blocks.production.*;
 import mindustry.world.draw.*;
 import mindustry.world.meta.BuildVisibility;
 import ol.content.*;
-import ol.graphics.*;
 import ol.world.blocks.crafting.*;
-import ol.world.blocks.pressure.PressureCrafter;
-import ol.world.blocks.pressure.SandboxCompressor;
+import ol.world.blocks.crafting.PressureCrafter;
+import ol.world.blocks.sandbox.SandboxCompressor;
 import ol.world.draw.*;
 
 import static mindustry.type.ItemStack.*;
