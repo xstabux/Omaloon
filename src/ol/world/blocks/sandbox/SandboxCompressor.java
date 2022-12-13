@@ -1,4 +1,4 @@
-package ol.world.blocks.pressure;
+package ol.world.blocks.sandbox;
 
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
@@ -10,6 +10,8 @@ import arc.util.io.Writes;
 import mindustry.gen.Building;
 import mindustry.ui.Styles;
 import mindustry.world.Tile;
+import ol.world.blocks.pressure.PressureAble;
+import ol.world.blocks.pressure.PressurePipe;
 
 //maxPressure in this block is max value in the config (!!!)
 public class SandboxCompressor extends PressurePipe {
@@ -39,12 +41,6 @@ public class SandboxCompressor extends PressurePipe {
         }
     }
 
-    @Override
-    public void setBars() {
-        super.setBars();
-        removeBar("pressure");
-    }
-
     public SandboxCompressor(String name) {
         super(name);
         rotate = false;
@@ -72,6 +68,7 @@ public class SandboxCompressor extends PressurePipe {
     @Override
     public void load() {
         super.load();
+
         voidRegion = loadRegion("-void");
     }
 
@@ -94,25 +91,27 @@ public class SandboxCompressor extends PressurePipe {
         }
 
         @Override
+        public void updateTile() {
+            super.updateTile();
+
+            pressure = enabled ? (voidMode() ? Integer.MIN_VALUE : val) : 0;
+        }
+
+        @Override
         public void write(Writes write) {
             super.write(write);
             write.i(val);
         }
 
         @Override
-        public boolean storageOnly() {
-            return false;
-        }
-
-        @Override
-        public float pressureThread() {
-            return enabled ? (voidMode() ? Integer.MIN_VALUE : val) : 0;
-        }
-
-        @Override
         public void read(Reads read, byte revision) {
             super.read(read, revision);
             val = read.i();
+        }
+
+        @Override
+        public boolean producePressure() {
+            return true;
         }
 
         @Override
@@ -139,7 +138,7 @@ public class SandboxCompressor extends PressurePipe {
         }
 
         @Override
-        public boolean inNet(Building b, PressureAble p, boolean j) {
+        public boolean inNet(Building b, PressureAble<?> p, boolean j) {
             return true;
         }
     }

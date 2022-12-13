@@ -14,7 +14,6 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
-import mindustry.world.*;
 import mindustry.content.*;
 import mindustry.entities.*;
 import mindustry.world.blocks.production.GenericCrafter;
@@ -22,7 +21,6 @@ import mindustry.world.meta.*;
 import mindustry.world.consumers.*;
 import ol.ui.*;
 import ol.utils.*;
-import ol.world.blocks.pressure.PressureCrafter;
 import ol.world.meta.*;
 
 /**
@@ -337,7 +335,7 @@ public class MultiCrafter extends GenericCrafter {
                     return;
                 }
 
-                for(ItemStack output : getCraft().outputItems){
+                for(ItemStack output : getCraft().outputItems) {
                     dump(output.item);
                 }
 
@@ -345,7 +343,7 @@ public class MultiCrafter extends GenericCrafter {
                     return;
                 }
 
-                for(LiquidStack output : getCraft().outputLiquids){
+                for(LiquidStack output : getCraft().outputLiquids) {
                     dumpLiquid(output.liquid);
                 }
             }
