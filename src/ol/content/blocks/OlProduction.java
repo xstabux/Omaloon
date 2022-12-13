@@ -154,6 +154,9 @@ public class OlProduction {
                                 OlItems.zarini, 1
                         );
 
+                        pressureConsume = 30;
+                        downPressure = true;
+
                         consumePower = 1.6f;
                         craftTime = 82f;
                         warmupSpeed = 0.2f;
