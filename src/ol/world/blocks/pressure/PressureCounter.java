@@ -1,20 +1,24 @@
 package ol.world.blocks.pressure;
 
-import arc.*;
+import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 
+import mindustry.annotations.Annotations.*;
 import mindustry.core.*;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.*;
 
-import ol.world.blocks.*;
+import mma.type.*;
+import mma.type.pixmap.*;
+import ol.gen.*;
 
 import static mindustry.Vars.*;
 
-public class PressureCounter extends PressurePipe implements RegionAble {
+public class PressureCounter extends PressurePipe implements ImageGenerator{
+    @Load("@-arrow")
     public TextureRegion arrowRegion;
 
     public PressureCounter(String name) {
@@ -36,16 +40,11 @@ public class PressureCounter extends PressurePipe implements RegionAble {
     }
 
     @Override
-    public void load() {
-        super.load();
-        arrowRegion = Core.atlas.find(name + "-arrow");
-        uiIcon = Core.atlas.find(name + "-icon");
+    public Pixmap generate(Pixmap icon, PixmapProcessor processor){
+        PixmapProcessor.drawCenter(icon,processor.get(arrowRegion));
+        return ImageGenerator.super.generate(icon, processor);
     }
 
-    @Override
-    public String name() {
-        return name;
-    }
 
     public class PressureCounterBuild extends PressurePipeBuild {
 
@@ -115,7 +114,7 @@ public class PressureCounter extends PressurePipe implements RegionAble {
         }
 
         @Override
-        public boolean inNet(Building b, PressureAble<?> p, boolean junction) {
+        public boolean inNet(Building b, PressureAblec p, boolean junction) {
             Building self = self();
             int delta = 1;
             if(junction) {
