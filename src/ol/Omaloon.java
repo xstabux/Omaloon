@@ -1,12 +1,14 @@
 package ol;
 
 import arc.*;
+import arc.func.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 
 import mindustry.core.*;
 import mindustry.ctype.*;
 import mindustry.game.*;
+import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Mods.*;
 
@@ -14,6 +16,7 @@ import mma.*;
 import mma.utils.*;
 
 import ol.content.*;
+import ol.gen.*;
 import ol.graphics.*;
 import ol.logic.*;
 import ol.ui.*;
@@ -29,10 +32,9 @@ public class Omaloon extends MMAMod {
     public Omaloon() {
         OlVars.load();
 
-        //sound / shaders
-        Events.on(EventType.FileTreeInitEvent.class, ignored -> {
-            app.post(OlSounds::load);
-            app.post(OlShaders::load);
+        OlGroups.init();
+        Events.on(ResetEvent.class, e -> {
+            OlGroups.clear();
         });
 
         ModVars.modLog("Loaded Omaloon constructor.");
@@ -106,9 +108,9 @@ public class Omaloon extends MMAMod {
     protected void modContent(Content content) {
         super.modContent(content);
 
-        //if(content instanceof MappableContent) {
-        //    OlContentRegions.loadRegions((MappableContent) content);
-        //}
+        if(content instanceof MappableContent) {
+            OlContentRegions.loadRegions((MappableContent) content);
+        }
     }
 
     void loadSettings() {
@@ -148,8 +150,15 @@ public class Omaloon extends MMAMod {
     @Override
     public void loadContent() {
         ModVars.modLog("Loading some content.");
+        if (!headless){//FileTreeInitEvent invokes before this method
+            OlVars.inTry(OlSounds::load);
+            OlVars.inTry(OlShaders::load);
+        }
+        OlCacheLayer.init();
+
+
         super.loadContent();
-        
+
         //logic
         OlLogicIO.load();
     }
