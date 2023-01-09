@@ -4,6 +4,7 @@ import arc.graphics.*;
 import arc.util.Tmp;
 
 import mindustry.content.*;
+import mindustry.entities.effect.*;
 import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.production.*;
@@ -243,7 +244,12 @@ public class OlProduction {
                     Items.titanium, 100
             ));
 
-            stopEffect = OlFx.psh;
+            stopEffect = new RadialEffect() {{
+                effect = OlFx.psh;
+                amount = 4;
+                lengthOffset = 12;
+                rotationOffset = 43;
+            }};
 
             craftTime = 270f;
             craftEffect = Fx.shieldBreak;

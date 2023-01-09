@@ -77,7 +77,9 @@ public class OlPressure {
                 lengthOffset = 8;
             }};
 
-            drawer = new DrawMulti(new DrawDefault());
+            drawer = new DrawMulti(
+                    new DrawDefault()
+            );
 
             craftTime = 100f;
             ambientSound = Sounds.none;
@@ -97,7 +99,9 @@ public class OlPressure {
         improvedCompressor = new PressureCrafter("improved-compressor"){{
             requirements(Category.power, ItemStack.with());
 
-            drawer = new DrawMulti(new DrawDefault());
+            drawer = new DrawMulti(
+                    new DrawDefault()
+            );
 
             craftTime = 100f;
             ambientSound = Sounds.none;
