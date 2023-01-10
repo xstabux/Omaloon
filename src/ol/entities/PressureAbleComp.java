@@ -47,7 +47,9 @@ abstract class PressureAbleComp implements Buildingc, PressureAblec{
     public void nextBuildings(@Nullable Building income, Cons<Building> consumer){
         for(Building building : proximity()){
             if(income == building) continue;
-            consumer.get(building);
+            if (building instanceof PressureAblec pressureAblec && PressureAPI.tierAble(this,pressureAblec)){
+                consumer.get(building);
+            }
         }
     }
 
