@@ -3,7 +3,7 @@ import java.time.format.DateTimeFormatter
 buildscript{
 
     ext{
-        def properties = new Properties().with{ p -> p.load(file('versions.properties').newReader()); return p }
+        def properties = new Properties().with{ p -> p.load(file('gradle.properties').newReader()); return p }
         mindustryVersion = properties["mindustryVersion"]
         jparcerVersion = properties["jparcerVersion"]
         jabelVersion = properties["jabelVersion"]
