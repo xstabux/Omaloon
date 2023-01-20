@@ -1,97 +1,144 @@
 package ol;
 
-import arc.Core;
-import arc.Events;
-import arc.func.Func;
-import arc.scene.ui.ImageButton;
-import arc.scene.ui.layout.Table;
-import arc.util.Log;
-import mindustry.game.EventType.ClientLoadEvent;
-import mindustry.game.EventType.FileTreeInitEvent;
-import mindustry.gen.Icon;
-import mindustry.mod.Mod;
-import mindustry.mod.Mods.LoadedMod;
-import ol.content.*;
-import ol.graphics.OlShaders;
-import ol.system.SolarSystem;
-import ol.ui.dialogs.OlDisclaimer;
-import ol.ui.dialogs.OlDiscordLink;
-import ol.ui.OlSettings;
+import arc.*;
+import arc.audio.*;
+import arc.scene.ui.layout.*;
 
-import java.util.Random;
+import mindustry.core.*;
+import mindustry.ctype.*;
+import mindustry.game.*;
+import mindustry.game.EventType.*;
+import mindustry.mod.Mods.*;
+
+import mma.*;
+import mma.utils.*;
+
+import ol.core.*;
+import ol.gen.*;
+import ol.graphics.*;
+import ol.logic.*;
+import ol.ui.ModMetaDialogFinder;
+import ol.ui.dialogs.*;
+import ol.utils.*;
+import ol.utils.pressure.*;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
 
-public class Omaloon extends Mod{
+public class Omaloon extends MMAMod{
+
+    public Omaloon(){
+        OlVars.load();
+
+        OlGroups.init();
+        Events.on(ResetEvent.class, e -> {
+            OlGroups.clear();
+        });
+
+        Events.on(EventType.ClientLoadEvent.class, ignored -> {
+            OlSettings.init();
+            OlSettings.loadCategory();
+
+            app.post(() -> {
+
+                if(!SettingsManager.show.get()){
+                    new OlDisclaimer().show();
+                }
+            });
+
+        });
+        ModVars.modLog("Loaded Omaloon constructor.");
+    }
+
     @Override
     public void init(){
         super.init();
-        SolarSystem.init();
-        LoadedMod mod = mods.locateMod("ol");
-        if(!headless){
-            //forom Betamindy by sk7725
-            Func<String, String> stringf = value -> bundle.get("mod." + value);
+        ManyPlanetSystems.init();
 
-            mod.meta.displayName = stringf.get(mod.meta.name + ".name");
-            mod.meta.description = bundle.get("mod.ol.description") +"\n\n"+ bundle.get("mod.ol.musics");
-            mod.meta.author = bundle.get("mod.ol.author") + "\n\n" + bundle.get("mod.ol.contributors");
-            //Random subtitles vote
-            String [] r = {
-                    bundle.get("mod.ol.subtitle1"),
-                    bundle.get("mod.ol.subtitle2"),
-                    bundle.get("mod.ol.subtitle3"),
-                    bundle.get("mod.ol.subtitle4")
-            };
-            Random rand = new Random();
-            String mogus = String.valueOf(
-                    r[rand.nextInt(3)]
+        //load pressure
+        app.addListener(new PressureUpdater());
+        PressureUpdater.load();
+
+        //map events
+        OlMapInvoker.load();
+
+
+        if(headless) return;
+
+        LoadedMod mod = ModVars.modInfo;
+
+        //change mod info
+        mod.meta.displayName = bundle.get("mod." + mod.meta.name + ".name");
+        mod.meta.description = bundle.get("mod.ol.description") + "\n\n" + bundle.get("mod.ol.musics");
+        mod.meta.author = bundle.get("mod.ol.author") + "\n\n" + bundle.get("mod.ol.contributors");
+
+        //random subtitles vote
+        String subtitle =
+            bundle.get(
+                bundle.getProperties()
+                    .keys().toSeq()
+                    .filter(it -> it.startsWith("mod.ol.subtitle"))
+                    .random()
             );
-            mod.meta.subtitle = "[#7f7f7f]"+"v"+mod.meta.version+"[]" +"\n"+ mogus;
-            Events.on(ClientLoadEvent.class, e -> {
-                loadSettings();
-                OlSettings.init();
-                app.post(() -> app.post(() -> {
-                    if (!settings.getBool("mod.ol.show", false)) {
-                        new OlDisclaimer().show();
-                    }
-                }));
+
+        mod.meta.subtitle = "[#7f7f7f]v" + mod.meta.version + "[]\n" + subtitle;
+
+
+        //if not mobile create text in menu
+        if(!mobile){
+            Events.on(EventType.ClientLoadEvent.class, ignored -> {
+                Table table = new Table();
+
+                //setup table
+                table.margin(4f);
+                table.labelWrap("[#87ceeb]Omaloon[] " + mod.meta.subtitle);
+                table.pack();
+
+                scene.add(table.visible(() -> state.is(GameState.State.menu)));
+
             });
-            if(!mobile) {
-                Events.on(ClientLoadEvent.class, e -> {
-                    Table t = new Table();
-                    t.margin(4f);
-                    t.labelWrap("[#87ceeb]" + "Omaloon" + "[]" + "[#7f7f7f]" + " v" + mod.meta.version + "[]" + "\n" + mogus);
-                    t.pack();
-                    scene.add(t.visible(() -> state.isMenu()));
-                });
-            }
+        }
+
+        if(!headless){
+            ModMetaDialogFinder.onNewListener(d -> {
+                if(d instanceof OlModDialog) return;
+                d.hide(null);
+                new OlModDialog().show();
+            });
+        }
+
+        //check updates if enabled
+        if(SettingsManager.check.get()){
+            OlUpdateCheckDialog.check();
         }
     }
 
-    void loadSettings() {
-        ui.settings.addCategory("@mod.ol.omaloon-settings", "ol-settings-icon", t -> {
-            t.checkPref("mod.ol.show", false);
-            t.checkPref("mod.ol.check", true);
-            t.fill(c -> c.bottom().right().button(Icon.discord, new ImageButton.ImageButtonStyle(), new OlDiscordLink()::show).marginTop(9f).marginLeft(10f).tooltip(bundle.get("setting.ol.discord-join")).size(84, 45).name("discord"));
-        });
+    @Override
+    protected void modContent(Content content){
+        super.modContent(content);
+
+        if(content instanceof MappableContent){
+            OlContentRegions.loadRegions((MappableContent)content);
+        }
     }
 
-    public Omaloon(){
-        Events.on(FileTreeInitEvent.class, e -> app.post(OlSounds::load));
-        Log.info("Loaded Omaloon constructor.");
-        mods.getMod(getClass());
-        Events.on(FileTreeInitEvent.class, e -> Core.app.post(OlShaders::load));
-    }
 
     @Override
     public void loadContent(){
-        Log.info("Loading some content.");
-        OlItems.load();
-        OlStatusEffects.load();
-        OlLiquids.load();
-        OlBlocks.load();
-        OlPlanets.load();
-        OlSounds.load();
+        ModVars.modInfo = mods.getMod(getClass());
+        ModVars.modLog("Loading some content.");
+        if(!headless){//FileTreeInitEvent invokes before this method
+            new Sound(ModVars.modInfo.root.child("sounds").child("boiler.ogg"));
+            OlVars.inTry(OlSounds::loadNow);
+            OlVars.inTry(OlMusics::loadNow);
+            OlVars.inTry(OlShaders::load);
+        }
+        OlCacheLayer.init();
+
+
+        super.loadContent();
+
+        //logic
+        OlLogicIO.load();
     }
 }

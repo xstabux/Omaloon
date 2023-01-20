@@ -1,11 +1,11 @@
 {
   "name": "ol",
-  "displayName": "Omaloon-Mod",
-  "author": "StaBU",
+  "displayName": "Omaloon",
+  "author": "StaBU, TheEE145",
   "main": "ol.Omaloon",
-  "subtitle": "Update 0.6-alpha!",
-  "description": "My first mod. Adds mostly unique content.",
-  "version": "0.5.1",
-  "minGameVersion": 137,
+  "subtitle": "v0.6 is finally here!",
+  "description": "The Mindustry mod aims to expand the campaign by adding a new star system. In active development. For now, not suitable for games outside the sandbox.",
+  "version": "0.6.1",
+  "minGameVersion": 140.3,
   "hidden": "false"
 }
