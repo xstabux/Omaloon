@@ -1,3 +1,4 @@
+.run/
 logs/
 /core/assets/mindustry-saves/
 /core/assets/mindustry-maps/
@@ -154,3 +155,9 @@ gradle-app.setting
 .DS_Store
 Thumbs.db
 android/libs/
+/bin/
+
+#sprite generation
+resources/assets-raw/sprites_out/
+modsDirectories.txt
+files-folder/
