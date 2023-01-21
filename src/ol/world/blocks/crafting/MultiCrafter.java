@@ -438,7 +438,6 @@ public class MultiCrafter extends PressureCrafter {
             }
 
             effect = effectx * efficenty();
-            this.pressureModule.pressure += this.pressureThread();
         }
 
         public void dumpOutputs() {
