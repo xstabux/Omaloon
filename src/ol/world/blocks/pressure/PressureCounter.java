@@ -13,21 +13,25 @@ import mindustry.world.*;
 
 import mma.type.*;
 import mma.type.pixmap.*;
-import ol.gen.*;
+
+import ol.graphics.OlPal;
+import ol.utils.Angles;
+
+import ol.world.blocks.pressure.meta.PressureAbleBuild;
 
 import static mindustry.Vars.*;
 
-public class PressureCounter extends PressurePipe implements ImageGenerator{
-    @Load("@-arrow")
-    public TextureRegion arrowRegion;
+public class PressureCounter extends PressurePipe implements ImageGenerator {
+    @Load("@-arrow") public TextureRegion arrowRegion;
+    public boolean colorArrow = false; //TODO setting to set it`s default
+    public float pointScale = 1.17f;
 
     public PressureCounter(String name) {
         super(name);
         mapDraw = true;
     }
 
-    @Override
-    public boolean inBuildPlanNet(BuildPlan s, int x, int y, int ignored) {
+    @Override public boolean inBuildPlanNet(BuildPlan s, int x, int y, int ignored) {
         int ox = s.x - x;
         int oy = s.y - y;
 
@@ -36,52 +40,25 @@ public class PressureCounter extends PressurePipe implements ImageGenerator{
         }
 
         ox = ox < 0 ? -ox : ox;
-        return (ox == 1) ? alignX(s.rotation) : alignY(s.rotation);
+        return (ox == 1) ? Angles.alignX(s.rotation) : Angles.alignY(s.rotation);
     }
 
-    @Override
-    public Pixmap generate(Pixmap icon, PixmapProcessor processor){
+    @Override public Pixmap generate(Pixmap icon, PixmapProcessor processor){
         PixmapProcessor.drawCenter(icon,processor.get(arrowRegion));
         return ImageGenerator.super.generate(icon, processor);
     }
 
-
     public class PressureCounterBuild extends PressurePipeBuild {
-
-        public boolean isDanger() {
-            if(dangerPressure == -1) {
-                return false;
-            }
-
-            return pressure > dangerPressure && canExplode;
-        }
-
         public float angle() {
             if(!isDanger()) {
-                return ((pressure / dangerPressure) * 360);
+                return ((this.pressure() / dangerPressure) * 360);
             }
 
-            return this.totalProgress() * pressure;
-        }
-
-        @Override
-        public boolean avalibleX() {
-            return this.alignX(this.rotation);
-        }
-
-        @Override
-        public boolean avalibleY() {
-            return this.alignY(this.rotation);
+            return this.totalProgress() * this.pressure();
         }
 
         public boolean visibleArrow() {
             return true;
-        }
-
-        @Override
-        public void draw() {
-            super.draw();
-            drawArrow();
         }
 
         public void drawArrow() {
@@ -89,8 +66,18 @@ public class PressureCounter extends PressurePipe implements ImageGenerator{
                 Draw.draw(Layer.blockBuilding + 5, () -> {
                     float angle = angle();
 
+                    if(this.isDanger() || !colorArrow) {
+                        Draw.color(Color.white);
+                    } else {
+                        Draw.color(OlPal.mixcol(Color.green, Color.red, this.pressure() / this.maxPressure()));
+                    }
+
+                    if(colorArrow) {
+                        Fill.circle(x, y, pointScale);
+                    }
+
                     if(!state.is(GameState.State.paused)) {
-                        Draw.rect(arrowRegion, x, y, ((angle / 360) * -180) + Mathf.random(pressure, angle) / 10);
+                        Draw.rect(arrowRegion, x, y, ((angle / 360) * -180) + Mathf.random(this.pressure(), angle) / 10);
                     } else {
                         Draw.rect(arrowRegion, x, y, ((angle / 360) * -180));
                     }
@@ -100,22 +87,34 @@ public class PressureCounter extends PressurePipe implements ImageGenerator{
             }
         }
 
-        @Override
-        public float drawrot() {
-            if(!quickRotate || !rotate || alignX(rotation)) {
+        @Override public boolean avalibleX() {
+            return Angles.alignX(this.rotation);
+        }
+
+        @Override public boolean avalibleY() {
+            return Angles.alignY(this.rotation);
+        }
+
+        @Override public void draw() {
+            super.draw();
+            drawArrow();
+        }
+
+        @Override public float drawrot() {
+            if(!quickRotate || !rotate || Angles.alignX(rotation)) {
                 return 0;
             }
 
-            if(alignY(rotation)) {
+            if(Angles.alignY(rotation)) {
                 return -90;
             }
 
             return 0;
         }
 
-        @Override
-        public boolean inNet(Building b, PressureAblec p, boolean junction) {
+        @Override public boolean inNet(Building b, PressureAbleBuild p, boolean junction) {
             Building self = self();
+
             int delta = 1;
             if(junction) {
                 delta++;
@@ -127,14 +126,14 @@ public class PressureCounter extends PressurePipe implements ImageGenerator{
             Tile left = world.tile(tx - delta, ty);
             Tile right = world.tile(tx + delta, ty);
 
-            if((left.build == b || right.build == b) && !alignX(rotation)) {
+            if((left.build == b || right.build == b) && !Angles.alignX(rotation)) {
                 return false;
             }
 
             Tile top = world.tile(tx, ty + delta);
             Tile bottom = world.tile(tx, ty - delta);
 
-            if((top.build == b || bottom.build == b) && !alignY(rotation)) {
+            if((top.build == b || bottom.build == b) && !Angles.alignY(rotation)) {
                 return false;
             }
 

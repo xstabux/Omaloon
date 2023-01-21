@@ -129,7 +129,8 @@ public class OlStatements {
         }
     }
 
-    public static class PressureReloadStatement extends OlStatement {
+    /*
+        public static class PressureReloadStatement extends OlStatement {
         @Override
         public LExecutor.LInstruction build(LAssembler builder) {
             return ignored -> PressureUpdater.reload();
@@ -170,4 +171,5 @@ public class OlStatements {
             return ignored -> PressureUpdater.clearNets();
         }
     }
+     */
 }

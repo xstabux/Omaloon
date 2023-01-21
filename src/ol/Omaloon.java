@@ -30,10 +30,10 @@ public class Omaloon extends MMAMod{
     public Omaloon(){
         OlVars.load();
 
-        OlGroups.init();
-        Events.on(ResetEvent.class, e -> {
-            OlGroups.clear();
-        });
+        //OlGroups.init();
+        //Events.on(ResetEvent.class, e -> {
+        //    OlGroups.clear();
+        //});
 
         Events.on(EventType.ClientLoadEvent.class, ignored -> {
             OlSettings.init();
@@ -54,10 +54,6 @@ public class Omaloon extends MMAMod{
     public void init(){
         super.init();
         ManyPlanetSystems.init();
-
-        //load pressure
-        app.addListener(new PressureUpdater());
-        PressureUpdater.load();
 
         //map events
         OlMapInvoker.load();
@@ -129,8 +125,6 @@ public class Omaloon extends MMAMod{
         ModVars.modLog("Loading some content.");
         if(!headless){//FileTreeInitEvent invokes before this method
             new Sound(ModVars.modInfo.root.child("sounds").child("boiler.ogg"));
-            OlVars.inTry(OlSounds::loadNow);
-            OlVars.inTry(OlMusics::loadNow);
             OlVars.inTry(OlShaders::load);
         }
         OlCacheLayer.init();

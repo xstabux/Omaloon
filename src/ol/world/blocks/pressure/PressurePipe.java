@@ -7,6 +7,7 @@ import arc.math.*;
 import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.*;
+
 import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
@@ -14,18 +15,19 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.*;
 import mindustry.world.meta.*;
+
 import ol.content.*;
 import ol.content.blocks.*;
 import ol.input.*;
 import ol.utils.*;
+import ol.utils.Angles;
 import ol.utils.pressure.*;
 
 import java.util.function.*;
-
 import static mindustry.Vars.*;
 
-public class PressurePipe extends PressureBlock implements PressureReplaceable{
-    public TextureRegion[] cache;//null if headless
+public class PressurePipe extends PressureBlock implements PressureReplaceable {
+    public TextureRegion[] cache; //null if headless
     public @Nullable Block junctionReplacement, bridgeReplacement;
 
     /** draw connections? */
@@ -42,14 +44,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
         priority = TargetPriority.transport;
     }
 
-    @Override
-    public void load(){
-        cache = new TextureRegion[0b1_00_00];
-        super.load();
-
-    }
-
-    public void drawT(int x, int y, int rotation){
+    public void drawT(int x, int y, int rotation) {
         TextureRegion pressureIcon = Core.atlas.find("ol-arrow");
 
         float dx = x * 8;
@@ -67,34 +62,36 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
         }
     }
 
-    @Override
-    public void drawPlace(int x, int y, int rotation, boolean valid){
+    @Override public void load() {
+        cache = new TextureRegion[0b1_00_00];
+        super.load();
+    }
+
+    @Override public void drawPlace(int x, int y, int rotation, boolean valid) {
         super.drawPlace(x, y, rotation, valid);
         drawT(x, y, rotation);
     }
 
-    @Override
-    public boolean canReplace(Block other){
+    @Override public boolean canReplace(Block other){
         boolean valid = true;
-        if(other instanceof PressurePipe pipe){
-            valid = PressureAPI.tierAble(pipe, tier);
+        if(other instanceof PressurePipe pipe) {
+            valid = PressureAPI.tierAble(pipe.tier, tier);
         }
 
         return canBeReplaced(other) && valid;
     }
 
-    @Override
-    public void init(){
+    @Override public void init() {
         super.init();
 
-        if(junctionReplacement == null){
+        if (junctionReplacement == null) {
             junctionReplacement = OlPressure.pressureJunction;
         }
 
         //I did this because there will be no other pipes for pressure anyway.
         //If there is an idea that it is better to implement, implement it.
-        if(bridgeReplacement == null || !(bridgeReplacement instanceof PressureBridge)){
-            bridgeReplacement = switch(tier){
+        if (bridgeReplacement == null || !(bridgeReplacement instanceof PressureBridge)) {
+            bridgeReplacement = switch (tier) {
                 case 2 -> OlPressure.improvedPressureBridge;
                 case 3 -> OlPressure.reinforcedPressureBridge;
                 default -> OlPressure.pressureBridge;
@@ -102,15 +99,11 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
         }
     }
 
-    public boolean alignX(int rotation){
-        return rotation == 0 || rotation == 2;
-    }
+    public boolean inBuildPlanNet(BuildPlan s, int x, int y, int rotation) {
+        if(s == null) {
+            return false;
+        }
 
-    public boolean alignY(int rotation){
-        return rotation == 1 || rotation == 3;
-    }
-
-    public boolean inBuildPlanNet(BuildPlan s, int x, int y, int rotation){
         int ox = s.x - x;
         int oy = s.y - y;
 
@@ -119,13 +112,12 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
         }
 
         ox = ox < 0 ? -ox : ox;
-        return (ox == 1) ? (alignX(rotation) || alignX(s.rotation))
-                   : (alignY(rotation) || alignY(s.rotation));
+        return (ox == 1) ? (Angles.alignX(rotation) || Angles.alignX(s.rotation))
+                   : (Angles.alignY(rotation) || Angles.alignY(s.rotation));
     }
 
-    @Override
-    public Block getReplacement(BuildPlan req, Seq<BuildPlan> plans){
-        if(junctionReplacement == null){
+    @Override public Block getReplacement(BuildPlan req, Seq<BuildPlan> plans){
+        if(junctionReplacement == null) {
             return this;
         }
 
@@ -142,14 +134,14 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
     }
 
     @Override
-    public void handlePlacementLine(Seq<BuildPlan> plans){
+    public void handlePlacementLine(Seq<BuildPlan> plans) {
         if(bridgeReplacement == null) return;
         OLPlacement.calculateBridges(plans, (PressureBridge)bridgeReplacement);
     }
 
     @Override
-    public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list){
-        if(this.mapDraw){
+    public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list) {
+        if(this.mapDraw) {
             OlPlans.set(plan, list);
 
             BuildPlan
@@ -167,8 +159,8 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
             Function<BuildPlan, Boolean> canWork = plnFunc -> {
                 Block block = plnFunc.block;
 
-                if(block instanceof PressureBlock pressureBlock){
-                    boolean valid = PressureAPI.tierAble(pressureBlock, tier);
+                if(block instanceof PressureBlock pressureBlock) {
+                    boolean valid = PressureAPI.tierAble(pressureBlock.tier, tier);
 
                     if(block instanceof PressurePipe pipe){
                         valid &= pipe.inBuildPlanNet(plan, plnFunc.x, plnFunc.y, plnFunc.rotation);
@@ -180,19 +172,19 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
                 return block instanceof PressureJunction;
             };
 
-            if(validTop){
+            if(validTop) {
                 validTop = canWork.apply(top);
             }
 
-            if(validBottom){
+            if(validBottom) {
                 validBottom = canWork.apply(bottom);
             }
 
-            if(validLeft){
+            if(validLeft) {
                 validLeft = canWork.apply(left);
             }
 
-            if(validRight){
+            if(validRight) {
                 validRight = canWork.apply(right);
             }
 
@@ -217,55 +209,42 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
     private TextureRegion getRegion(boolean top, boolean bottom, boolean left, boolean right){
         int
             b = bottom ? 0b0001 : 0,
-            t = top ? 0b0010 : 0,
-            r = right ? 0b0100 : 0,
-            l = left ? 0b1000 : 0;
+            t = top    ? 0b0010 : 0,
+            r = right  ? 0b0100 : 0,
+            l = left   ? 0b1000 : 0;
 
         int spriteID = l | r | t | b;
 
-        if(cache[spriteID] == null){
-            cache[spriteID] = Core.atlas.find(name + "-" + spriteID);
+        TextureRegion reg = cache[spriteID];
+
+        if(reg == null) {
+            cache[spriteID] = reg = Core.atlas.find(name + "-" + spriteID);
+
+            if(reg == null) {
+                throw new NullPointerException("ZELAUX!!!!!!!!!!!!!!!!!!!!");
+            }
         }
 
-        TextureRegion reg = cache[spriteID];
         return reg;
     }
 
-    public class PressurePipeBuild extends PressureBlockBuild{
-        @Override
-        public void nextBuildings(Building income, Cons<Building> consumer){
-            Building left = nearby(-1, 0);
-            Building right = nearby(1, 0);
-            Building bottom = nearby(0, -1);
-            Building top = nearby(0, 1);
-
-            boolean bLeft = (avalible(left) || left instanceof PressureJunction.PressureJunctionBuild) && avalibleX();
-            boolean bRight = (avalible(right) || right instanceof PressureJunction.PressureJunctionBuild) && avalibleX();
-            boolean bTop = (avalible(top) || top instanceof PressureJunction.PressureJunctionBuild) && avalibleY();
-            boolean bBottom = (avalible(bottom) || bottom instanceof PressureJunction.PressureJunctionBuild) && avalibleY();
-            if(left != income && bLeft) consumer.get(left);
-            if(right != income && bRight) consumer.get(right);
-            if(bottom != income && bBottom) consumer.get(bottom);
-            if(top != income && bTop) consumer.get(top);
-        }
-
+    public class PressurePipeBuild extends PressureBlockBuild {
         @Override
         public void updateTile(){
             super.updateTile();
 
-            if(PressureAPI.overload(this)){
+            if(this.isPressureDamages()) {
                 float random = Mathf.random(-3, 3);
 
-                if(timer(PressurePipe.this.timer, Mathf.random(35, 65))){
+                if(timer(PressurePipe.this.timer, Mathf.random(35, 65))) {
                     OlFx.pressureDamage.at(x + random / 2, y + random / 2, this.totalProgress() * random, Layer.blockUnder);
                 }
             }
         }
 
-        public boolean avalible(Building b){
+        public boolean avalible(Building b) {
             return PressureAPI.netAble(this, b);
         }
-
 
         /**
          * pipes name based on connections <name>-[L*8+R*4+T*2+B]
@@ -276,53 +255,50 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable{
          * if connected only right and left when loaded 12...
          */
 
-        public boolean avalibleX(){
+        public boolean avalibleX() {
             return true;
         }
 
-        public boolean avalibleY(){
+        public boolean avalibleY() {
             return true;
         }
 
         @Override
         public void draw(){
-            if(!mapDraw){
+            if(!mapDraw) {
                 super.draw();
                 this.drawTeamTop();
                 return;
             }
 
-            Building left = nearby(-1, 0);
-            Building right = nearby(1, 0);
+            Building left   = nearby(-1, 0);
+            Building right  = nearby(1, 0);
             Building bottom = nearby(0, -1);
-            Building top = nearby(0, 1);
+            Building top    = nearby(0, 1);
 
-            boolean bLeft = avalible(left) || left instanceof PressureJunction.PressureJunctionBuild;
-            boolean bRight = avalible(right) || right instanceof PressureJunction.PressureJunctionBuild;
-            boolean bTop = avalible(top) || top instanceof PressureJunction.PressureJunctionBuild;
+            boolean bLeft   = avalible(left)   || left   instanceof PressureJunction.PressureJunctionBuild;
+            boolean bRight  = avalible(right)  || right  instanceof PressureJunction.PressureJunctionBuild;
+            boolean bTop    = avalible(top)    || top    instanceof PressureJunction.PressureJunctionBuild;
             boolean bBottom = avalible(bottom) || bottom instanceof PressureJunction.PressureJunctionBuild;
 
-            TextureRegion region = getRegion(avalibleY() && bTop, avalibleY() && bBottom, avalibleX() && bLeft, avalibleX() && bRight);
+            TextureRegion region = getRegion(
+                    avalibleY() && bTop,
+                    avalibleY() && bBottom,
+                    avalibleX() && bLeft,
+                    avalibleX() && bRight
+            );
 
-            if(pressure > maxPressure && canExplode){
-                if(state.is(GameState.State.paused)){
+            if(this.isPressureDamages()) {
+                if(state.is(GameState.State.paused)) {
                     Draw.rect(region, this.x, this.y);
-                }else{
+                } else{
                     Draw.rect(region, this.x, this.y, Mathf.random(-4, 4));
                 }
             }else{
                 Draw.rect(region, this.x, this.y);
             }
+
             this.drawTeamTop();
-
-
         }
     }
-/*@Struct
-    class PressureSpriteIndexStruct{
-        public boolean bottom;
-        public boolean top;
-        public boolean right;
-        public boolean left;
-    }*/
 }

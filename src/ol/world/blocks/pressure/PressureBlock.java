@@ -2,22 +2,20 @@ package ol.world.blocks.pressure;
 
 import arc.util.io.*;
 
-import mindustry.content.*;
-import mindustry.entities.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 
-import ol.gen.*;
 import ol.utils.pressure.*;
+import ol.world.blocks.pressure.meta.PressureAble;
+import ol.world.blocks.pressure.meta.PressureAbleBuild;
+import ol.world.blocks.pressure.meta.PressureModule;
 import ol.world.meta.*;
 
 import static arc.Core.*;
 import static ol.graphics.OlPal.*;
 
-public class PressureBlock extends Block {
-    public Effect explodeEffect = Fx.none;
-
+public class PressureBlock extends Block implements PressureAble {
     public float dangerPressure = -1;
     public float maxPressure = 100;
     public boolean canExplode = true;
@@ -25,24 +23,28 @@ public class PressureBlock extends Block {
 
     public PressureBlock(String name) {
         super(name);
-        update=true;
+
+        this.update = true;
+        this.destructible = true;
     }
 
-    @Override
-    public void setBars() {
+    @Override public void setBars() {
         super.setBars();
 
         if(canExplode) {
-            addBar("pressure", (PressureBlockBuild build) -> new Bar(
-                    () -> bundle.get("bar.pressure") + " " + (int) build.pressure(),
-                    () -> mixcol(oLPressureMin, oLPressure, build.getPressureProgress()),
-                    build::getPressureProgress
-            ));
+            addBar("pressure", (PressureBlockBuild build) -> {
+                float delta = build.pressure() / build.maxPressure();
+
+                return new Bar(
+                        () -> bundle.get("bar.pressure") + " " + (int) build.pressure(),
+                        () -> mixcol(oLPressureMin, oLPressure, delta),
+                        () -> delta
+                );
+            });
         }
     }
 
-    @Override
-    public void setStats() {
+    @Override public void setStats() {
         super.setStats();
 
         if(tier > 0){
@@ -54,97 +56,53 @@ public class PressureBlock extends Block {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public class PressureBlockBuild extends Building implements PressureAblecImpl{
-        //public float lag_counter = 0;
-        public float pressure = 0;
-        public PressureNet pressureNet;
+    @Override public boolean canExplode() {
+        return this.canExplode;
+    }
 
-        @Override
-        public PressureNet pressureNet(){
-            return pressureNet;
-        }
-        @Override
-        public void pressureNet(PressureNet pressureNet){
-            this.pressureNet = pressureNet;
-        }
-        @Override
-        public void add(){
-            boolean wasAdded = added;
-            super.add();
-            if (!wasAdded && added){
-                OlGroups.pressureAble.add(this);
+    @Override public float maxPressure() {
+        return this.maxPressure;
+    }
+
+    @Override public int tier() {
+        return this.tier;
+    }
+
+    public class PressureBlockBuild extends Building implements PressureAbleBuild {
+        public PressureModule pressureModule = new PressureModule();
+
+        public boolean isDanger() {
+            if(dangerPressure == -1) {
+                return false;
             }
+
+            return this.pressure() >= dangerPressure;
         }
 
-        @Override
-        public void remove(){
-            boolean wasAdded = added;
-            super.remove();
-            if (wasAdded && !added){
-                OlGroups.pressureAble.remove(this);
-            }
-        }
-        @Override
-        public PressureBlockBuild self() {
-            return this;
-        }
-
-        @Override
-        public void write(Writes write) {
+        @Override public void write(Writes write) {
             super.write(write);
-            write.f(pressure());
+            pressureModule.write(write);
         }
 
-        @Override
-        public void read(Reads read, byte revision) {
+        @Override public void read(Reads read, byte revision) {
             super.read(read, revision);
-            pressure(read.f());
+            pressureModule.read(read);
         }
 
-        @Override
-        public void updateTile() {
-            onUpdate();
-
-            //lag_counter--;
-            //if(lag_counter < 0) {
-            //    onUpdate(canExplode, maxPressure, explodeEffect);
-            //    lag_counter = Pressure.getPressureRendererProgress();
-            //}
+        @Override public void updateTile() {
+            this.executeDefaultUpdateTileScript();
         }
 
-        @Override
-        public float pressure() {
-            return pressure;
+        @Override public PressureModule getModule() {
+            return this.pressureModule;
         }
 
-        @Override
-        public void pressure(float pressure) {
-            this.pressure = pressure;
+        @Override public PressureAble asBlock() {
+            return PressureBlock.this;
         }
 
-        @Override
-        public float maxPressure() {
-            return maxPressure;
-        }
-
-        @Override
-        public boolean canExplode() {
-            return canExplode;
-        }
-
-        @Override
-        public Effect explodeEffect() {
-            return explodeEffect;
-        }
-
-        @Override
-        public int tier() {
-            return tier;
-        }
-
-        public float getPressureProgress() {
-            return pressure() / maxPressure();
+        @Override public Building asBuilding() {
+            return this;
         }
     }
 }

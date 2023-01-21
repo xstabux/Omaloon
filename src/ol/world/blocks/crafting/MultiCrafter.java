@@ -199,9 +199,9 @@ public class MultiCrafter extends PressureCrafter {
         removeBar("items");
 
         addBar("pressure", (PressureCrafterBuild b) -> {
-            float pressure = b.pressure / b.maxPressure();
+            float pressure = b.pressure() / b.maxPressure();
             return new Bar(
-                    () -> bundle.format("bar.pressureEfficient", (int)(b.pressure), (int)(b.efficenty() * 100 + 0.0001f)),
+                    () -> bundle.format("bar.pressureEfficient", (int)(b.pressure()), (int)(b.efficenty() * 100 + 0.0001f)),
                     () -> mixcol(oLPressureMin, oLPressure, pressure),
                     () -> pressure
             );
@@ -378,6 +378,8 @@ public class MultiCrafter extends PressureCrafter {
 
         @Override
         public void updateTile() {
+            this.executeDefaultUpdateTileScript();
+
             efficiency *= efficenty();
             if(efficiency > 0 && getCraft() != null) {
                 warmup = Mathf.approachDelta(warmup, 1f, getCraft().warmupSpeed);
@@ -436,16 +438,7 @@ public class MultiCrafter extends PressureCrafter {
             }
 
             effect = effectx * efficenty();
-        }
-
-        @Override
-        public boolean downPressure() {
-            return getCraft() != null && getCraft().downPressure;
-        }
-
-        @Override
-        public float downPercent() {
-            return getCraft() != null ? getCraft().downScl : 0f;
+            this.pressureModule.pressure += this.pressureThread();
         }
 
         public void dumpOutputs() {
@@ -476,6 +469,7 @@ public class MultiCrafter extends PressureCrafter {
                 crafts.get(0).drawer.draw(this);
             }
         }
+
         @Override
         public void drawLight() {
             if (getCraft() != null) {

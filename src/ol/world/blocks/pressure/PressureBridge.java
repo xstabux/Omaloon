@@ -8,6 +8,7 @@ import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.io.*;
+
 import mindustry.*;
 import mindustry.annotations.Annotations.*;
 import mindustry.core.*;
@@ -18,24 +19,24 @@ import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.world.*;
 import mindustry.world.meta.*;
-import ol.gen.*;
+
 import ol.graphics.*;
 import ol.utils.*;
 import ol.utils.pressure.*;
 import ol.world.blocks.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import static arc.graphics.g2d.Draw.*;
 import static mindustry.Vars.*;
 
+@SuppressWarnings("unchecked")
 public class PressureBridge extends PressureBlock implements PressureReplaceable{
     private static BuildPlan otherReq;
 
-    @Load("@-bridge")
-    public TextureRegion bridge;
-    @Load("@-end")
-    public TextureRegion bridgeEnd;
-    @Load("@-end2")
-    public TextureRegion bridgeEnd2;
+    @Load("@-bridge") public TextureRegion bridge;
+    @Load("@-end")    public TextureRegion bridgeEnd;
+    @Load("@-end2")   public TextureRegion bridgeEnd2;
     public float range = 2.5f * tilesize;
 
     public PressureBridge(String name){
@@ -53,25 +54,11 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         group = BlockGroup.transportation;
 
         config(Integer.class, (PressureBridgeBuild c, Integer link) -> {
-            if(c.link == link){
+            if(c.link == link) {
                 c.unlink();
-                if (c.pressureNet!=null){
-                    c.pressureNet.set(c);
-                    if(world.build(link) instanceof PressureAblec linkBuild){
-                        PressureNet newNet = new PressureNet();
-                        newNet.set(linkBuild);
-                        PressureUpdater.nets.add(newNet);
-                    }
-                }
-            }else{
-                if(world.build(link) instanceof PressureAblec linkBuild && c.pressureNet!=null){
-                    PressureNet oldNet = linkBuild.pressureNet();
-                    c.pressureNet.merge(oldNet);
-                    PressureUpdater.nets.remove(oldNet);
-                }
+            } else {
                 c.link = link;
             }
-//            Core.app.post(PressureRenderer::reload);
         });
 
         config(Point2.class, (PressureBridgeBuild tile, Point2 i) -> {
@@ -79,11 +66,12 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         });
     }
 
+    @Contract(pure = true)
     public static boolean collision(float x1, float y1, float x2, float y2, float radius){
         return Mathf.within(x1, y1, x2, y2, radius + 1f);
     }
 
-    public void drawBridge(Position self, Position other){
+    public void drawBridge(@NotNull Position self, @NotNull Position other){
         float sx = self.getX(), sy = self.getY();
         float ox = other.getX(), oy = other.getY();
 
@@ -146,15 +134,13 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         Draw.reset();
     }
 
-    @Override
-    public void setStats(){
+    @Override public void setStats(){
         super.setStats();
 
         stats.add(Stat.linkRange, range / tilesize, StatUnit.blocks);
     }
 
-    @Override
-    public void drawPlanConfigTop(BuildPlan plan, Eachable<BuildPlan> list){
+    @Override public void drawPlanConfigTop(BuildPlan plan, Eachable<BuildPlan> list){
         otherReq = null;
 
         list.each(other -> {
@@ -168,8 +154,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         }
     }
 
-    @Override
-    public void handlePlacementLine(Seq<BuildPlan> plans){
+    @Override public void handlePlacementLine(Seq<BuildPlan> plans){
         for(int i = 0; i < plans.size - 1; i++){
             var cur = plans.get(i);
             var next = plans.get(i + 1);
@@ -178,7 +163,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
                 Point2 config = new Point2(next.x - cur.x, next.y - cur.y);
                 cur.config = config;
 
-                if(world.build(cur.x, cur.y) instanceof PressureBridgeBuild bridgec){
+                if(world.build(cur.x, cur.y) instanceof PressureBridgeBuild bridgec) {
                     if(validLink(next, cur.x, cur.y)){
                         bridgec.configure(config);
                     }
@@ -187,11 +172,10 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         }
     }
 
-    @Override
-    public boolean canReplace(Block other){
+    @Override public boolean canReplace(Block other) {
         boolean valid = true;
-        if(other instanceof PressureBridge cond){
-            valid = PressureAPI.tierAble(cond, tier);
+        if(other instanceof PressureBridge cond) {
+            valid = PressureAPI.tierAble(cond.tier, tier);
         }
 
         return canBeReplaced(other) && valid;
@@ -205,34 +189,39 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         return collision(x, y, other.x, other.y, range / tilesize + 1);
     }
 
-    public boolean validLink(Building other, int x, int y){
-        if(other == null){
+    public boolean validLink(Building other, int x, int y) {
+        if(other == null) {
             return false;
         }
 
-        PressureBridgeBuild b2 = (PressureBridgeBuild)world.build(x, y);
+        PressureBridgeBuild b2;
+
+        try {
+            b2 = (PressureBridgeBuild) world.build(x, y);
+        } catch(ClassCastException exception) {
+            throw new RuntimeException("bridge is broken", exception);
+        }
 
         //null check
-        if(b2 == null){
+        if(b2 == null) {
             return false;
         }
 
         return collision(b2.x, b2.y, other.x, other.y, range) && other instanceof PressureBridgeBuild b &&
-                   (PressureAPI.tierAble(b2, b));
+                   (PressureAPI.tierAble(b2.tier(), b.tier()));
     }
 
     public boolean positionsValid(int x1, int y1, int x2, int y2){
-        if(x1 == x2){
+        if(x1 == x2) {
             return Math.abs(y1 - y2) <= range / tilesize;
-        }else if(y1 == y2){
+        }else if(y1 == y2) {
             return Math.abs(x1 - x2) <= range / tilesize;
-        }else{
+        }else {
             return false;
         }
     }
 
-    @Override
-    public void drawPlace(int x, int y, int rotation, boolean valid){
+    @Override public void drawPlace(int x, int y, int rotation, boolean valid){
         super.drawPlace(x, y, rotation, valid);
 
         Drawf.dashCircle(x * 8, y * 8, range, Pal.accent);
@@ -242,9 +231,16 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         return (int)(Mathf.dst(x1, y1, x2, y2) / tilesize);
     }
 
-    @Override
-    public void changePlacementPath(Seq<Point2> points, int rotation){
-        Placement.calculateNodes(points, this, rotation, (point, other) -> overlaps(world.tile(point.x, point.y), world.tile(other.x, other.y)));
+    @Override public void changePlacementPath(Seq<Point2> points, int rotation){
+        Placement.calculateNodes(
+                points,
+                this,
+                rotation,
+                (point, other) -> overlaps(
+                        world.tile(point.x, point.y),
+                        world.tile(other.x, other.y)
+                )
+        );
     }
 
     public boolean overlaps(@Nullable Tile src, @Nullable Tile other){
@@ -254,21 +250,15 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             Tmp.r1.setSize(size).setCenter(other.worldx() + offset, other.worldy() + offset));
     }
 
-    public class PressureBridgeBuild extends PressureBlockBuild implements Ranged{
+    public class PressureBridgeBuild extends PressureBlockBuild implements Ranged {
         public int link = -1;
 
         @Override
-        @SuppressWarnings("unchecked")
-        public PressureBridgeBuild self(){
-            return this;
-        }
-
-        @Override
-        public void updateTile(){
+        public void updateTile() {
             super.updateTile();
 
-            if(linked() && link() instanceof PressureBridgeBuild link32){
-                if(link32.linked(this) && linked(link32)){
+            if(linked() && link() instanceof PressureBridgeBuild link32) {
+                if(link32.linked(this) && linked(link32)) {
                     unlink();
                     link32.unlink();
                 }
@@ -276,19 +266,17 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         }
 
         @Override
-        public void drawSelect(){
+        public void drawSelect() {
             super.drawSelect();
 
-//            IntSeq tmp = Pools.get(IntSeq.class, IntSeq::new).obtain();
-            if(Vars.control.input.config.getSelected() != this){
+            if(Vars.control.input.config.getSelected() != this) {
                 drawWires();
             }
         }
 
-        private void drawWires(){
-
+        private void drawWires() {
             float s = size * 8 / 2f + 2f;
-            int range = (int)(range() / tilesize * 2);
+            int range = (int) (range() / tilesize * 2);
 
             for(int x = -range; x < range; x++){
                 for(int y = -range; y < range; y++){
@@ -361,20 +349,6 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             drawRange();
         }
 
-        @Override
-        public void nextBuildings(Building income, Cons<Building> consumer){
-            int range = (int)(range() / tilesize * 2);
-            for(int x = -range; x < range; x++){
-                for(int y = -range; y < range; y++){
-                    if(nearby(x, y) instanceof PressureBridgeBuild b && validLink(nearby(x, y), tileX(), tileY())){
-                        if(b != this && b.linked(this) || linked(b)) consumer.get(b);
-                    }
-                }
-            }
-            super.nextBuildings(income, consumer);
-
-        }
-
         public Building link(){
             if(link == -1){
                 return null;
@@ -397,8 +371,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             link = -1;
         }
 
-        @Override
-        public boolean onConfigureBuildTapped(Building other){
+        @Override public boolean onConfigureBuildTapped(Building other){
             if(link == other.pos()){
                 configure(other.pos());
                 deselect();
@@ -432,15 +405,14 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             return builds;
         }
 
-        @Override
-        public Seq<Building> children(){
-            Seq<Building> childs = super.children();
+        @Override public Seq<Building> proximityNeighbor() {
+            Seq<Building> childs = super.proximityNeighbor();
             for(PressureBridgeBuild b : validLinks(b -> b.linked(this) || linked(b))){
                 if(b == this){
                     continue;
                 }
 
-                if(PressureAPI.tierAble(b, this)){
+                if(PressureAPI.tierAble(b.tier(), tier)) {
                     childs.add(b);
                 }
             }
@@ -448,29 +420,24 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             return childs;
         }
 
-        @Override
-        public float range(){
+        @Override public float range(){
             return range;
         }
 
-        @Override
-        public Point2 config(){
+        @Override public Point2 config(){
             return Point2.unpack(link).sub(tile.x, tile.y);
         }
 
-        @Override
-        public byte version(){
+        @Override public byte version(){
             return 1;
         }
 
-        @Override
-        public void write(Writes write){
+        @Override public void write(Writes write){
             super.write(write);
             write.i(link);
         }
 
-        @Override
-        public void read(Reads read, byte revision){
+        @Override public void read(Reads read, byte revision){
             super.read(read, revision);
             link = read.i();
         }

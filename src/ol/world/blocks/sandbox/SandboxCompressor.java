@@ -10,9 +10,9 @@ import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 
-import ol.gen.*;
-import ol.utils.pressure.*;
 import ol.world.blocks.pressure.*;
+import ol.world.blocks.pressure.meta.PressureAbleBuild;
+import ol.world.blocks.pressure.meta.PressureModule;
 
 //maxPressure in this block is max value in the config (!!!)
 public class SandboxCompressor extends PressurePipe {
@@ -71,41 +71,32 @@ public class SandboxCompressor extends PressurePipe {
             return val == 0;
         }
 
-        @Override
-        public float pressureThread() {
-            return enabled ? (voidMode() ? Integer.MIN_VALUE : val) : 0;
+        @Override public PressureModule getModule() {
+            PressureModule falseModule = new PressureModule();
+            falseModule.pressure = this.voidMode() ? Integer.MIN_VALUE : val;
+            return falseModule;
         }
 
-        @Override
-        public void draw() {
+        @Override public void draw() {
             Draw.rect(voidMode() ? voidRegion : region, this.x, this.y, this.drawrot());
             this.drawTeamTop();
         }
 
-        @Override
-        public Integer config() {
+        @Override public Integer config() {
             return val;
         }
 
-        @Override
-        public void write(Writes write) {
+        @Override public void write(Writes write) {
             super.write(write);
             write.i(val);
         }
 
-        @Override
-        public void read(Reads read, byte revision) {
+        @Override public void read(Reads read, byte revision) {
             super.read(read, revision);
             val = read.i();
         }
 
-        @Override
-        public boolean producePressure() {
-            return true;
-        }
-
-        @Override
-        public void buildConfiguration(Table table) {
+        @Override public void buildConfiguration(Table table) {
             if(table == null) {
                 return;
             }
@@ -130,14 +121,10 @@ public class SandboxCompressor extends PressurePipe {
                         return false;
                     }
                 }).pad(6f).get().setText(val + "");
-
-                //added if it "crashed"
-                t.button(Icon.refresh, PressureUpdater::reload).width(40f).pad(6f);
             });
         }
 
-        @Override
-        public boolean inNet(Building b, PressureAblec p, boolean j) {
+        @Override public boolean inNet(Building b, PressureAbleBuild p, boolean junction) {
             return true;
         }
     }

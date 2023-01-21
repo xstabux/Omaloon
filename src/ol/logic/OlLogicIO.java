@@ -22,8 +22,8 @@ public class OlLogicIO {
 
     public static void load() {
         //pressure
-        registerStatement(OlStatements.PressureUnlinkStatement::new);
-        registerStatement(OlStatements.PressureReloadStatement::new);
+        //registerStatement(OlStatements.PressureUnlinkStatement::new);
+        //registerStatement(OlStatements.PressureReloadStatement::new);
 
         //comments
         registerStatement(OlStatements.CommentStatement::new);

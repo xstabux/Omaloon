@@ -1,7 +1,6 @@
 package ol.content.blocks;
 
 import arc.util.OS;
-import mindustry.Vars;
 import mindustry.entities.effect.RadialEffect;
 import mindustry.gen.Sounds;
 import mindustry.graphics.Layer;
@@ -12,12 +11,10 @@ import mindustry.world.draw.DrawDefault;
 import mindustry.world.draw.DrawFrames;
 import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.BuildVisibility;
-import ol.*;
 import ol.content.OlFx;
 import ol.content.OlLiquids;
 import ol.world.blocks.crafting.PressureCrafter;
 import ol.world.blocks.pressure.*;
-import ol.world.blocks.sandbox.PressureDebugger;
 import ol.world.blocks.sandbox.SandboxCompressor;
 
 import static mindustry.Vars.tilesize;
@@ -33,6 +30,8 @@ public class OlPressure {
             pressurePipe,
             improvedPressurePipe,
             reinforcedPressurePipe,
+            //releasers,
+            pressureReleaser,
             //counters
             pressureCounter,
             improvedPressureCounter,
@@ -144,6 +143,14 @@ public class OlPressure {
         }};
 
         //end pipes
+        //releasers
+
+        pressureReleaser = new PressureReleaser("pressure-releaser") {{
+            requirements(Category.power, ItemStack.with());
+            this.maxPressure = Float.MAX_VALUE;
+        }};
+
+        //end releasers
         //counters
 
         pressureCounter = new PressureCounter("pressure-counter") {{
@@ -196,13 +203,5 @@ public class OlPressure {
             range = 5.0f*tilesize;
             tier = 3;
         }};
-
-        //end bridges
-        if(OS.username.equals("TheEE145")) {
-            pressureDebugger = new PressureDebugger("pressure-debugger") {{
-                requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
-                size = 2;
-            }};
-        }
     }
 }

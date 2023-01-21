@@ -1,6 +1,5 @@
 package ol.world.blocks.crafting;
 
-import arc.func.Cons;
 import arc.math.*;
 import arc.struct.*;
 import arc.util.io.*;
@@ -13,16 +12,16 @@ import mindustry.world.blocks.production.*;
 import mindustry.world.meta.*;
 
 import ol.gen.*;
-import ol.utils.pressure.*;
-import ol.world.blocks.pressure.PressureBridge;
-import ol.world.blocks.pressure.PressureJunction;
+import ol.world.blocks.pressure.meta.ConsumePressure;
+import ol.world.blocks.pressure.meta.PressureAble;
+import ol.world.blocks.pressure.meta.PressureAbleBuild;
+import ol.world.blocks.pressure.meta.PressureModule;
 import ol.world.meta.*;
 
 import static arc.Core.*;
 import static ol.graphics.OlPal.*;
 
-public class PressureCrafter extends GenericCrafter {
-
+public class PressureCrafter extends GenericCrafter implements PressureAble {
     public int tier = -1;
     /**how many pressure crafter consumes*/
     public float pressureConsume = 0;
@@ -37,17 +36,15 @@ public class PressureCrafter extends GenericCrafter {
     public boolean downPressure;
     public float downPercent = 0.25f;
 
-    //boom
-    public Effect explodeEffect = Fx.none;
     public PressureCrafter(String name) {
         super(name);
 
         flags = EnumSet.of(BlockFlag.factory);
     }
 
-    @Override
-    public void setStats(){
+    @Override public void setStats() {
         super.setStats();
+
         if(showPressure) {
             stats.remove(Stat.productionTime);
         }
@@ -69,24 +66,23 @@ public class PressureCrafter extends GenericCrafter {
         }
     }
 
-    @Override
-    public void setBars() {
+    @Override public void setBars() {
         super.setBars();
 
         if(!showPressure && pressureConsume > 0) {
             addBar("pressure", (PressureCrafterBuild b) -> {
-                float pressure = b.pressure / b.maxPressure();
+                float pressure = b.pressure() / b.maxPressure();
                 return new Bar(
-                        () -> bundle.format("bar.pressureEfficient", (int) Math.floor(b.pressure), (int) (b.efficenty() * 100 + 0.0001f)),
+                        () -> bundle.format("bar.pressureEfficient", (int) Math.floor(b.pressure()), (int) (b.efficenty() * 100 + 0.0001f)),
                         () -> mixcol(oLPressureMin, oLPressure, pressure),
                         () -> pressure
                 );
             });
         } else {
             addBar("pressure", (PressureCrafterBuild b) ->{
-                float pressure = b.pressure / b.maxPressure();
+                float pressure = b.pressure() / b.maxPressure();
                 return new Bar(
-                        () -> bundle.get("bar.pressure") + " " + (int)(b.pressure),
+                        () -> bundle.get("bar.pressure") + " " + (int)(b.pressure()),
                         () -> mixcol(oLPressureMin, oLPressure, pressure),
                         () -> pressure
                 );
@@ -94,116 +90,57 @@ public class PressureCrafter extends GenericCrafter {
         }
     }
 
-    public class PressureCrafterBuild extends GenericCrafterBuild implements PressureAblecImpl{
-        public PressureNet pressureNet;
-
-        @Override
-        public PressureNet pressureNet(){
-            return pressureNet;
-        }
-        @Override
-        public void pressureNet(PressureNet pressureNet){
-            this.pressureNet = pressureNet;
+    @Override public void init() {
+        if(this.pressureConsume > 0) {
+            this.consumeBuilder.add(new ConsumePressure() {{
+                this.pressureConsume = PressureCrafter.this.pressureConsume;
+            }});
         }
 
-        public float pressure;
+        super.init();
+    }
+
+    @Override public boolean canExplode() {
+        return this.canExplode;
+    }
+
+    @Override public float maxPressure() {
+        return this.maxPressure;
+    }
+
+    @Override public int tier() {
+        return this.tier;
+    }
+
+    public class PressureCrafterBuild extends GenericCrafterBuild implements PressureAbleBuild {
+        public PressureModule pressureModule = new PressureModule();
         public float effect;
         public float effectx;
 
-        @Override
-        public void add(){
-            boolean wasAdded = added;
-            super.add();
-            if (!wasAdded && added){
-                OlGroups.pressureAble.add(this);
-            }
-        }
-
-        @Override
-        public void remove(){
-            boolean wasAdded = added;
-            super.remove();
-            if (wasAdded && !added){
-                OlGroups.pressureAble.remove(this);
-            }
-        }
-
-        @Override
-        public boolean inNet(Building b, PressureAblec p, boolean j) {
-            return !(b instanceof PressureCrafterBuild);
-        }
-
-        @Override
-        public void write(Writes write) {
+        @Override public void write(Writes write) {
             super.write(write);
-            write.f(pressure);
+            pressureModule.write(write);
         }
 
-        @Override
-        public void read(Reads read, byte revision) {
+        @Override public void read(Reads read, byte revision) {
             super.read(read, revision);
-            pressure = read.f();
+            pressureModule.read(read);
         }
 
-        @Override
-        @SuppressWarnings("unchecked")
-        public PressureCrafterBuild self() {
+        @Override public PressureModule getModule() {
+            return pressureModule;
+        }
+
+        @Override public PressureAble asBlock() {
+            return PressureCrafter.this;
+        }
+
+        @Override public Building asBuilding() {
             return this;
         }
 
-        @Override
-        public float pressure() {
-            return pressure;
-        }
-
-        @Override
-        public void draw() {
-            /*don't work: if(!squareSprite) {
-                for(Building b : proximity) {
-                    if(b instanceof PressureAble<?> pressureAble && pressureAble.inNet(b, false) && !(b instanceof PressureCrafterBuild)) {
-                        Draw.draw(Layer.max, () -> {
-                            Draw.rect(
-                                    b.block.region,
-                                    b.x + (b.x > x ? -8 : 8),
-                                    b.y + (b.y > y ? -8 : 8),
-                                    b.drawrot()
-                            );
-                        });
-                    }
-                }
-            }*/
-
-            super.draw();
-        }
-
-        @Override
-        public void pressure(float pressure) {
-            this.pressure = pressure;
-        }
-
-        @Override
-        public boolean online() {
+        @Override public boolean online() {
             return pressureConsume() > 0 || pressureProduce() > 0;
-        }
-
-        @Override
-        public float pressureThread() {
-            return (pressureProduce() * (effect / 100) * efficenty()) -
-                    (downPressure() && status() == BlockStatus.active ? (pressureConsume() * downPercent()) : 0);
-        }
-
-        @Override
-        public boolean downPressure() {
-            return downPressure;
-        }
-
-        public float downPercent() {
-            return downPercent;
-        }
-
-        @Override
-        public float calculatePressureDown() {
-            return pressureConsume() * downPercent() * (canConsume() ? 1 : 0);
         }
 
         public float pressureConsume() {
@@ -214,19 +151,17 @@ public class PressureCrafter extends GenericCrafter {
             return pressureProduce;
         }
 
-        @Override
-        public float maxPressure() {
-            return maxPressure;
+        public boolean downPressure() {
+            return downPressure;
         }
 
-        @Override
-        public boolean canExplode() {
-            return canExplode;
+        public float downPercent() {
+            return downPercent;
         }
 
-        @Override
-        public Effect explodeEffect() {
-            return explodeEffect;
+        public float pressureThread() {
+            return (pressureProduce() * (effect / 100) * efficenty()) -
+                    (downPressure() && status() == BlockStatus.active ? (pressureConsume() * downPercent()) : 0);
         }
 
         @Override
@@ -236,11 +171,7 @@ public class PressureCrafter extends GenericCrafter {
             }
 
             super.craft();
-        }
-
-        @Override
-        public int tier() {
-            return tier;
+            this.pressureModule.pressure += this.pressureThread();
         }
 
         @Override
@@ -254,7 +185,7 @@ public class PressureCrafter extends GenericCrafter {
                 return SUPER;
             }
 
-            return pressure <= 0 ? BlockStatus.noInput : SUPER;
+            return this.pressure() <= 0 ? BlockStatus.noInput : SUPER;
         }
 
         public float efficenty() {
@@ -262,7 +193,7 @@ public class PressureCrafter extends GenericCrafter {
                 return 1;
             }
 
-            return Math.max(Math.min(pressure/pressureConsume(), 2), 0);
+            return Math.max(Math.min(this.pressure()/pressureConsume(), 2), 0);
         }
 
         public float handleProgress() {
@@ -275,6 +206,8 @@ public class PressureCrafter extends GenericCrafter {
 
         @Override
         public void updateTile() {
+            this.executeDefaultUpdateTileScript();
+
             progress += this.handleProgress();
             totalProgress += this.handleTotalProgress();
 
@@ -311,9 +244,8 @@ public class PressureCrafter extends GenericCrafter {
             effect = effectx * efficenty();
         }
 
-        @Override
-        public boolean producePressure() {
-            return pressureProduce() > 0;
+        @Override public boolean inNet(Building b, PressureAbleBuild p, boolean junction) {
+            return !(b instanceof PressureCrafterBuild);
         }
     }
 }
