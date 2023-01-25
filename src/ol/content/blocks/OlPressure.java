@@ -147,7 +147,8 @@ public class OlPressure {
 
         pressureReleaser = new PressureReleaser("pressure-releaser") {{
             requirements(Category.power, ItemStack.with());
-            this.maxPressure = Float.MAX_VALUE;
+            this.dangerPressure = 44;
+            this.maxPressure = 50;
         }};
 
         //end releasers

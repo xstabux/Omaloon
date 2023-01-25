@@ -18,6 +18,7 @@ import ol.graphics.OlPal;
 import ol.utils.Angles;
 
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
+import org.jetbrains.annotations.NotNull;
 
 import static mindustry.Vars.*;
 
@@ -31,7 +32,7 @@ public class PressureCounter extends PressurePipe implements ImageGenerator {
         mapDraw = true;
     }
 
-    @Override public boolean inBuildPlanNet(BuildPlan s, int x, int y, int ignored) {
+    @Override public boolean inBuildPlanNet(@NotNull BuildPlan s, int x, int y, int ignored) {
         int ox = s.x - x;
         int oy = s.y - y;
 
@@ -43,7 +44,7 @@ public class PressureCounter extends PressurePipe implements ImageGenerator {
         return (ox == 1) ? Angles.alignX(s.rotation) : Angles.alignY(s.rotation);
     }
 
-    @Override public Pixmap generate(Pixmap icon, PixmapProcessor processor){
+    @Override public Pixmap generate(Pixmap icon, @NotNull PixmapProcessor processor){
         PixmapProcessor.drawCenter(icon,processor.get(arrowRegion));
         return ImageGenerator.super.generate(icon, processor);
     }
@@ -113,31 +114,7 @@ public class PressureCounter extends PressurePipe implements ImageGenerator {
         }
 
         @Override public boolean inNet(Building b, PressureAbleBuild p, boolean junction) {
-            Building self = self();
-
-            int delta = 1;
-            if(junction) {
-                delta++;
-            }
-
-            int tx = self.tileX();
-            int ty = self.tileY();
-
-            Tile left = world.tile(tx - delta, ty);
-            Tile right = world.tile(tx + delta, ty);
-
-            if((left.build == b || right.build == b) && !Angles.alignX(rotation)) {
-                return false;
-            }
-
-            Tile top = world.tile(tx, ty + delta);
-            Tile bottom = world.tile(tx, ty - delta);
-
-            if((top.build == b || bottom.build == b) && !Angles.alignY(rotation)) {
-                return false;
-            }
-
-            return p.online() && (p.tier() == -1 || p.tier() == tier());
+            return this.COUNTER_IN_NET_CALL(b, p, junction);
         }
     }
 }

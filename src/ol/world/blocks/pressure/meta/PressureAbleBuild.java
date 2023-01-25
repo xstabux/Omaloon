@@ -67,6 +67,34 @@ public interface PressureAbleBuild {
         return new Seq<>();
     }
 
+    default boolean COUNTER_IN_NET_CALL(Building b, PressureAbleBuild p, boolean junction) {
+        Building self = asBuilding();
+
+        int delta = 1;
+        if(junction) {
+            delta++;
+        }
+
+        int tx = self.tileX();
+        int ty = self.tileY();
+
+        Tile left = world.tile(tx - delta, ty);
+        Tile right = world.tile(tx + delta, ty);
+
+        if((left.build == b || right.build == b) && !Angles.alignX(self.rotation)) {
+            return false;
+        }
+
+        Tile top = world.tile(tx, ty + delta);
+        Tile bottom = world.tile(tx, ty - delta);
+
+        if((top.build == b || bottom.build == b) && !Angles.alignY(self.rotation)) {
+            return false;
+        }
+
+        return p.online() && (p.tier() == -1 || p.tier() == tier());
+    }
+
     default boolean inNet(Building b, PressureAbleBuild p, boolean junction) {
         if(b == null) {
             return false;
