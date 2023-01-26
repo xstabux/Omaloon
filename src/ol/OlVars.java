@@ -46,10 +46,11 @@ public class OlVars extends ModVars {
 
     @Override
     public void loadContent() {
-        OlItems          .load();
-        OlStatusEffects  .load();
-        OlLiquids        .load();
-        OlBlocks         .load();
-        OlPlanets        .load();
+        OlItems.load();
+        OlStatusEffects.load();
+        OlLiquids.load();
+        OlBlocks.load();
+        OlUnits.load();
+        OlPlanets.load();
     }
 }
