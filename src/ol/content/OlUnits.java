@@ -60,6 +60,7 @@ public class OlUnits {
                      new Weapon(name + "-w1"){{
                          layerOffset = -0.01f;
                          mirror = true;
+                         alternate = false;
                          x = 2.8f; y = 9.8f;
                      }},
                      new Weapon(name + "-w2"){{
