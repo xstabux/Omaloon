@@ -70,7 +70,7 @@ public class OlUnits {
                          x = 2.8f; y = 9.8f;
                          reload = 19f;
                          smoothReloadSpeed = 0.3f;
-                         bullet = new BasicBulletType(2.5f, 9){{
+                         bullet = new BasicBulletType(2.5f, 5){{
                              width = 7f;
                              height = 9f;
                              lifetime = 40f;
@@ -88,15 +88,13 @@ public class OlUnits {
                          smoothReloadSpeed = 0.5f;
                          shootSound = Sounds.missile;
 
-                         bullet = new MissileBulletType(3f, 3){{
+                         bullet = new MissileBulletType(3f, 4){{
                              width = 6f;
                              height = 6f;
                              shrinkY = 0f;
-                             drag = -0.003f;
                              homingRange = 60f;
-                             keepVelocity = false;
                              splashDamageRadius = 25f;
-                             splashDamage = 15f;
+                             splashDamage = 5f;
                              lifetime = 45f;
                              trailColor = Color.valueOf("90efbf");
                              backColor = Color.valueOf("90efbf");
