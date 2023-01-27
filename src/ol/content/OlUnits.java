@@ -1,6 +1,12 @@
 package ol.content;
 
+import arc.graphics.Color;
+import mindustry.content.Fx;
+import mindustry.entities.bullet.BasicBulletType;
+import mindustry.entities.bullet.MissileBulletType;
+import mindustry.gen.Sounds;
 import mindustry.graphics.Layer;
+import mindustry.graphics.Pal;
 import mindustry.type.*;
 
 import ol.type.units.ornitopter.Blade;
@@ -62,14 +68,47 @@ public class OlUnits {
                          mirror = true;
                          alternate = false;
                          x = 2.8f; y = 9.8f;
+                         reload = 19f;
+                         smoothReloadSpeed = 0.3f;
+                         bullet = new BasicBulletType(2.5f, 9){{
+                             width = 7f;
+                             height = 9f;
+                             lifetime = 40f;
+                             shootEffect = Fx.shootSmall;
+                             smokeEffect = Fx.shootSmallSmoke;
+                             ammoMultiplier = 2;
+                             trailLength = 6;
+                         }};
                      }},
                      new Weapon(name + "-w2"){{
                          layerOffset = 1f;
                          mirror = true;
                          x = 5; y = 2f;
+                         reload = 30f;
+                         smoothReloadSpeed = 0.5f;
+                         shootSound = Sounds.missile;
+
+                         bullet = new MissileBulletType(3f, 3){{
+                             width = 6f;
+                             height = 6f;
+                             shrinkY = 0f;
+                             drag = -0.003f;
+                             homingRange = 60f;
+                             keepVelocity = false;
+                             splashDamageRadius = 25f;
+                             splashDamage = 15f;
+                             lifetime = 45f;
+                             trailColor = Color.valueOf("90efbf");
+                             backColor = Color.valueOf("90efbf");
+                             frontColor = Color.valueOf("90efbf");
+                             hitEffect = Fx.blastExplosion;
+                             despawnEffect = Fx.blastExplosion;
+                             weaveScale = 6f;
+                             weaveMag = 1f;
+                         }};
                      }}
              );
-             hitSize = 13;
+             hitSize = 16;
          }};
      }
 }
