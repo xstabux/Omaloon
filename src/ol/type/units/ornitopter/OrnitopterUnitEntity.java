@@ -35,7 +35,6 @@ public class OrnitopterUnitEntity extends UnitEntity {
 
         // Slows down rotor when dying
         if (dead || health() <= 0) {
-            rotation += Time.delta * (type.spinningFallSpeed * vel().len()) * Mathf.signs[id % 2];
             if (Mathf.chanceDelta(type.fallSmokeChance)) {
                 Fx.fallSmoke.at(rX, rY);
                 Fx.burning.at(rX, rY);

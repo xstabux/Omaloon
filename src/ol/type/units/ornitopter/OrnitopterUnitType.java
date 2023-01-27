@@ -14,7 +14,6 @@ import ol.world.draw.*;
 public class OrnitopterUnitType extends UnitType {
     public final Seq<Blade> blade = new Seq<>();
 
-    public float spinningFallSpeed = 0.5f;
     public float bladeDeathMoveSlowdown = 0.01f;
     public float fallSmokeX = 0f, fallSmokeY = -5f, fallSmokeChance = 0.1f;
 
