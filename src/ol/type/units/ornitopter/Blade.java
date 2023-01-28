@@ -6,7 +6,7 @@ import arc.graphics.g2d.*;
 import mindustry.io.*;
 
 public class Blade {
-    public final String name;
+    public final String spriteName;
     public TextureRegion bladeRegion, blurRegion, bladeOutlineRegion, shadeRegion;
 
     /** Rotor offsets from the unit */
@@ -29,13 +29,14 @@ public class Blade {
     public int bladeCount = 1;
 
     public Blade(String name) {
-        this.name = name;
+        this.spriteName = name;
     }
 
     public static class BladeMount {
-        public final Blade blade;
+        public Blade blade;
         public float bladeRotation;
         public float bladeBlurRotation;
+        public long seed;
 
         public BladeMount(Blade blade) {
             this.blade = blade;
@@ -43,13 +44,13 @@ public class Blade {
     }
 
     public void load() {
-        bladeRegion = Core.atlas.find(name);
-        blurRegion = Core.atlas.find(name + "-blur");
-        bladeOutlineRegion = Core.atlas.find(name + "-outline");
-        shadeRegion = Core.atlas.find(name + "-shade");}
+        bladeRegion = Core.atlas.find(spriteName);
+        blurRegion = Core.atlas.find(spriteName + "-blur");
+        bladeOutlineRegion = Core.atlas.find(spriteName + "-outline");
+        shadeRegion = Core.atlas.find(spriteName + "-shade");}
 
     // For mirroring
     public Blade copy() {
-        return JsonIO.copy(this, new Blade(name));
+        return JsonIO.copy(this, new Blade(spriteName));
     }
 }

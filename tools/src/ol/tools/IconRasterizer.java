@@ -1,37 +1,39 @@
 package ol.tools;
 
-import arc.Graphics;
 import arc.*;
 import arc.backend.sdl.SdlApplication.*;
-import arc.backend.sdl.*;
 import arc.files.*;
-import arc.graphics.Color;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.graphics.gl.*;
-import arc.mock.*;
 import arc.util.*;
+import ol.tools.shapes.*;
 
+import javax.imageio.*;
 import java.awt.*;
 import java.awt.image.*;
+import java.io.*;
 import java.util.*;
-
-import static arc.Core.batch;
 
 public class IconRasterizer{
     Graphics2D out = null;
     BufferedImage outImage = null;
     float width, height;
+    private float scl,cellSize;
 
     public static void main(String[] inputArgs){
         try{
             executeMain(inputArgs);
         }catch(SdlError error){
             Log.warn("Cannot run " + IconRasterizer.class.getSimpleName() + ", reason: @", Strings.getStackTrace(error));
+        }catch(IOException e){
+            RuntimeException exception = new RuntimeException(e.getMessage());
+            exception.setStackTrace(e.getStackTrace());
+            throw exception;
         }
     }
 
-    private static void executeMain(String[] inputArgs){
+    private static void executeMain(String[] inputArgs) throws IOException{
         int[] sizes = new int[Structs.count(inputArgs, Strings::canParseInt)];
 
         for(int i = 0, sizeI = 0; i < inputArgs.length; i++){
@@ -49,7 +51,7 @@ public class IconRasterizer{
         **/
         Fi rootDirectory = Fi.get("../../../assets-raw");
         if(Core.atlas == null){
-            rootDirectory = Fi.get("resources/assets-raw");
+            rootDirectory = Fi.get("core/assets-raw");
         }
 //        System.out.println(rootDirectory.file().getAbsoluteFile().getAbsoluteFile().getAbsolutePath());
 //        if (true) throw null;
@@ -60,26 +62,7 @@ public class IconRasterizer{
         Fi[] list = rootDirectory.child("icons").list();
 
 //        Seq<Fi> files = new Seq<>();
-        Batch prevBatch = batch;
-        Graphics prefGraphics = Core.graphics;
-        Application prevApp = Core.app;
-        TextureAtlas prevAtlas = Core.atlas;
-        Core.graphics = new MockGraphics();
-        Core.app = new MockApplication();
-        Core.gl = Core.gl20 = /*gl20 =*/ new SdlGL20();
-/*        if (!Core.atlas.find("white").found()) {
-            Core.atlas.addRegion("write", Pixmaps.blankTextureRegion());
-            TextureAtlas.AtlasRegion white = Core.atlas.find("white");
-            Reflect.set(Core.atlas, "white", white);
-        }*/
-        long window = GlSetup.init();
 
-        Core.atlas = TextureAtlas.blankAtlas();
-        batch = new SpriteBatch();
-
-//        Fill.rect(0, 0, 1, 1);
-        Reflect.set(Batch.class, batch, "lastTexture", Core.atlas.white().texture);
-        System.out.println(rootDirectory.child("list::").absolutePath());
         for(Fi img : list){
             System.out.println(img);
             if(img.extension().equals("png")){
@@ -87,8 +70,16 @@ public class IconRasterizer{
                 String fileName = img.nameWithoutExtension()/*.replace("icon-", "")*/;
 //                dst.copyTo(iconsPartFolder.child(dst.name()));
                 //dst.copyTo(svgOutputFolder.child(dst.name()));
+                BufferedImage image = ImageIO.read(img.file());
+                Pixmap pixmap = new Pixmap(image.getWidth(),image.getHeight());
+                for(int x = 0; x < pixmap.width; x++){
+                    for(int y = 0; y < pixmap.height; y++){
+                        pixmap.set(x,y,Tmp.c1.argb8888(image.getRGB(x,y)));
+                    }
+                }
+
                 for(int size : sizes){
-                    new IconRasterizer().convert(new Pixmap(img), size, svgOutputFolder.child(fileName + "-" + size + ".png"));
+                    new IconRasterizer().convert(pixmap.copy(), size, svgOutputFolder.child(fileName + "-" + size + ".png"));
                     /*Main main = new Main(new String[]{
 //                    "-d",svgOutputFolder.absolutePath()+"/"+dst.nameWithoutExtension()+"-"+size+".png",
                     "-w", size + "",
@@ -107,17 +98,44 @@ public class IconRasterizer{
         for(Fi fi : svgOutputFolder.list()){
             fi.copyTo(svgIcons.child(fi.name()));
         }
-
-        GlSetup.disable(window);
-        batch = prevBatch;
-        Core.atlas = prevAtlas;
-        Core.app = prevApp;
-        Core.graphics = prefGraphics;
         Log.info("Done converting icons in &lm@&lgs.", Time.elapsed() / 1000f);
 //        System.exit(0);
     }
 
     void convert(Pixmap pixmap, int size, Fi output){
+
+
+        width = pixmap.width;
+        height = pixmap.height;
+        cellSize=size;
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        out= (Graphics2D)image.getGraphics();
+        out.setRenderingHint(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_QUALITY);
+        out.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+//        out.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+//        out.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        marchingSquare(pixmap,size/(width)/2);
+
+
+        System.out.println(output.absolutePath());
+        Pixmap pix = new Pixmap(image.getWidth(), image.getHeight());
+        pix.each((x,y)->{
+            int argb=image.getRGB(x,y);
+
+            Tmp.c1.argb8888(argb);
+            pix.set(x,y,Tmp.c1);
+        });
+
+        output.writePng(pix);
+
+
+//        out = null;
+//        outImage = null;
+//        output.writeString(out.toString());
+    }
+
+    private void marchingSquare(Pixmap pixmap, float halfScale){
+        scl=halfScale*2;
         boolean[][] grid = new boolean[pixmap.width][pixmap.height];
 
         for(int x = 0; x < pixmap.width; x++){
@@ -125,45 +143,31 @@ public class IconRasterizer{
                 grid[x][pixmap.height - 1 - y] = !pixmap.empty(x, y);
             }
         }
+        float scl=halfScale*2;
 
-        float xscl = 1f, yscl = 1f;//resolution / (float)pixmap.getWidth(), yscl = resolution / (float)pixmap.getHeight();
-        float scl = xscl;
-
-        width = pixmap.width;
-        height = pixmap.height;
-        FrameBuffer buffer = new FrameBuffer(size, size);
-        Texture.TextureFilter filter = Texture.TextureFilter.linear;
-        buffer.getTexture().setFilter(filter, filter);
-        buffer.begin(Color.clear);
-//        outImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-//        out = (Graphics2D) outImage.getGraphics();
-//        out.setColor(Color.WHITE);
-//        float scaleX = outImage.getWidth() / width;
-//        float scaleY = outImage.getHeight() / height;
-//        Draw.scl(scaleX, scaleY);
-        Draw.proj(0, 0, width, height);
+        //resolution / (float)pixmap.getWidth(), scl = resolution / (float)pixmap.getHeight();
         for(int x = -1; x < pixmap.width; x++){
             for(int y = -1; y < pixmap.height; y++){
                 int index = index(x, y, pixmap.width, pixmap.height, grid);
 
-                float leftx = x * xscl, boty = y * yscl, rightx = x * xscl + xscl, topy = y * xscl + yscl,
-                    midx = x * xscl + xscl / 2f, midy = y * yscl + yscl / 2f;
+                float leftx = x * scl, boty = y * scl, rightx = x * scl + scl, topy = y * scl + scl,
+                midx = x * scl + halfScale, midy = y * scl + halfScale;
 
                 switch(index){
                     case 0:
                         break;
                     case 1:
                         tri(
-                            leftx, midy,
-                            leftx, topy,
-                            midx, topy
+                        leftx, midy,
+                        leftx, topy,
+                        midx, topy
                         );
                         break;
                     case 2:
                         tri(
-                            midx, topy,
-                            rightx, topy,
-                            rightx, midy
+                        midx, topy,
+                        rightx, topy,
+                        rightx, midy
                         );
                         break;
                     case 3:
@@ -171,9 +175,9 @@ public class IconRasterizer{
                         break;
                     case 4:
                         tri(
-                            midx, boty,
-                            rightx, boty,
-                            rightx, midy
+                        midx, boty,
+                        rightx, boty,
+                        rightx, midy
                         );
                         break;
                     case 5:
@@ -181,16 +185,16 @@ public class IconRasterizer{
 
                         //7
                         tri(
-                            leftx, midy,
-                            midx, midy,
-                            midx, boty
+                        leftx, midy,
+                        midx, midy,
+                        midx, boty
                         );
 
                         //13
                         tri(
-                            midx, topy,
-                            midx, midy,
-                            rightx, midy
+                        midx, topy,
+                        midx, midy,
+                        rightx, midy
                         );
 
                         rect(leftx, midy, scl / 2f, scl / 2f);
@@ -203,9 +207,9 @@ public class IconRasterizer{
                     case 7:
                         //invert triangle
                         tri(
-                            leftx, midy,
-                            midx, midy,
-                            midx, boty
+                        leftx, midy,
+                        midx, midy,
+                        midx, boty
                         );
 
                         //3
@@ -215,9 +219,9 @@ public class IconRasterizer{
                         break;
                     case 8:
                         tri(
-                            leftx, boty,
-                            leftx, midy,
-                            midx, boty
+                        leftx, boty,
+                        leftx, midy,
+                        midx, boty
                         );
                         break;
                     case 9:
@@ -228,16 +232,16 @@ public class IconRasterizer{
 
                         //11
                         tri(
-                            midx, boty,
-                            midx, midy,
-                            rightx, midy
+                        midx, boty,
+                        midx, midy,
+                        rightx, midy
                         );
 
                         //14
                         tri(
-                            leftx, midy,
-                            midx, midy,
-                            midx, topy
+                        leftx, midy,
+                        midx, midy,
+                        midx, topy
                         );
 
                         rect(midx, midy, scl / 2f, scl / 2f);
@@ -248,9 +252,9 @@ public class IconRasterizer{
                         //invert triangle
 
                         tri(
-                            midx, boty,
-                            midx, midy,
-                            rightx, midy
+                        midx, boty,
+                        midx, midy,
+                        rightx, midy
                         );
 
                         //3
@@ -265,9 +269,9 @@ public class IconRasterizer{
                         //invert triangle
 
                         tri(
-                            midx, topy,
-                            midx, midy,
-                            rightx, midy
+                        midx, topy,
+                        midx, midy,
+                        rightx, midy
                         );
 
                         //12
@@ -279,9 +283,9 @@ public class IconRasterizer{
                         //invert triangle
 
                         tri(
-                            leftx, midy,
-                            midx, midy,
-                            midx, topy
+                        leftx, midy,
+                        midx, midy,
+                        midx, topy
                         );
 
                         //12
@@ -295,14 +299,6 @@ public class IconRasterizer{
                 }
             }
         }
-        buffer.end();
-        System.out.println(output.absolutePath());
-        output.writePng(toPixmap(buffer));
-
-
-//        out = null;
-//        outImage = null;
-//        output.writeString(out.toString());
     }
 
     public Pixmap toPixmap(FrameBuffer buffer){
@@ -327,11 +323,22 @@ public class IconRasterizer{
     void tri(float x1, float y1, float x2, float y2, float x3, float y3){
 //        float scaleX = outImage.getWidth() / width;
 //        float scaleY = outImage.getHeight() / height;
-        Fill.tri(
+        if (out!=null){
+            float offsetX=scl/2f,offsetY=scl/2f;
+
+            out.fill(new Tri(
+            Tmp.v1.set(x1+offsetX, flip(y1+offsetY)),
+            Tmp.v2.set(x2+offsetX, flip(y2+offsetY)),
+            Tmp.v3.set(x3+offsetX, flip(y3+offsetY))
+            ));
+        }else{
+            Fill.tri(
             x1 + 0.5f, flip(y1 + 0.5f),
             x2 + 0.5f, flip(y2 + 0.5f),
             x3 + 0.5f, flip(y3 + 0.5f)
-        );
+            );
+        }
+
        /* Tri tri = new Tri(
                 new Vec2(x1 + 0.5f, flip(y1 + 0.5f)).scl(scaleX, scaleY),
                 new Vec2(x2 + 0.5f, flip(y2 + 0.5f)).scl(scaleX, scaleY),
@@ -343,14 +350,28 @@ public class IconRasterizer{
 
     void rect(float x1, float y1, float width, float height){
 //        Fill.quad(x1 + 0.5f, flip(y1 + 0.5f), width, height);
-        float x = x1 + 0.5f;
-        float y = flip(y1 + 0.5f);
-        Fill.quad(
+        if (out!=null){
+            JustPoly poly = new JustPoly(4);
+
+            float x = x1 +scl/2;
+            float y = flip(y1 +scl/2);
+            poly.setAll(
+            Tmp.v1.set(x, y),
+            Tmp.v2.set(x + width, y),
+            Tmp.v3.set(x + width, y + height),
+            Tmp.v4.set(x, y + height)
+            );
+            out.fill(poly);
+        } else{
+            float x = x1 + 0.5f;
+            float y = flip(y1 + 0.5f);
+            Fill.quad(
             x, y,
             x + width, y,
             x + width, y + height,
             x, y + height
-        );
+            );
+        }
         /*float scaleX = outImage.getWidth() / width;
         float scaleY = outImage.getHeight() / height;
         Square square = new Square(
