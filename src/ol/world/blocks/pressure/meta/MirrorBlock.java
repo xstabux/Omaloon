@@ -42,7 +42,7 @@ public class MirrorBlock extends Block {
             Building aa = this.nearby(this.rotation);
             Building bb = this.antiNearby();
 
-            if(bb != null && aa instanceof PressureAbleBuild) {
+            if(bb != null && aa instanceof PressureAbleBuild && this.canConsume()) {
                 if(bb instanceof PressureAbleBuild && this.active()) {
                     this.updateNearby(aa);
                     this.updateAntiNearby(bb);
