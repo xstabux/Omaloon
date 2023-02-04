@@ -92,7 +92,7 @@ public interface PressureAbleBuild {
             return false;
         }
 
-        return p.online() && (p.tier() == -1 || p.tier() == tier());
+        return p.online() && (p.tier() == PressureAPI.NULL_TIER || p.tier() == tier());
     }
 
     default boolean inNet(Building b, PressureAbleBuild p, boolean junction) {
@@ -186,7 +186,7 @@ public interface PressureAbleBuild {
         this.checkComp();
 
         if(this.isPressureDamages()) {
-            float overload = this.pressure() / (float) this.maxPressure();
+            float overload = this.pressure() / this.maxPressure();
             return this.pressureDamage() * overload;
         }
 
