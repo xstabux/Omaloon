@@ -165,6 +165,7 @@ public class OlPressure {
             tmp1(this);
             this.dangerPressure = 44;
             this.maxPressure = 50;
+            this.tier = 1;
         }};
 
         //end releasers
