@@ -49,7 +49,10 @@ public class PressureReleaser extends PressurePipe {
             super.updateTile();
 
             if(this.opened || (this.auto && this.isDanger())) {
-                this.pressureModule.pressure -= releasePower;
+                if(this.pressure() > 0) {
+                    this.pressureModule.pressure -= releasePower;
+                }
+
                 this.needAngle = 90;
             } else {
                 needAngle = 0;

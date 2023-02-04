@@ -24,6 +24,7 @@ import mindustry.world.consumers.*;
 
 import ol.ui.*;
 import ol.utils.*;
+import ol.world.blocks.pressure.meta.ConsumePressureDynamic;
 import ol.world.meta.*;
 
 import static arc.Core.*;
@@ -233,6 +234,19 @@ public class MultiCrafter extends PressureCrafter {
     @Override
     public void getRegionsToOutline(Seq<TextureRegion> out) {
         crafts.get(0).drawer.getRegionsToOutline(this, out);
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        this.consume(new ConsumePressureDynamic(build -> {
+            if(build instanceof MultiCrafterBuild crafter) {
+                return crafter.pressureConsume();
+            }
+
+            return 0F;
+        }));
     }
 
     @Override

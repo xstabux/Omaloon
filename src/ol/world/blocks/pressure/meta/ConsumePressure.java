@@ -4,7 +4,7 @@ import mindustry.gen.Building;
 import mindustry.world.consumers.Consume;
 
 public class ConsumePressure extends Consume {
-    public boolean mulEfficiency = false;
+    public boolean mulEfficiency = true;
     public float pressureConsume = 0;
 
     public ConsumePressure() {
