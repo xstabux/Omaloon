@@ -237,6 +237,7 @@ public class OlPressure {
 
         pressureLeveler = new PressureLeveler("pressure-leveler") {{
             tmp1(this);
+            this.hasPower = true;
             this.consumePower(1);
         }};
 
@@ -245,6 +246,11 @@ public class OlPressure {
 
         pressureSmaller = new PressureSmaller("pressure-smaller") {{
             tmp1(this);
+
+            this.liquidCapacity = 1;
+
+            this.hasPower = true;
+            this.hasLiquids = true;
 
             this.consumePower(0.5f);
             this.consumeLiquid(OlLiquids.angeirum, 0.4f);

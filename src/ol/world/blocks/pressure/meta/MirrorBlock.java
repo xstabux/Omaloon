@@ -1,7 +1,17 @@
 package ol.world.blocks.pressure.meta;
 
+import arc.ApplicationListener;
+import arc.Core;
+import arc.util.Log;
+import mindustry.Vars;
 import mindustry.gen.Building;
 import mindustry.world.Block;
+import mindustry.world.consumers.Consume;
+import mindustry.world.meta.BlockStatus;
+import mindustry.world.modules.PowerModule;
+import ol.utils.OlMapInvoker;
+
+import java.util.Arrays;
 
 public class MirrorBlock extends Block {
     public MirrorBlock(String name) {
@@ -9,6 +19,32 @@ public class MirrorBlock extends Block {
 
         this.destructible = true;
         this.solid = false;
+    }
+
+    //TODO fix why updateTile() don`t calls
+    public static void loadListener() {
+        Core.app.addListener(new ApplicationListener() {
+            @Override
+            public void update() {
+                if(Vars.world == null || Vars.state == null || Vars.world.tiles == null) {
+                    return;
+                }
+
+                if(Vars.state.isPaused() || Vars.state.isEditor()) {
+                    return;
+                }
+
+                if(!Vars.state.isPlaying()) {
+                    return;
+                }
+
+                OlMapInvoker.eachBuild(building -> {
+                    if(building instanceof MirrorBlockBuild) {
+                        ((MirrorBlockBuild) building).updateChildren();
+                    }
+                });
+            }
+        });
     }
 
     public class MirrorBlockBuild extends Building {
@@ -37,18 +73,50 @@ public class MirrorBlock extends Block {
         public void updateBoth(Building aa, Building bb) {
         }
 
-        @Override
-        public void updateTile() {
+        public void updateChildren() {
             Building aa = this.nearby(this.rotation);
             Building bb = this.antiNearby();
 
-            if(bb != null && aa instanceof PressureAbleBuild && this.canConsume()) {
-                if(bb instanceof PressureAbleBuild && this.active()) {
-                    this.updateNearby(aa);
-                    this.updateAntiNearby(bb);
-                    this.updateBoth(aa, bb);
+            if(bb != null) {
+                if(aa instanceof PressureAbleBuild) {
+                    if(this.canConsume()) {
+                        if(bb instanceof PressureAbleBuild) {
+                            if(this.active()) {
+                                this.updateNearby(aa);
+                                this.updateAntiNearby(bb);
+                                this.updateBoth(aa, bb);
+                                //Log.info("all is ok");
+                            } else {
+                                //Log.info("protocol 0");
+                            }
+                        } else {
+                            //Log.info("protocol 1");
+                        }
+                    } else {
+                        //Log.info("protocol 2");
+                    }
+                } else {
+                    //Log.info("protocol 3");
+                }
+            } else {
+                //Log.info("protocol 4");
+            }
+        }
+
+        @Override
+        public BlockStatus status() {
+            return this.canConsume() ? BlockStatus.noInput : BlockStatus.active;
+        }
+
+        @Override
+        public boolean canConsume() {
+            for(Consume consume : consumers) {
+                if(consume.efficiency(this) == 0) {
+                    return false;
                 }
             }
+
+            return true;
         }
     }
 }

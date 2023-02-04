@@ -21,6 +21,7 @@ import ol.ui.ModMetaDialogFinder;
 import ol.ui.dialogs.*;
 import ol.utils.*;
 import ol.utils.pressure.*;
+import ol.world.blocks.pressure.meta.MirrorBlock;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -40,13 +41,14 @@ public class Omaloon extends MMAMod{
             OlSettings.loadCategory();
 
             app.post(() -> {
-
                 if(!SettingsManager.show.get()){
                     new OlDisclaimer().show();
                 }
             });
 
+            MirrorBlock.loadListener();
         });
+
         ModVars.modLog("Loaded Omaloon constructor.");
     }
 

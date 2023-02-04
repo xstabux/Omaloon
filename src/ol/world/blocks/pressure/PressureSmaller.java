@@ -10,6 +10,9 @@ public class PressureSmaller extends MirrorBlock {
 
     public PressureSmaller(String name) {
         super(name);
+
+        this.update = true;
+        this.noUpdateDisabled = true;
     }
 
     public class PressureSmallerBuild extends MirrorBlockBuild {
