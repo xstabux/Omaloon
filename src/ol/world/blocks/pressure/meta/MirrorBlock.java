@@ -2,16 +2,14 @@ package ol.world.blocks.pressure.meta;
 
 import arc.ApplicationListener;
 import arc.Core;
-import arc.util.Log;
+
 import mindustry.Vars;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 import mindustry.world.consumers.Consume;
 import mindustry.world.meta.BlockStatus;
-import mindustry.world.modules.PowerModule;
-import ol.utils.OlMapInvoker;
 
-import java.util.Arrays;
+import ol.utils.OlMapInvoker;
 
 public class MirrorBlock extends Block {
     public MirrorBlock(String name) {
@@ -19,6 +17,10 @@ public class MirrorBlock extends Block {
 
         this.destructible = true;
         this.solid = false;
+
+        this.rotate = true;
+        this.quickRotate = true;
+        this.rotateDraw = false;
     }
 
     //TODO fix why updateTile() don`t calls
