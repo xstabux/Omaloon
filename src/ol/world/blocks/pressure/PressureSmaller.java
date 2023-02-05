@@ -17,15 +17,11 @@ public class PressureSmaller extends MirrorBlock {
 
     public class PressureSmallerBuild extends MirrorBlockBuild {
         @Override
-        public void updateNearby(Building building) {
-            PressureAbleBuild build = (PressureAbleBuild) building;
-            build.pressure(build.pressure() - pressure);
-        }
+        public void updateBoth(Building aa, Building bb) {
+            PressureAbleBuild pab = (PressureAbleBuild) aa;
+            PressureAbleBuild pbb = (PressureAbleBuild) bb;
 
-        @Override
-        public void updateAntiNearby(Building building) {
-            PressureAbleBuild build = (PressureAbleBuild) building;
-            build.pressure(build.pressure() - pressure/4);
+            pab.pressure(-pbb.pressure());
         }
     }
 }

@@ -147,16 +147,16 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             OlPlans.set(plan, list);
 
             BuildPlan
-                top = OlPlans.get(0, 1),
+                top    = OlPlans.get(0, 1),
                 bottom = OlPlans.get(0, -1),
-                left = OlPlans.get(-1, 0),
-                right = OlPlans.get(1, 0);
+                left   = OlPlans.get(-1, 0),
+                right  = OlPlans.get(1, 0);
 
             boolean
-                validTop = top != null,
+                validTop    = top != null,
                 validBottom = bottom != null,
-                validLeft = left != null,
-                validRight = right != null;
+                validLeft   = left != null,
+                validRight  = right != null;
 
             Function<BuildPlan, Boolean> canWork = plnFunc -> {
                 Block block = plnFunc.block;
