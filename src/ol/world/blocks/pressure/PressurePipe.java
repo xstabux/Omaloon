@@ -22,6 +22,7 @@ import ol.input.*;
 import ol.utils.*;
 import ol.utils.Angles;
 import ol.utils.pressure.*;
+import ol.world.blocks.pressure.meta.MirrorBlock;
 
 import java.util.function.*;
 import static mindustry.Vars.*;
@@ -123,7 +124,8 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
 
         Boolf<Point2> cont = p -> plans.contains(o ->
                 o.x == req.x + p.x && o.y == req.y + p.y && o.rotation
-                == req.rotation && (req.block instanceof PressurePipe || req.block instanceof PressureJunction)
+                == req.rotation && (req.block instanceof PressurePipe || req.block instanceof PressureJunction
+                || req.block instanceof MirrorBlock)
         );
 
         return cont.get(Geometry.d4(req.rotation)) &&
@@ -162,7 +164,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
                 if(block instanceof PressureBlock pressureBlock) {
                     boolean valid = PressureAPI.tierAble(pressureBlock.tier, tier);
 
-                    if(block instanceof PressurePipe pipe){
+                    if(block instanceof PressurePipe pipe) {
                         valid &= pipe.inBuildPlanNet(plan, plnFunc.x, plnFunc.y, plnFunc.rotation);
                     }
 
@@ -263,6 +265,11 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             return true;
         }
 
+        public boolean isCorrectType(Building building) {
+            return building instanceof PressureJunction.PressureJunctionBuild ||
+                    building instanceof MirrorBlock.MirrorBlockBuild;
+        }
+
         @Override
         public void draw(){
             if(!mapDraw) {
@@ -276,10 +283,10 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             Building bottom = nearby(0, -1);
             Building top    = nearby(0, 1);
 
-            boolean bLeft   = avalible(left)   || left   instanceof PressureJunction.PressureJunctionBuild;
-            boolean bRight  = avalible(right)  || right  instanceof PressureJunction.PressureJunctionBuild;
-            boolean bTop    = avalible(top)    || top    instanceof PressureJunction.PressureJunctionBuild;
-            boolean bBottom = avalible(bottom) || bottom instanceof PressureJunction.PressureJunctionBuild;
+            boolean bLeft   = avalible(left)   || isCorrectType(left);
+            boolean bRight  = avalible(right)  || isCorrectType(right);
+            boolean bTop    = avalible(top)    || isCorrectType(top);
+            boolean bBottom = avalible(bottom) || isCorrectType(bottom);
 
             TextureRegion region = getRegion(
                     avalibleY() && bTop,

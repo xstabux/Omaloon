@@ -107,7 +107,7 @@ public class MirrorBlock extends Block {
 
         @Override
         public BlockStatus status() {
-            return this.canConsume() ? BlockStatus.noInput : BlockStatus.active;
+            return !this.canConsume() ? BlockStatus.noInput : BlockStatus.active;
         }
 
         @Override
