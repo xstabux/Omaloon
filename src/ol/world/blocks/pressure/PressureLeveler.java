@@ -16,7 +16,7 @@ public class PressureLeveler extends MirrorBlock {
             float app = ((PressureAbleBuild) aa).pressure();
 
 
-            if(app > 0) {
+            if(app > 1) {
 
 
 
