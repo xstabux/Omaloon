@@ -13,6 +13,7 @@ import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.BuildVisibility;
 import ol.content.OlFx;
 import ol.content.OlLiquids;
+import ol.utils.ConsumeLiquidDynamic;
 import ol.world.blocks.crafting.PressureCrafter;
 import ol.world.blocks.pressure.*;
 import ol.world.blocks.sandbox.SandboxCompressor;
@@ -238,12 +239,12 @@ public class OlPressure {
         pressureLeveler = new PressureLeveler("pressure-leveler") {{
             tmp1(this);
             this.liquidCapacity = 48;
+            this.consumePower(0.5f);
 
             this.hasPower = true;
             this.hasLiquids = true;
 
-            this.consumePower(0.5f);
-            this.consumeLiquid(OlLiquids.angeirum, 0.4f);
+            this.consume(new ConsumeLiquidDynamic(PressureLevelerBuild::getLiquid));
         }};
 
         //end levelers
