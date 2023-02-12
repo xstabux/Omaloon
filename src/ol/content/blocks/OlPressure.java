@@ -198,7 +198,7 @@ public class OlPressure {
             this.requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
             this.bridgeReplacement = OlPressure.sandboxPressureBridge;
             this.maxPressure = 512;
-            this.dangerPressure = -1;
+            this.dangerPressure = Float.POSITIVE_INFINITY;
             this.canExplode = false;
         }};
 
