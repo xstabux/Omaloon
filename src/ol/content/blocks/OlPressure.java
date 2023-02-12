@@ -39,6 +39,7 @@ public class OlPressure {
             pressureCounter,
             improvedPressureCounter,
             reinforcedPressureCounter,
+            sandboxPressureCounter,
             //other
             pressureJunction,
             //bridges
@@ -191,6 +192,14 @@ public class OlPressure {
             maxPressure = 240;
             dangerPressure = 234;
             tier = 3;
+        }};
+
+        sandboxPressureCounter = new PressureCounter("sandbox-pressure-counter") {{
+            this.requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
+            this.bridgeReplacement = OlPressure.sandboxPressureBridge;
+            this.maxPressure = 512;
+            this.dangerPressure = -1;
+            this.canExplode = false;
         }};
 
         //end counters

@@ -18,16 +18,20 @@ import mindustry.world.meta.*;
 
 import ol.content.*;
 import ol.content.blocks.*;
+import ol.graphics.OlGraphics;
 import ol.input.*;
 import ol.utils.*;
 import ol.utils.Angles;
 import ol.utils.pressure.*;
 import ol.world.blocks.pressure.meta.MirrorBlock;
+import org.jetbrains.annotations.Contract;
 
 import java.util.function.*;
 import static mindustry.Vars.*;
 
 public class PressurePipe extends PressureBlock implements PressureReplaceable {
+    public final RegionUtils.BlockRegionFinder finder = new RegionUtils.BlockRegionFinder(this);
+
     public TextureRegion[] cache; //null if headless
     public @Nullable Block junctionReplacement, bridgeReplacement;
 
@@ -39,8 +43,8 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
     public PressurePipe(String name){
         super(name);
 
-        conveyorPlacement = underBullets = rotate = solid = true;
-        drawArrow = false;
+        conveyorPlacement = underBullets = rotate = true;
+        drawArrow = solid = squareSprite = false;
         group = BlockGroup.power;
         priority = TargetPriority.transport;
     }
@@ -64,7 +68,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
     }
 
     @Override public void load() {
-        cache = new TextureRegion[0b1_00_00];
+        cache = OlGraphics.getRegions(this.finder.getRegion("-sheet"), 4, 4, 32);
         super.load();
     }
 
@@ -124,7 +128,8 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
 
         Boolf<Point2> cont = p -> plans.contains(o ->
                 o.x == req.x + p.x && o.y == req.y + p.y && o.rotation
-                == req.rotation && (req.block instanceof PressurePipe || req.block instanceof PressureJunction
+                == req.rotation && (req.block instanceof PressurePipe ||
+                        req.block instanceof PressureJunction
                 || req.block instanceof MirrorBlock)
         );
 
@@ -208,6 +213,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
         }
     }
 
+    @Contract(pure = true)
     private TextureRegion getRegion(boolean top, boolean bottom, boolean left, boolean right){
         int
             b = bottom ? 0b0001 : 0,
@@ -215,19 +221,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             r = right  ? 0b0100 : 0,
             l = left   ? 0b1000 : 0;
 
-        int spriteID = l | r | t | b;
-
-        TextureRegion reg = cache[spriteID];
-
-        if(reg == null) {
-            cache[spriteID] = reg = Core.atlas.find(name + "-" + spriteID);
-
-            if(reg == null) {
-                throw new NullPointerException("ZELAUX!!!!!!!!!!!!!!!!!!!!");
-            }
-        }
-
-        return reg;
+        return cache[l | r | t | b];
     }
 
     public class PressurePipeBuild extends PressureBlockBuild {

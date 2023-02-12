@@ -1,17 +1,12 @@
 package ol.world.blocks.pressure;
 
 import arc.Core;
-import arc.func.Prov;
 import arc.graphics.g2d.Draw;
-import arc.scene.style.TextureRegionDrawable;
-import arc.scene.ui.layout.Table;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
-import mindustry.gen.Icon;
-import mindustry.ui.Styles;
 
 import ol.utils.Angles;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
