@@ -197,7 +197,8 @@ public interface PressureAbleBuild {
      * @return true, if block to damage itself, false if not need to damage
      */
     default boolean isPressureDamages() {
-        return this.canExplode() && this.pressure() > this.maxPressure();
+        float p = this.pressure(), mp = this.maxPressure();
+        return this.canExplode() && (p > mp | p < -mp);
     }
 
     /**
