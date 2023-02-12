@@ -48,14 +48,26 @@ public class PressureReleaser extends PressurePipe {
         @Override public void updateTile() {
             super.updateTile();
 
-            if(this.opened || (this.auto && this.isDanger())) {
+            if(this.isDanger()) {
                 if(this.pressure() > 0) {
                     this.pressureModule.pressure -= releasePower;
                 }
 
-                this.needAngle = 90;
+                this.needAngle = switch(this.rotation) {
+                    case 0, 1 -> -90;
+                    case 2, 3 -> 90;
+
+                    //unreachable
+                    default -> throw new RuntimeException();
+                };
             } else {
-                needAngle = 0;
+                needAngle = switch(this.rotation) {
+                    case 0, 3 -> 0;
+                    case 1, 2 -> 180;
+
+                    //unreachable
+                    default -> throw new RuntimeException();
+                };
             }
 
             if(angle < needAngle) {
@@ -87,25 +99,6 @@ public class PressureReleaser extends PressurePipe {
 
         @Override public boolean inNet(Building b, PressureAbleBuild p, boolean junction) {
             return this.COUNTER_IN_NET_CALL(b, p, junction);
-        }
-
-        @Override public void buildConfiguration(@NotNull Table table) {
-            table.setBackground(Styles.black5);
-
-            table.button(Icon.rotate, () -> {
-                opened = !opened;
-            }).pad(6f).size(24f);
-
-            Prov<TextureRegionDrawable> icon = () -> {
-                return auto ? Icon.cancel : Icon.add;
-            };
-
-            table.button(icon.get(), () -> {
-                this.auto = !this.auto;
-            }).update(btn -> {
-                btn.clearChildren();
-                btn.image(icon.get());
-            }).pad(6f).size(24f);
         }
     }
 }
