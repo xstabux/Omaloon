@@ -2,6 +2,7 @@ package ol.content;
 
 import arc.graphics.*;
 
+import kotlin.jvm.JvmOverloads;
 import mindustry.content.*;
 import mindustry.type.*;
 
@@ -11,6 +12,7 @@ public class OlLiquids{
 	public static Liquid
 			liquidOmalite,
 			angeirum,
+			nothing,
 			dalanii;
 
 	public static void load() {
@@ -45,6 +47,13 @@ public class OlLiquids{
 			colorTo = Color.valueOf("3e6067");
 
 			canStayOn.add(Liquids.water);
+		}};
+
+		nothing = new Liquid("nothing", Color.black) {{
+			this.description = "IT`S NOT LIQUID. IT`S NOT LIQUID. IT`S NOT LIQUID.";
+			this.localizedName = "";
+
+			this.hidden = true;
 		}};
 	}
 }

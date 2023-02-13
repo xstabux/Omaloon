@@ -38,7 +38,7 @@ public class PressureReleaser extends PressurePipe {
         public boolean opened = false;
         public boolean auto = false;
         public int needAngle = 0;
-        
+
         public int angle = switch(this.rotation) {
             case 0, 3 -> 0;
             case 1, 2 -> 180;

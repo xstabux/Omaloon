@@ -16,7 +16,7 @@ public class PressureLeveler extends MirrorBlock {
 
     public class PressureLevelerBuild extends MirrorBlockBuild {
         public LiquidStack[] getLiquid() {
-            LiquidStack[] empty = LiquidStack.with(Liquids.water, 0);
+            LiquidStack[] empty = LiquidStack.with(OlLiquids.nothing, 0);
 
             if(this.antiNearby() instanceof PressureAbleBuild build) {
                 return switch(build.tier()) {
