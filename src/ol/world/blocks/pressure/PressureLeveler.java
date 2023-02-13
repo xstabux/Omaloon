@@ -22,10 +22,10 @@ public class PressureLeveler extends MirrorBlock {
                 return switch(build.tier()) {
                     case 1, 2, 3, -1 -> LiquidStack.with(
                         switch(build.tier()) {
-                            case 1 -> Liquids.arkycite;
+                            case 1 -> empty;
                             case 2 -> OlLiquids.angeirum;
                             case 3 -> Liquids.slag;
-                            case -1 -> Liquids.cryofluid;
+                            case -1 -> empty;
 
                             default -> throw new IllegalStateException("Unexpected value: " + build.tier());
                         }, 0.4f
