@@ -2,6 +2,7 @@ package ol.world.blocks.pressure;
 
 import arc.Core;
 import arc.graphics.g2d.Draw;
+import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 
@@ -19,7 +20,6 @@ public class PressureReleaser extends PressurePipe {
         super(name);
 
         this.mapDraw = true;
-        this.configurable = true;
     }
 
     @Override public boolean inBuildPlanNet(@NotNull BuildPlan s, int x, int y, int ignored) {
@@ -38,13 +38,20 @@ public class PressureReleaser extends PressurePipe {
         public boolean opened = false;
         public boolean auto = false;
         public int needAngle = 0;
-        public int angle = 0;
+        
+        public int angle = switch(this.rotation) {
+            case 0, 3 -> 0;
+            case 1, 2 -> 180;
+
+            //unreachable
+            default -> throw new RuntimeException();
+        };
 
         @Override public void updateTile() {
             super.updateTile();
 
             if(this.isDanger()) {
-                if(this.pressure() > 0) {
+                if(this.pressure() > 0 && Math.floor(Time.globalTime) % 5 == 0) {
                     this.pressureModule.pressure -= releasePower;
                 }
 

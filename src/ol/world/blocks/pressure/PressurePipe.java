@@ -282,6 +282,12 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             boolean bTop    = avalible(top)    || isCorrectType(top);
             boolean bBottom = avalible(bottom) || isCorrectType(bottom);
 
+            float angle = ((avalibleY() && bTop ? 1 : 0) +
+                    (avalibleY() && bBottom ? 1 : 0) +
+                    (avalibleX() && bLeft ? 1 : 0) +
+                    (avalibleX() && bRight ? 1 : 0)) == 0 ?
+                    Angles.alignY(this.rotation) ? -90 : 0 : 0;
+
             TextureRegion region = getRegion(
                     avalibleY() && bTop,
                     avalibleY() && bBottom,
@@ -291,12 +297,12 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
 
             if(this.isPressureDamages()) {
                 if(state.is(GameState.State.paused)) {
-                    Draw.rect(region, this.x, this.y);
+                    Draw.rect(region, this.x, this.y, angle);
                 } else{
-                    Draw.rect(region, this.x, this.y, Mathf.random(-4, 4));
+                    Draw.rect(region, this.x, this.y, angle + Mathf.random(-4, 4));
                 }
             }else{
-                Draw.rect(region, this.x, this.y);
+                Draw.rect(region, this.x, this.y, angle);
             }
 
             this.drawTeamTop();
