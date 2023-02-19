@@ -247,13 +247,11 @@ public class OlPressure {
 
         pressureLeveler = new PressureLeveler("pressure-leveler") {{
             tmp1(this);
-            this.liquidCapacity = 48;
-            this.consumePower(0.5f);
-
-            this.hasPower = true;
-            this.hasLiquids = true;
-
-            this.consume(new ConsumeLiquidDynamic(PressureLevelerBuild::getLiquid));
+            liquidCapacity = 10;
+            consumePower(0.5f);
+            liquidConsumption = 4f;
+            hasLiquids = true;
+            consume(new ConsumeLiquidDynamic(PressureLevelerBuild::getLiquid));
         }};
 
         //end levelers

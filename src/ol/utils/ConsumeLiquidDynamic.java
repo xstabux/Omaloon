@@ -10,7 +10,6 @@ import mindustry.world.*;
 import mindustry.world.consumers.*;
 import mindustry.world.modules.*;
 
-/** from mindustry by Anuken but edited for liquids */
 public class ConsumeLiquidDynamic extends Consume {
     public final Func<Building, LiquidStack[]> liquids;
 
@@ -53,9 +52,9 @@ public class ConsumeLiquidDynamic extends Consume {
                 return false;
             }
         }
-
         return true;
     }
+
 
     private void rebuild(Building tile, Table table) {
         table.clear();
