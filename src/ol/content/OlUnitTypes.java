@@ -8,12 +8,12 @@ import mindustry.entities.bullet.MissileBulletType;
 import mindustry.gen.Sounds;
 import mindustry.type.*;
 
-import mma.gen.*;
+import ol.entites.OrnitorpterComp;
 import ol.gen.*;
 import ol.type.units.ornitopter.Blade;
 import ol.type.units.ornitopter.OrnitopterUnitType;
 
-public class OlUnits {
+public class OlUnitTypes {
     @EntityDef(value = Ornitorpterc.class)
     public static UnitType
     t1;
@@ -25,13 +25,11 @@ public class OlUnits {
              accel = 0.08f;
              drag = 0.04f;
              flying = true;
-             health = 120;
-             fallSpeed = 0.1f;
-//             constructor = OrnitopterUnitEntity::new;
-             engineSize = 0f;
+             health = 210;
              range = 15 * 8f;
              maxRange = range;
              rotateSpeed = 6f;
+             shadowElevation = 1.6f;
              blades.addAll(
                      //first
                      new Blade(name + "-blade1"){{

@@ -74,8 +74,11 @@ public class ConsumeLiquidDynamic extends Consume {
 
     @Override
     public void trigger(Building build) {
-        for(LiquidStack stack : liquids.get(build)) {
-            build.liquids.remove(stack.liquid, stack.amount);
+        LiquidModule liquids = build.liquids;
+        for (LiquidStack stack : this.liquids.get(build)) {
+            Liquid liquid = stack.liquid;
+            float amount = stack.amount;
+            liquids.remove(liquid, amount);
         }
     }
 

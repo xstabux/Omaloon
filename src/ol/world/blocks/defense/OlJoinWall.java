@@ -113,7 +113,10 @@ public class OlJoinWall extends OlWall {
 
             for(Building b : proximity) {
                 if(b instanceof OlJoinWallBuild w && b != source && !w.justDamaged && b != this) {
-                    w.damage(length + 1, amount * damageScl, this);
+                    // check if the walls are of the same type
+                    if (this.block == w.block) {
+                        w.damage(length + 1, amount * damageScl, this);
+                    }
                 }
             }
         }

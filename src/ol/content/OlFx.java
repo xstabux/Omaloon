@@ -5,9 +5,12 @@ import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
 
+import mindustry.gen.Groups;
+import mindustry.gen.WeatherState;
 import mindustry.graphics.*;
 import mindustry.entities.*;
 
+import mindustry.type.weather.ParticleWeather;
 import ol.graphics.*;
 
 import static arc.graphics.g2d.Draw.*;

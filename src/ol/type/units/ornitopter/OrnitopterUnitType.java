@@ -26,8 +26,8 @@ public class OrnitopterUnitType extends UnitType implements ImageGenerator{
     public void drawRotor(Unit unit){
         float z = unit.elevation > 0.5f ? (lowAltitude ? Layer.flyingUnitLow : Layer.flyingUnit) : groundLayer + Mathf.clamp(hitSize / 4000f, 0, 0.01f);
 
-        Weapon weapon = weapons.max(it -> it.layerOffset);
-        z += (weapon.layerOffset + 0.0001f);
+        //Weapon weapon = weapons.max(it -> it.layerOffset);
+        //z += (weapon.layerOffset + 0.0001f);
         applyColor(unit);
         if(unit instanceof Ornitorpterc copter){
             for(int sign : Mathf.signs){

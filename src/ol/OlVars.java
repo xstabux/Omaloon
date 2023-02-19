@@ -6,7 +6,6 @@ import arc.util.*;
 import mma.*;
 
 import ol.content.*;
-import ol.gen.*;
 
 import static arc.Core.*;
 
@@ -49,8 +48,8 @@ public class OlVars extends ModVars {
         OlItems.load();
         OlStatusEffects.load();
         OlLiquids.load();
+        OlUnitTypes.load();
         OlBlocks.load();
-        OlUnits.load();
         OlPlanets.load();
     }
 }

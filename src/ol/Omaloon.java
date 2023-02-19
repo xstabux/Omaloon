@@ -127,6 +127,8 @@ public class Omaloon extends MMAMod{
         ModVars.modLog("Loading some content.");
         if(!headless){//FileTreeInitEvent invokes before this method
             new Sound(ModVars.modInfo.root.child("sounds").child("boiler.ogg"));
+            OlVars.inTry(OlMusics::loadNow);
+            OlVars.inTry(OlSounds::loadNow);
             OlVars.inTry(OlShaders::load);
         }
         OlCacheLayer.init();
