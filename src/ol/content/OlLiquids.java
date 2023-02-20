@@ -2,10 +2,10 @@ package ol.content;
 
 import arc.graphics.*;
 
-import kotlin.jvm.JvmOverloads;
 import mindustry.content.*;
 import mindustry.type.*;
 
+import ol.type.NothingLiquid;
 import ol.type.liquids.*;
 
 public class OlLiquids{
@@ -49,11 +49,6 @@ public class OlLiquids{
 			canStayOn.add(Liquids.water);
 		}};
 
-		nothing = new Liquid("nothing", Color.black) {{
-			this.description = "IT`S NOT LIQUID. IT`S NOT LIQUID. IT`S NOT LIQUID.";
-			this.localizedName = "";
-
-			this.hidden = true;
-		}};
+		nothing = new NothingLiquid();
 	}
 }
