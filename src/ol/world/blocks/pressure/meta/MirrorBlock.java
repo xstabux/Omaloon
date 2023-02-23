@@ -1,137 +1,102 @@
 package ol.world.blocks.pressure.meta;
 
-import arc.graphics.g2d.Draw;
-import arc.graphics.g2d.TextureRegion;
-import arc.ApplicationListener;
-import arc.Core;
+import arc.graphics.g2d.*;
+import arc.util.*;
 
-import arc.util.Eachable;
-import mindustry.Vars;
-import mindustry.entities.units.BuildPlan;
-import mindustry.gen.Building;
-import mindustry.world.Block;
-import mindustry.world.consumers.Consume;
-import mindustry.world.meta.BlockStatus;
+import mindustry.entities.units.*;
+import mindustry.gen.*;
+import mindustry.world.*;
+import mindustry.world.consumers.*;
+import mindustry.world.meta.*;
 
-import ol.graphics.OlGraphics;
-import ol.utils.OlMapInvoker;
-import ol.utils.RegionUtils.BlockRegionFinder;
-import org.jetbrains.annotations.NotNull;
+import ol.graphics.*;
+import ol.utils.*;
+import ol.utils.RegionUtils.*;
+
+import org.jetbrains.annotations.*;
 
 public class MirrorBlock extends Block {
-    public final BlockRegionFinder finder = new BlockRegionFinder(this);
-    public TextureRegion[] regions = new TextureRegion[4];
+    private final BlockRegionFinder regionFinder = new BlockRegionFinder(this);
+    private TextureRegion[] regions = new TextureRegion[4];
 
     public MirrorBlock(String name) {
         super(name);
-
-        this.destructible = true;
-        this.solid = false;
-
-        this.rotate = true;
-        this.quickRotate = true;
-        this.rotateDraw = false;
+        destructible = true;
+        solid = false;
+        rotate = true;
+        quickRotate = true;
+        rotateDraw = false;
     }
 
+    // Load textures
     @Override
     public void load() {
         super.load();
-
-        this.regions = OlGraphics.getRegions(this.finder.getRegion("-sprites"), 4, 1, 32);
+        regions = OlGraphics.getRegions(regionFinder.getRegion("-sprites"), 4, 1, 32);
     }
 
+    // Draw the plan region
     @Override
     public void drawPlanRegion(@NotNull BuildPlan plan, Eachable<BuildPlan> list) {
         Draw.rect(regions[plan.rotation], plan.drawx(), plan.drawy());
     }
 
-    //TODO fix why updateTile() don`t calls
-    public static void loadListener() {
-        Core.app.addListener(new ApplicationListener() {
-            @Override
-            public void update() {
-                if(Vars.world == null || Vars.state == null || Vars.world.tiles == null) {
-                    return;
-                }
-
-                if(Vars.state.isPaused() || Vars.state.isEditor()) {
-                    return;
-                }
-
-                if(!Vars.state.isPlaying()) {
-                    return;
-                }
-
-                OlMapInvoker.eachBuild(building -> {
-                    if(building instanceof MirrorBlockBuild) {
-                        ((MirrorBlockBuild) building).updateChildren();
-                    }
-                });
-            }
-        });
-    }
-
+    // Inner class that represents the building instance of the mirror block
     public class MirrorBlockBuild extends Building {
-        public Building antiNearby() {
-            return switch(this.rotation) {
-                case 0 -> this.nearby(2);
-                case 1 -> this.nearby(3);
-                case 2 -> this.nearby(0);
-                case 3 -> this.nearby(1);
-
+        // Get the opposite building based on the current rotation
+        public Building getAntiNearby() {
+            return switch(rotation) {
+                case 0 -> nearby(2);
+                case 1 -> nearby(3);
+                case 2 -> nearby(0);
+                case 3 -> nearby(1);
                 //unreached
                 default -> null;
             };
         }
 
-        public boolean active() {
+        // Determine if the block is active
+        public boolean isActive() {
             return true;
         }
 
-        public void updateNearby(Building building) {
-        }
+        // Update nearby buildings
+        public void updateNearby() {}
 
-        public void updateAntiNearby(Building building) {
-        }
+        // Update the opposite building
+        public void updateAntiNearby() {}
 
-        public void updateBoth(Building aa, Building bb) {
-        }
+        // Update both nearby and opposite buildings
+        public void updateBoth(Building aa, Building bb) {}
 
+        // Update child buildings
         public void updateChildren() {
-            Building aa = this.nearby(this.rotation);
-            Building bb = this.antiNearby();
+            // Loop through each building in the map
+            OlMapInvoker.eachBuild(building -> {
+                // If the building is a mirror block, process it
+                if(building instanceof MirrorBlockBuild) {
+                    Building aa = building.nearby(building.rotation);
+                    Building bb = this.getAntiNearby();
 
-            if(bb != null) {
-                if(aa instanceof PressureAbleBuild) {
-                    if(this.canConsume()) {
-                        if(bb instanceof PressureAbleBuild) {
-                            if(this.active()) {
-                                this.updateNearby(aa);
-                                this.updateAntiNearby(bb);
-                                this.updateBoth(aa, bb);
-                                //Log.info("all is ok");
-                            } else {
-                                //Log.info("protocol 0");
-                            }
-                        } else {
-                            //Log.info("protocol 1");
+                    // If the opposite building is not null and both buildings can consume pressure
+                    if(bb != null && aa instanceof PressureAbleBuild && building.canConsume()) {
+                        if (bb instanceof PressureAbleBuild && this.isActive()) {
+                            this.updateNearby();
+                            this.updateAntiNearby();
+                            this.updateBoth(aa, bb);
                         }
-                    } else {
-                        //Log.info("protocol 2");
                     }
-                } else {
-                    //Log.info("protocol 3");
                 }
-            } else {
-                //Log.info("protocol 4");
-            }
+            });
         }
 
+        // Determine the status of the block
         @Override
         public BlockStatus status() {
-            return !this.canConsume() ? BlockStatus.noInput : BlockStatus.active;
+            return !canConsume() ? BlockStatus.noInput : BlockStatus.active;
         }
 
+        // Determine if the block can consume pressure
         @Override
         public boolean canConsume() {
             for(Consume consume : consumers) {
@@ -139,14 +104,14 @@ public class MirrorBlock extends Block {
                     return false;
                 }
             }
-
             return true;
         }
 
+        // Draw the block
         @Override
         public void draw() {
-            Draw.rect(regions[this.rotation], this.x, this.y);
-            this.drawTeamTop();
+            Draw.rect(regions[rotation], x, y);
+            drawTeamTop();
         }
     }
 }

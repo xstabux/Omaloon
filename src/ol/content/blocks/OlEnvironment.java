@@ -10,9 +10,8 @@ import ol.graphics.*;
 public class OlEnvironment {
     public static Block
             oreOmalite,
-            gravelDalanii,
-            dalanii,
-            deepDalanii;
+            gravelDalanii, dalanii, deepDalanii,
+            grun, grunWall;
 
     public static void load() {
         //region Ores
@@ -28,7 +27,6 @@ public class OlEnvironment {
             useColor = true;
         }};
         //endregion Ores
-        //region Environment
         gravelDalanii = new Floor("gravel-dalanii") {{
             itemDrop = Items.sand;
             playerUnmineable = true;
@@ -77,6 +75,14 @@ public class OlEnvironment {
 
             cacheLayer = OlCacheLayer.dalaniteLayer;
         }};
-        //endregion Environment
+
+        grun = new Floor("grun"){{
+            variants = 4;
+            wall = grunWall;
+        }};
+
+        grunWall = new StaticWall("grun-wall"){{
+           variants = 3;
+        }};
     }
 }

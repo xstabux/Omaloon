@@ -25,6 +25,7 @@ import mindustry.world.consumers.*;
 import ol.ui.*;
 import ol.utils.*;
 import ol.world.blocks.pressure.meta.ConsumePressureDynamic;
+import ol.world.consumers.ConsumeLiquidDynamic;
 import ol.world.meta.*;
 
 import static arc.Core.*;

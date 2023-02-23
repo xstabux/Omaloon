@@ -7,44 +7,42 @@ import mindustry.type.LiquidStack;
 import ol.content.OlLiquids;
 import ol.world.blocks.pressure.meta.MirrorBlock;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
+import ol.world.consumers.ConsumeLiquidDynamic;
 
 public class PressureLeveler extends MirrorBlock {
     public float liquidConsumption;
-    public float consumption;
 
     public PressureLeveler(String name) {
         super(name);
+
+        consume(new ConsumeLiquidDynamic(PressureLevelerBuild::getLiquid));
     }
 
     public class PressureLevelerBuild extends MirrorBlockBuild {
         public LiquidStack[] getLiquid() {
-            LiquidStack[] empty = LiquidStack.with(OlLiquids.nothing, 0);
-
-            if (this.antiNearby() instanceof PressureAbleBuild build) {
-                return switch (build.tier()) {
-                    case 2, 3 -> LiquidStack.with(build.tier() == 2 ?
-                            OlLiquids.angeirum : Liquids.slag, 0.4f);
-                    default -> empty;
-                };
+            Building anti = getAntiNearby();
+            if (anti instanceof PressureAbleBuild build && build.tier() >= 2) {
+                Liquid liquid = build.tier() == 2 ? OlLiquids.angeirum : Liquids.slag;
+                return LiquidStack.with(liquid, 0.4f);
+            } else {
+                return LiquidStack.with(OlLiquids.nothing, 0);
             }
-
-            return empty;
         }
 
         @Override
-        public void updateBoth(Building input, Building output) {
-            // Get pressure from the input side
-            float pressure = ((PressureAbleBuild) input).pressure();
+        public void updateBoth(Building aa, Building bb) {
+            PressureAbleBuild inputBuild = (PressureAbleBuild) aa;
+            PressureAbleBuild outputBuild = (PressureAbleBuild) bb;
 
-            // If pressure is above 1, transfer pressure to the output side
+            float pressure = inputBuild.pressure();
             if (pressure > 1) {
-                ((PressureAbleBuild) output).pressure(pressure);
+                outputBuild.pressure(pressure);
             }
 
-            // Decrease liquid amount when pressure changes
-            if (input.liquids != null) {
-                input.liquids.remove(getLiquid()[0].liquid, pressure * liquidConsumption);
-                this.consume();
+            LiquidStack[] liquidStack = getLiquid();
+            if (aa.liquids != null && liquidStack.length > 0 && liquidStack[0].amount > 0) {
+                aa.liquids.remove(liquidStack[0].liquid, pressure * liquidConsumption);
+                consume(liquidStack[0]);
             }
         }
 
@@ -53,10 +51,9 @@ public class PressureLeveler extends MirrorBlock {
             return liquid == getLiquid()[0].liquid;
         }
 
-        // Decreases the amount of the liquid that is being consumed by the PressureLeveler
-        public void consume() {
-            if (consumption > 0 && getLiquid()[0].amount > 0) {
-                getLiquid()[0].amount -= consumption;
+        private void consume(LiquidStack liquidStack) {
+            if (liquidConsumption > 0 && liquidStack.amount > 0) {
+                liquidStack.amount -= liquidConsumption;
             }
         }
     }

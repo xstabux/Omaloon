@@ -45,8 +45,6 @@ public class Omaloon extends MMAMod{
                     new OlDisclaimer().show();
                 }
             });
-
-            MirrorBlock.loadListener();
         });
 
         ModVars.modLog("Loaded Omaloon constructor.");
