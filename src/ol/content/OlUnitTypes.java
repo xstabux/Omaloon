@@ -21,6 +21,7 @@ public class OlUnitTypes {
     public static void load(){
         OlEntityMapping.init();
          t1 = new OrnitopterUnitType("t1"){{
+             outlineColor = Color.valueOf("454552");
              speed = 2.7f;
              accel = 0.08f;
              drag = 0.04f;
@@ -29,7 +30,6 @@ public class OlUnitTypes {
              range = 15 * 8f;
              maxRange = range;
              rotateSpeed = 6f;
-             shadowElevation = 1.6f;
              blades.addAll(
                      //first
                      new Blade(name + "-blade1"){{
