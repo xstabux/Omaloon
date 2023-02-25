@@ -7,7 +7,6 @@ import arc.scene.ui.layout.*;
 import mindustry.core.*;
 import mindustry.ctype.*;
 import mindustry.game.*;
-import mindustry.game.EventType.*;
 import mindustry.mod.Mods.*;
 
 import mma.*;
@@ -17,11 +16,10 @@ import ol.core.*;
 import ol.gen.*;
 import ol.graphics.*;
 import ol.logic.*;
+import ol.ui.CustomCategory;
 import ol.ui.ModMetaDialogFinder;
 import ol.ui.dialogs.*;
 import ol.utils.*;
-import ol.utils.pressure.*;
-import ol.world.blocks.pressure.meta.MirrorBlock;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -45,6 +43,9 @@ public class Omaloon extends MMAMod{
                     new OlDisclaimer().show();
                 }
             });
+
+            CustomCategory.loadIcons();
+            //CustomCategory.load();
         });
 
         ModVars.modLog("Loaded Omaloon constructor.");
