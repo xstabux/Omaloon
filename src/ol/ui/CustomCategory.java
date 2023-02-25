@@ -31,6 +31,7 @@ import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.input.Binding;
 import mindustry.input.InputHandler;
+import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.ui.*;
 import mindustry.world.Block;
@@ -129,8 +130,7 @@ public class CustomCategory {
                 return rails;
             }
 
-            if(block instanceof PressureAble || block instanceof MirrorBlock ||
-                    block == OlPressure.pressureJunction)
+            if((block instanceof PressureAble || block instanceof MirrorBlock) && power.equals(block.category))
             {
                 return pressure;
             }
@@ -176,6 +176,10 @@ public class CustomCategory {
 
         public Category(TextureRegion region, String name) {
             this(generate(region, name));
+        }
+
+        public boolean equals(mindustry.type.Category category) {
+            return this.equals(of(category));
         }
 
         public boolean equals(Block block) {
