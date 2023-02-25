@@ -10,6 +10,7 @@ import mindustry.ctype.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import ol.type.NothingLiquid;
 
 import java.lang.reflect.*;
 
@@ -56,7 +57,14 @@ public class OlModDialog extends BaseDialog{
 
         }).width(400f);
 
-        Seq<UnlockableContent> all = Seq.with(content.getContentMap()).<Content>flatten().select(c -> c.minfo.mod == modInfo && c instanceof UnlockableContent).as();
+        Seq<UnlockableContent> all = Seq.with(content.getContentMap()).<Content>flatten().select(c -> {
+            if(c.minfo.mod == modInfo && c instanceof UnlockableContent) {
+                return !(c instanceof NothingLiquid);
+            }
+
+            return false;
+        }).as();
+
         buttons.defaults().size(210f, 64f).row();
         buttons.button("@ol.youtube", Icon.play, () -> Core.app.openURI("https://www.youtube.com/@omaloon"));
         if(!all.isEmpty()){

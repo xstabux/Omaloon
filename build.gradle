@@ -111,8 +111,8 @@ allprojects{
         sourceCompatibility = JavaVersion.VERSION_16
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    tasks.withType(JavaCompile){
-        targetCompatibility = 8
+    tasks.withType(JavaCompile) {
+        targetCompatibility = "$java_version"
         sourceCompatibility = JavaVersion.VERSION_16
         options.encoding = "UTF-8"
 //        options.encoding = "windows-1251"
@@ -145,8 +145,8 @@ allprojects{
 }*/
 configure(project(":annotations")){
     tasks.withType(JavaCompile){
-        targetCompatibility = 8
-        sourceCompatibility = 8
+        targetCompatibility = "$java_version"
+        sourceCompatibility = "$java_version"
         options.fork = true
     }
 }
@@ -154,7 +154,7 @@ configure(project(":annotations")){
 //compile with java 8 compatibility for everything except the annotation project
 configure(subprojects - project(":annotations")){
     tasks.withType(JavaCompile){
-        options.compilerArgs.addAll(['--release', '8'])
+        options.compilerArgs.addAll(['--release', "$java_version"])
     }
 
     tasks.withType(Javadoc){

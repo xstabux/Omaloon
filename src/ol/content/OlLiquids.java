@@ -5,12 +5,14 @@ import arc.graphics.*;
 import mindustry.content.*;
 import mindustry.type.*;
 
+import ol.type.NothingLiquid;
 import ol.type.liquids.*;
 
 public class OlLiquids{
 	public static Liquid
 			liquidOmalite,
 			angeirum,
+			nothing,
 			dalanii;
 
 	public static void load() {
@@ -46,5 +48,7 @@ public class OlLiquids{
 
 			canStayOn.add(Liquids.water);
 		}};
+
+		nothing = new NothingLiquid();
 	}
 }

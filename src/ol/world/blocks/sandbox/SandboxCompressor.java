@@ -73,7 +73,7 @@ public class SandboxCompressor extends PressurePipe {
 
         @Override public PressureModule getModule() {
             PressureModule falseModule = new PressureModule();
-            falseModule.pressure = this.voidMode() ? Integer.MIN_VALUE : val;
+            falseModule.pressure = val;
             return falseModule;
         }
 

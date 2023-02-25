@@ -7,7 +7,6 @@ import arc.scene.ui.layout.*;
 import mindustry.core.*;
 import mindustry.ctype.*;
 import mindustry.game.*;
-import mindustry.game.EventType.*;
 import mindustry.mod.Mods.*;
 
 import mma.*;
@@ -17,10 +16,10 @@ import ol.core.*;
 import ol.gen.*;
 import ol.graphics.*;
 import ol.logic.*;
+import ol.ui.CustomCategory;
 import ol.ui.ModMetaDialogFinder;
 import ol.ui.dialogs.*;
 import ol.utils.*;
-import ol.utils.pressure.*;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -40,13 +39,15 @@ public class Omaloon extends MMAMod{
             OlSettings.loadCategory();
 
             app.post(() -> {
-
                 if(!SettingsManager.show.get()){
                     new OlDisclaimer().show();
                 }
             });
 
+            CustomCategory.loadIcons();
+            //CustomCategory.load();
         });
+
         ModVars.modLog("Loaded Omaloon constructor.");
     }
 
@@ -125,6 +126,8 @@ public class Omaloon extends MMAMod{
         ModVars.modLog("Loading some content.");
         if(!headless){//FileTreeInitEvent invokes before this method
             new Sound(ModVars.modInfo.root.child("sounds").child("boiler.ogg"));
+            OlVars.inTry(OlMusics::loadNow);
+            OlVars.inTry(OlSounds::loadNow);
             OlVars.inTry(OlShaders::load);
         }
         OlCacheLayer.init();

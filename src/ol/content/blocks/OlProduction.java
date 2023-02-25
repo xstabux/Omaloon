@@ -124,6 +124,7 @@ public class OlProduction {
                         consumePower = 0.7f;
 
                         downPressure = true;
+
                         pressureConsume = 40;
 
                         craftTime = 82f;
@@ -200,7 +201,7 @@ public class OlProduction {
             pressureConsume = 110;
 
             downPressure = true;
-            downPercent = 0.15f;
+            downPercent = 0.60f;
 
             consumePower(3.6f);
 
@@ -289,6 +290,7 @@ public class OlProduction {
             powerProduction = 22f;
 
             this.downPressure = true;
+            this.downPercent = 0.80f;
             this.pressureConsume = 190;
             this.maxPressure = 240;
 

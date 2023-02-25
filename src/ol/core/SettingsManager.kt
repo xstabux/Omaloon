@@ -13,7 +13,7 @@ object SettingsManager {
     val check = BooleanSettingKey("mod.ol.check") { false }
 
     @JvmField
-    val pressureUpdate = IntSettingKey("mod.ol.pressureupdate") { 0 }
+    var clarrows = BooleanSettingKey("mod.ol.clarrows") { false }
 
     init {
         SettingKey.allKeys.each { it.setDefault() }

@@ -1,17 +1,13 @@
 package ol.world.blocks.pressure;
 
 import arc.Core;
-import arc.func.Prov;
 import arc.graphics.g2d.Draw;
-import arc.scene.style.TextureRegionDrawable;
-import arc.scene.ui.layout.Table;
+import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
-import mindustry.gen.Icon;
-import mindustry.ui.Styles;
 
 import ol.utils.Angles;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
@@ -24,7 +20,6 @@ public class PressureReleaser extends PressurePipe {
         super(name);
 
         this.mapDraw = true;
-        this.configurable = true;
     }
 
     @Override public boolean inBuildPlanNet(@NotNull BuildPlan s, int x, int y, int ignored) {
@@ -43,16 +38,38 @@ public class PressureReleaser extends PressurePipe {
         public boolean opened = false;
         public boolean auto = false;
         public int needAngle = 0;
-        public int angle = 0;
+
+        public int angle = switch(this.rotation) {
+            case 0, 3 -> 0;
+            case 1, 2 -> 180;
+
+            //unreachable
+            default -> throw new RuntimeException();
+        };
 
         @Override public void updateTile() {
             super.updateTile();
 
-            if(this.opened || (this.auto && this.isDanger())) {
-                this.pressureModule.pressure -= releasePower;
-                this.needAngle = 90;
+            if(this.isDanger()) {
+                if(this.pressure() > 0 && Math.floor(Time.globalTime) % 5 == 0) {
+                    this.pressureModule.pressure -= releasePower;
+                }
+
+                this.needAngle = switch(this.rotation) {
+                    case 0, 1 -> -90;
+                    case 2, 3 -> 90;
+
+                    //unreachable
+                    default -> throw new RuntimeException();
+                };
             } else {
-                needAngle = 0;
+                needAngle = switch(this.rotation) {
+                    case 0, 3 -> 0;
+                    case 1, 2 -> 180;
+
+                    //unreachable
+                    default -> throw new RuntimeException();
+                };
             }
 
             if(angle < needAngle) {
@@ -84,25 +101,6 @@ public class PressureReleaser extends PressurePipe {
 
         @Override public boolean inNet(Building b, PressureAbleBuild p, boolean junction) {
             return this.COUNTER_IN_NET_CALL(b, p, junction);
-        }
-
-        @Override public void buildConfiguration(@NotNull Table table) {
-            table.setBackground(Styles.black5);
-
-            table.button(Icon.rotate, () -> {
-                opened = !opened;
-            }).pad(6f).size(24f);
-
-            Prov<TextureRegionDrawable> icon = () -> {
-                return auto ? Icon.cancel : Icon.add;
-            };
-
-            table.button(icon.get(), () -> {
-                this.auto = !this.auto;
-            }).update(btn -> {
-                btn.clearChildren();
-                btn.image(icon.get());
-            }).pad(6f).size(24f);
         }
     }
 }

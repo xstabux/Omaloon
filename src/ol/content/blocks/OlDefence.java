@@ -157,7 +157,7 @@ public class OlDefence {
 
         int wallHealthMultiplier = 4;
 
-        zariniWall = new OlJoinWall("zarini-wall") {{
+        zariniWall = new OlJoinWall("modular-zarini-wall") {{
             requirements(Category.defense, with(
                     OlItems.zarini, 4,
                     OlItems.grumon, 2
@@ -169,7 +169,7 @@ public class OlDefence {
             size = 1;
         }};
 
-        tungstenWall = new OlJoinWall("ol-tungsten-wall") {{
+        tungstenWall = new OlJoinWall("modular-tungsten-wall") {{
             requirements(Category.defense, with(
                     Items.tungsten, 5,
                     OlItems.grumon, 1

@@ -1,35 +1,46 @@
 package ol.world.blocks.pressure;
 
+import arc.Events;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 
-import mindustry.annotations.Annotations.*;
 import mindustry.core.*;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.*;
 import mindustry.graphics.*;
-import mindustry.world.*;
 
 import mma.type.*;
 import mma.type.pixmap.*;
 
+import ol.core.SettingsManager;
 import ol.graphics.OlPal;
 import ol.utils.Angles;
 
+import ol.utils.RegionUtils;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
 import org.jetbrains.annotations.NotNull;
 
 import static mindustry.Vars.*;
 
 public class PressureCounter extends PressurePipe implements ImageGenerator {
-    @Load("@-arrow") public TextureRegion arrowRegion;
-    public boolean colorArrow = false; //TODO setting to set it`s default
+    public boolean colorArrow = SettingsManager.clarrows.get();
+
+    public TextureRegion arrowRegion;
     public float pointScale = 1.17f;
 
     public PressureCounter(String name) {
         super(name);
         mapDraw = true;
+    }
+
+    @Override
+    public void load() {
+        super.load();
+
+        arrowRegion = RegionUtils.getRegion(this.name + "-arrow",
+                RegionUtils.getRegion("pressure-counter-arrow")
+        );
     }
 
     @Override public boolean inBuildPlanNet(@NotNull BuildPlan s, int x, int y, int ignored) {

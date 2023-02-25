@@ -11,7 +11,8 @@ public class OlStat {
             pressureConsume = new Stat("pressure-consume", OlStatCat.pressure),
             pressureProduction = new Stat("pressure-production", OlStatCat.pressure),
             maxPressure = new Stat("max-pressure", OlStatCat.pressure),
-            requirements = new Stat("requirements", StatCat.crafting);
+            requirements = new Stat("requirements", StatCat.crafting),
+            fuel = new Stat("fuel", StatCat.crafting);
     //averageSurfaceTemperature = new Stat("average-surface-temperature"),
     //rad = new Stat("radius"),
     //orbitRad = new Stat("orbit-radius");

@@ -18,10 +18,6 @@ public class PressureModule extends BlockModule {
     }
 
     public void update(Building build) {
-        if(this.pressure < 0) {
-            this.pressure = 0;
-        }
-
         if(build == null) {
             return;
         }

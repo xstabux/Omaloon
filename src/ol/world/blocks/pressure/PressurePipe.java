@@ -18,15 +18,20 @@ import mindustry.world.meta.*;
 
 import ol.content.*;
 import ol.content.blocks.*;
+import ol.graphics.OlGraphics;
 import ol.input.*;
 import ol.utils.*;
 import ol.utils.Angles;
 import ol.utils.pressure.*;
+import ol.world.blocks.pressure.meta.MirrorBlock;
+import org.jetbrains.annotations.Contract;
 
 import java.util.function.*;
 import static mindustry.Vars.*;
 
 public class PressurePipe extends PressureBlock implements PressureReplaceable {
+    public final RegionUtils.BlockRegionFinder finder = new RegionUtils.BlockRegionFinder(this);
+
     public TextureRegion[] cache; //null if headless
     public @Nullable Block junctionReplacement, bridgeReplacement;
 
@@ -38,8 +43,8 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
     public PressurePipe(String name){
         super(name);
 
-        conveyorPlacement = underBullets = rotate = solid = true;
-        drawArrow = false;
+        conveyorPlacement = underBullets = rotate = true;
+        drawArrow = solid = squareSprite = false;
         group = BlockGroup.power;
         priority = TargetPriority.transport;
     }
@@ -63,7 +68,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
     }
 
     @Override public void load() {
-        cache = new TextureRegion[0b1_00_00];
+        cache = OlGraphics.getRegions(this.finder.getRegion("-sheet"), 4, 4, 32);
         super.load();
     }
 
@@ -123,7 +128,9 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
 
         Boolf<Point2> cont = p -> plans.contains(o ->
                 o.x == req.x + p.x && o.y == req.y + p.y && o.rotation
-                == req.rotation && (req.block instanceof PressurePipe || req.block instanceof PressureJunction)
+                == req.rotation && (req.block instanceof PressurePipe ||
+                        req.block instanceof PressureJunction
+                || req.block instanceof MirrorBlock)
         );
 
         return cont.get(Geometry.d4(req.rotation)) &&
@@ -145,16 +152,16 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             OlPlans.set(plan, list);
 
             BuildPlan
-                top = OlPlans.get(0, 1),
+                top    = OlPlans.get(0, 1),
                 bottom = OlPlans.get(0, -1),
-                left = OlPlans.get(-1, 0),
-                right = OlPlans.get(1, 0);
+                left   = OlPlans.get(-1, 0),
+                right  = OlPlans.get(1, 0);
 
             boolean
-                validTop = top != null,
+                validTop    = top != null,
                 validBottom = bottom != null,
-                validLeft = left != null,
-                validRight = right != null;
+                validLeft   = left != null,
+                validRight  = right != null;
 
             Function<BuildPlan, Boolean> canWork = plnFunc -> {
                 Block block = plnFunc.block;
@@ -162,7 +169,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
                 if(block instanceof PressureBlock pressureBlock) {
                     boolean valid = PressureAPI.tierAble(pressureBlock.tier, tier);
 
-                    if(block instanceof PressurePipe pipe){
+                    if(block instanceof PressurePipe pipe) {
                         valid &= pipe.inBuildPlanNet(plan, plnFunc.x, plnFunc.y, plnFunc.rotation);
                     }
 
@@ -206,6 +213,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
         }
     }
 
+    @Contract(pure = true)
     private TextureRegion getRegion(boolean top, boolean bottom, boolean left, boolean right){
         int
             b = bottom ? 0b0001 : 0,
@@ -213,19 +221,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             r = right  ? 0b0100 : 0,
             l = left   ? 0b1000 : 0;
 
-        int spriteID = l | r | t | b;
-
-        TextureRegion reg = cache[spriteID];
-
-        if(reg == null) {
-            cache[spriteID] = reg = Core.atlas.find(name + "-" + spriteID);
-
-            if(reg == null) {
-                throw new NullPointerException("ZELAUX!!!!!!!!!!!!!!!!!!!!");
-            }
-        }
-
-        return reg;
+        return cache[l | r | t | b];
     }
 
     public class PressurePipeBuild extends PressureBlockBuild {
@@ -263,6 +259,11 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             return true;
         }
 
+        public boolean isCorrectType(Building building) {
+            return building instanceof PressureJunction.PressureJunctionBuild ||
+                    building instanceof MirrorBlock.MirrorBlockBuild;
+        }
+
         @Override
         public void draw(){
             if(!mapDraw) {
@@ -276,10 +277,16 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             Building bottom = nearby(0, -1);
             Building top    = nearby(0, 1);
 
-            boolean bLeft   = avalible(left)   || left   instanceof PressureJunction.PressureJunctionBuild;
-            boolean bRight  = avalible(right)  || right  instanceof PressureJunction.PressureJunctionBuild;
-            boolean bTop    = avalible(top)    || top    instanceof PressureJunction.PressureJunctionBuild;
-            boolean bBottom = avalible(bottom) || bottom instanceof PressureJunction.PressureJunctionBuild;
+            boolean bLeft   = avalible(left)   || isCorrectType(left);
+            boolean bRight  = avalible(right)  || isCorrectType(right);
+            boolean bTop    = avalible(top)    || isCorrectType(top);
+            boolean bBottom = avalible(bottom) || isCorrectType(bottom);
+
+            float angle = ((avalibleY() && bTop ? 1 : 0) +
+                    (avalibleY() && bBottom ? 1 : 0) +
+                    (avalibleX() && bLeft ? 1 : 0) +
+                    (avalibleX() && bRight ? 1 : 0)) == 0 ?
+                    Angles.alignY(this.rotation) ? -90 : 0 : 0;
 
             TextureRegion region = getRegion(
                     avalibleY() && bTop,
@@ -290,12 +297,12 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
 
             if(this.isPressureDamages()) {
                 if(state.is(GameState.State.paused)) {
-                    Draw.rect(region, this.x, this.y);
+                    Draw.rect(region, this.x, this.y, angle);
                 } else{
-                    Draw.rect(region, this.x, this.y, Mathf.random(-4, 4));
+                    Draw.rect(region, this.x, this.y, angle + Mathf.random(-4, 4));
                 }
             }else{
-                Draw.rect(region, this.x, this.y);
+                Draw.rect(region, this.x, this.y, angle);
             }
 
             this.drawTeamTop();
