@@ -165,7 +165,7 @@ public class OlDefence {
 
             health = 100 * wallHealthMultiplier;
             damageScl = 0.50f;
-            damageRadius = 3;
+//            damageRadius = 3;
             size = 1;
         }};
 
@@ -177,7 +177,7 @@ public class OlDefence {
 
             health = 150 * wallHealthMultiplier;
             damageScl = 0.40f;
-            damageRadius = 3;
+//            damageRadius = 3;
             size = 1;
         }};
 
