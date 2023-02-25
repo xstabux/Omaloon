@@ -8,7 +8,6 @@ import mindustry.entities.bullet.MissileBulletType;
 import mindustry.gen.Sounds;
 import mindustry.type.*;
 
-import ol.entites.OrnitorpterComp;
 import ol.gen.*;
 import ol.type.units.ornitopter.Blade;
 import ol.type.units.ornitopter.OrnitopterUnitType;
