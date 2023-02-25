@@ -36,7 +36,6 @@ import mindustry.ui.*;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.ConstructBlock;
-import mindustry.ui.fragments.PlacementFragment;
 
 import ol.content.blocks.OlPressure;
 import ol.world.blocks.RailBlock;
@@ -49,7 +48,7 @@ import org.jetbrains.annotations.NotNull;
 import static mindustry.Vars.*;
 import static mindustry.Vars.state;
 
-public class CustomCategory extends PlacementFragment {
+public class CustomCategory {
     public static final CustomCategory blockfrag = new CustomCategory(0);
 
     @Contract(pure = true)
@@ -115,18 +114,7 @@ public class CustomCategory extends PlacementFragment {
         @Contract(value = "null -> null; !null -> !null", pure = true)
         public static Category of(mindustry.type.Category category) {
             if(category == null) return null;
-            return switch(category) {
-                case turret -> turret;
-                case production -> production;
-                case distribution -> distribution;
-                case liquid -> liquid;
-                case power -> power;
-                case defense -> defence;
-                case crafting -> crafting;
-                case units -> units;
-                case effect -> effect;
-                case logic -> logic;
-            };
+            return all.get(category.ordinal());
         }
 
         public static Category of(int id) {
@@ -141,7 +129,9 @@ public class CustomCategory extends PlacementFragment {
                 return rails;
             }
 
-            if(block instanceof PressureAble || block instanceof MirrorBlock) {
+            if(block instanceof PressureAble || block instanceof MirrorBlock ||
+                    block == OlPressure.pressureJunction)
+            {
                 return pressure;
             }
 
@@ -687,7 +677,6 @@ public class CustomCategory extends PlacementFragment {
         return null;
     }
 
-    @Override
     public void build(@NotNull Group parent) {
         parent.fill(full -> {
             Reflect.set(ui.hudfrag.blockfrag, "toggler", full);
@@ -712,7 +701,9 @@ public class CustomCategory extends PlacementFragment {
 
                         ImageButton button = blockTable.button(new TextureRegionDrawable(block.uiIcon), Styles.selecti, () -> {
                             if(unlocked(block)){
-                                if((Core.input.keyDown(KeyCode.shiftLeft) || Core.input.keyDown(KeyCode.controlLeft)) && Fonts.getUnicode(block.name) != 0){
+                                if((Core.input.keyDown(KeyCode.shiftLeft) || Core.input.keyDown(KeyCode.controlLeft)) &&
+                                        Fonts.getUnicode(block.name) != 0)
+                                {
                                     Core.app.setClipboardText((char)Fonts.getUnicode(block.name) + "");
                                     ui.showInfoFade("@copied");
                                 }else{

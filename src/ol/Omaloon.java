@@ -45,7 +45,7 @@ public class Omaloon extends MMAMod{
             });
 
             CustomCategory.loadIcons();
-            //CustomCategory.load();
+            CustomCategory.load();
         });
 
         ModVars.modLog("Loaded Omaloon constructor.");
