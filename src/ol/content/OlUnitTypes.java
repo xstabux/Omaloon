@@ -13,6 +13,7 @@ import ol.type.units.ornitopter.Blade;
 import ol.type.units.ornitopter.OrnitopterUnitType;
 
 public class OlUnitTypes {
+
     @EntityDef(value = Ornitorpterc.class)
     public static UnitType
     t1;
