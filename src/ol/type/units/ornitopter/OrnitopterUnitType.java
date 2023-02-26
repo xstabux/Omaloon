@@ -15,7 +15,7 @@ import ol.gen.*;
 public class OrnitopterUnitType extends UnitType implements ImageGenerator{
     public final Seq<Blade> blades = new Seq<>();
 
-    public float bladeDeathMoveSlowdown = 0.01f;
+    public float bladeDeathMoveSlowdown = 0.01f, fallDriftScl = 60f;
     public float fallSmokeX = 0f, fallSmokeY = -5f, fallSmokeChance = 0.1f;
 
     public OrnitopterUnitType(String name){

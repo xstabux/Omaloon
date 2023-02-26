@@ -29,6 +29,7 @@ public class OlUnitTypes {
              range = 15 * 8f;
              maxRange = range;
              rotateSpeed = 6f;
+             fallDriftScl = 60f;
              blades.addAll(
                      //first
                      new Blade(name + "-blade1"){{

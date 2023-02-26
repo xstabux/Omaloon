@@ -67,7 +67,7 @@ public abstract class OrnitorpterComp implements Unitc, Ornitorpterc{
             // Compute random drift angle if not already set
             if (!hasDriftAngle) {
                 float speed = Math.max(Math.abs(vel().x), Math.abs(vel().y));
-                float maxAngle = Math.min(180f, speed * 60f); // Maximum drift angle based on speed
+                float maxAngle = Math.min(180f, speed * type.fallDriftScl); // Maximum drift angle based on speed
                 driftAngle = (Angles.angle(x, y, x + vel().x, y + vel().y) + Mathf.range(maxAngle)) % 360f;
                 hasDriftAngle = true;
             }
