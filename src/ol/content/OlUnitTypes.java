@@ -14,9 +14,7 @@ import ol.type.units.ornitopter.OrnitopterUnitType;
 
 public class OlUnitTypes {
 
-    @EntityDef(value = Ornitorpterc.class)
-    public static UnitType
-    t1;
+    public static @EntityDef(value = {Ornitorpterc.class}) UnitType t1;
 
     public static void load(){
         OlEntityMapping.init();
