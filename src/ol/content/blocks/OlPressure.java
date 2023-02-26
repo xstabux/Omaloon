@@ -13,7 +13,6 @@ import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.BuildVisibility;
 import ol.content.OlFx;
 import ol.content.OlLiquids;
-import ol.world.consumers.ConsumeLiquidDynamic;
 import ol.world.blocks.crafting.PressureCrafter;
 import ol.world.blocks.pressure.*;
 import ol.world.blocks.sandbox.SandboxCompressor;
@@ -28,37 +27,40 @@ public class OlPressure {
             electricCompressor,
             improvedCompressor,
             sandboxCompressor,
-            //pipes
+            //tier 1
             pressurePipe,
-            improvedPressurePipe,
-            reinforcedPressurePipe,
-            sandboxPressurePipe,
-            //releasers,
             pressureReleaser,
-            //counters
             pressureCounter,
+            pressureBridge,
+            pressureSmaller,
+            //tier 2
+            improvedPressurePipe,
             improvedPressureCounter,
+            improvedPressureBridge,
+            //tier 3
+            reinforcedPressurePipe,
             reinforcedPressureCounter,
+            reinforcedPressureBridge,
+            //sandbox
+            /*
+            sandboxPressurePipe,
             sandboxPressureCounter,
+            sandboxPressureBridge,
+            */
             //other
             pressureJunction,
-            //bridges
-            pressureBridge,
-            improvedPressureBridge,
-            reinforcedPressureBridge,
-            sandboxPressureBridge,
-            //levelers
             pressureLeveler,
-            //smaller
-            pressureSmaller,
     end;
 
-    public static void load(){
+    /*temporary*/
+    public static void tmp1(@NotNull Block block) {
+        block.requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
+    }
 
+    public static void load(){
         //compressors
         mechanicalCompressor = new PressureCrafter("mechanical-compressor") {{
             tmp1(this);
-
             drawer = new DrawMulti(
                     new DrawDefault(),
                     new DrawFrames(){{
@@ -66,7 +68,6 @@ public class OlPressure {
                         interval = 5f;
                     }}
             );
-
             ambientSound = Sounds.none;
             pressureProduce = 5;
             maxPressure = 50;
@@ -78,106 +79,79 @@ public class OlPressure {
 
         electricCompressor = new PressureCrafter("electric-compressor") {{
             tmp1(this);
-
             craftEffect = new RadialEffect() {{
                 effect = OlFx.psh;
                 layer = Layer.blockUnder;
                 amount = 4;
                 lengthOffset = 8;
             }};
-
-            drawer = new DrawMulti(
-                    new DrawDefault()
-            );
-
+            drawer = new DrawMulti(new DrawDefault());
             craftTime = 100f;
             ambientSound = Sounds.none;
             pressureProduce = 15;
-
             consumePower(2f);
-
             maxPressure = 50;
             showPressure = true;
             hasItems = false;
             hasLiquids= false;
-
             size = 2;
             tier = 1;
         }};
 
         improvedCompressor = new PressureCrafter("improved-compressor"){{
             tmp1(this);
-
-            drawer = new DrawMulti(
-                    new DrawDefault()
-            );
-
+            drawer = new DrawMulti(new DrawDefault());
             craftTime = 100f;
             ambientSound = Sounds.none;
             pressureProduce = 25;
-
             consumePower(2.6f);
             consumeLiquid(OlLiquids.angeirum, 14f/60f);
-
             maxPressure = 125;
             showPressure = true;
-
             size = 2;
             tier = 2;
         }};
 
-        sandboxCompressor = new SandboxCompressor("sandbox-compressor") {{
-            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
-            maxPressure = 1000;
-        }};
-
         //end compressors
-        //pipes
-
+        //tier 1
         pressurePipe = new PressurePipe("pressure-pipe") {{
             tmp1(this);
             maxPressure = 50;
             tier = 1;
         }};
 
-        improvedPressurePipe = new PressurePipe("improved-pressure-pipe"){{
-            tmp1(this);
-            maxPressure = 125;
-            tier = 2;
-        }};
-
-        reinforcedPressurePipe = new PressurePipe("reinforced-pressure-pipe"){{
-            tmp1(this);
-            maxPressure = 240;
-            tier = 3;
-        }};
-
-        sandboxPressurePipe = new PressurePipe("sandbox-pressure-pipe") {{
-            this.requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
-            this.bridgeReplacement = OlPressure.sandboxPressureBridge;
-            this.maxPressure = Float.POSITIVE_INFINITY;
-            this.dangerPressure = -1;
-            this.canExplode = false;
-        }};
-
-        //end pipes
-        //releasers
-
         pressureReleaser = new PressureReleaser("pressure-releaser") {{
             tmp1(this);
-            this.dangerPressure = 44;
-            this.maxPressure = 50;
-            this.tier = 1;
+            dangerPressure = 44;
+            maxPressure = 50;
+            tier = 1;
         }};
-
-        //end releasers
-        //counters
 
         pressureCounter = new PressureCounter("pressure-counter") {{
             tmp1(this);
             maxPressure = 50;
             dangerPressure = 44;
             tier = 1;
+        }};
+
+        pressureBridge = new PressureBridge("pressure-bridge") {{
+            tmp1(this);
+            maxPressure = 50;
+            range = 5.0f*tilesize;
+            tier = 1;
+        }};
+
+        pressureSmaller = new PressureSmaller("pressure-smaller") {{
+            tmp1(this);
+          //tier = 1;
+            consumePower(1);
+        }};
+
+        //tier 2
+        improvedPressurePipe = new PressurePipe("improved-pressure-pipe"){{
+            tmp1(this);
+            maxPressure = 125;
+            tier = 2;
         }};
 
         improvedPressureCounter = new PressureCounter("improved-pressure-counter"){{
@@ -187,43 +161,25 @@ public class OlPressure {
             tier = 2;
         }};
 
-        reinforcedPressureCounter = new PressureCounter("reinforced-pressure-counter"){{
-            tmp1(this);
-            maxPressure = 240;
-            dangerPressure = 234;
-            tier = 3;
-        }};
-
-        sandboxPressureCounter = new PressureCounter("sandbox-pressure-counter") {{
-            this.requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
-            this.bridgeReplacement = OlPressure.sandboxPressureBridge;
-            this.maxPressure = 512;
-            this.dangerPressure = Float.POSITIVE_INFINITY;
-            this.canExplode = false;
-        }};
-
-        //end counters
-        //other
-
-        pressureJunction = new PressureJunction("pressure-junction") {{
-            tmp1(this);
-        }};
-
-        //end other
-        //bridges
-
-        pressureBridge = new PressureBridge("pressure-bridge") {{
-            tmp1(this);
-            maxPressure = 50;
-            range = 5.0f*tilesize;
-            tier = 1;
-        }};
-
         improvedPressureBridge = new PressureBridge("improved-pressure-bridge"){{
             tmp1(this);
             maxPressure = 125;
             range = 5.0f*tilesize;
             tier = 2;
+        }};
+
+        //tier 3
+        reinforcedPressurePipe = new PressurePipe("reinforced-pressure-pipe"){{
+            tmp1(this);
+            maxPressure = 240;
+            tier = 3;
+        }};
+
+        reinforcedPressureCounter = new PressureCounter("reinforced-pressure-counter"){{
+            tmp1(this);
+            maxPressure = 240;
+            dangerPressure = 234;
+            tier = 3;
         }};
 
         reinforcedPressureBridge = new PressureBridge("reinforced-pressure-bridge"){{
@@ -233,17 +189,43 @@ public class OlPressure {
             tier = 3;
         }};
 
-        sandboxPressureBridge = new PressureBridge("sandbox-pressure-bridge") {{
-            this.requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
-            this.maxPressure = Float.POSITIVE_INFINITY;
-            this.dangerPressure = -1;
-            this.canExplode = false;
-
-            this.range = 7.0f*tilesize;
+        //sandbox
+        sandboxCompressor = new SandboxCompressor("sandbox-compressor") {{
+            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
+            maxPressure = 1000;
         }};
 
-        //end bridges
-        //levelers
+        /*
+        sandboxPressurePipe = new PressurePipe("sandbox-pressure-pipe") {{
+            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
+            bridgeReplacement = OlPressure.sandboxPressureBridge;
+            maxPressure = Float.POSITIVE_INFINITY;
+            dangerPressure = -1;
+            canExplode = false;
+        }};
+
+        sandboxPressureCounter = new PressureCounter("sandbox-pressure-counter") {{
+            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
+            bridgeReplacement = OlPressure.sandboxPressureBridge;
+            maxPressure = 512;
+            dangerPressure = Float.POSITIVE_INFINITY;
+            canExplode = false;
+        }};
+
+        sandboxPressureBridge = new PressureBridge("sandbox-pressure-bridge") {{
+            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
+            maxPressure = Float.POSITIVE_INFINITY;
+            dangerPressure = -1;
+            canExplode = false;
+            range = 7.0f*tilesize;
+        }};
+        */
+
+        //end tiers
+        //other
+        pressureJunction = new PressureJunction("pressure-junction") {{
+            tmp1(this);
+        }};
 
         pressureLeveler = new PressureLeveler("pressure-leveler") {{
             tmp1(this);
@@ -252,20 +234,6 @@ public class OlPressure {
             liquidConsumption = 4f;
             hasLiquids = true;
         }};
-
-        //end levelers
-        //smallers
-
-        pressureSmaller = new PressureSmaller("pressure-smaller") {{
-            tmp1(this);
-            this.hasPower = true;
-            this.consumePower(1);
-        }};
-
-        //end smallers
-    }
-
-    public static void tmp1(@NotNull Block block) {
-        block.requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.empty);
+        //end other
     }
 }

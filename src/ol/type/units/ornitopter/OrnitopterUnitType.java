@@ -7,6 +7,7 @@ import arc.struct.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
+import mindustry.world.meta.Env;
 import mma.type.*;
 import mma.type.pixmap.*;
 import ol.gen.*;
@@ -20,6 +21,8 @@ public class OrnitopterUnitType extends UnitType implements ImageGenerator{
     public OrnitopterUnitType(String name){
         super(name);
         engineSize = 0f;
+        outlineColor = Color.valueOf("454552");
+        envDisabled = Env.space;
     }
 
     // Drawing Rotors
@@ -126,7 +129,6 @@ public class OrnitopterUnitType extends UnitType implements ImageGenerator{
             Pixmap bladeOutline = PixmapProcessor.outline(processor.get(blade.bladeRegion).copy());
             processor.save(bladeOutline, blade.spriteName + "-outline");
             processor.save(PixmapProcessor.outline(processor.get(blade.shadeRegion).copy()), blade.spriteName + "-top-outline");
-//            Pixmap pixmap = processor.get(region);
             icon = PixmapProcessor.drawScaleAt(icon, bladeOutline, (int)(blade.x / Draw.scl + icon.width / 2f - bladeOutline.width / 2f), (int)(-blade.y / Draw.scl + icon.height / 2f - bladeOutline.height / 2f));
             icon = PixmapProcessor.drawScaleAt(icon, bladeOutline.flipX(), (int)(-blade.x / Draw.scl + icon.width / 2f - bladeOutline.width / 2f), (int)(-blade.y / Draw.scl + icon.height / 2f - bladeOutline.height / 2f));
         }
@@ -135,11 +137,8 @@ public class OrnitopterUnitType extends UnitType implements ImageGenerator{
 
     @Override
     public void draw(Unit unit){
-        float z = unit.elevation > 0.5f ? (lowAltitude ? Layer.flyingUnitLow : Layer.flyingUnit) : groundLayer + Mathf.clamp(hitSize / 4000f, 0, 0.01f);
         super.draw(unit);
-
         drawRotor(unit);
-
     }
 
 
