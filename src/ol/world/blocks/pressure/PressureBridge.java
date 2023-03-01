@@ -24,6 +24,7 @@ import ol.graphics.*;
 import ol.utils.*;
 import ol.utils.pressure.*;
 import ol.world.blocks.*;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -186,7 +187,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             return false;
         }
 
-        return collision(x, y, other.x, other.y, range / tilesize + 1);
+        return collision(x, y, other.x, other.y, range / tilesize);
     }
 
     public boolean validLink(Building other, int x, int y) {
@@ -246,7 +247,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
     public boolean overlaps(@Nullable Tile src, @Nullable Tile other){
         if(src == null || other == null) return true;
 
-        return Intersector.overlaps(Tmp.cr1.set(src.worldx() + offset, src.worldy() + offset, range - 1),
+        return Intersector.overlaps(Tmp.cr1.set(src.worldx() + offset, src.worldy() + offset, range),
             Tmp.r1.setSize(size).setCenter(other.worldx() + offset, other.worldy() + offset));
     }
 
@@ -344,8 +345,6 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
                 }
             }
             drawWires();
-
-//            Drawf.select(x, y, s, Pal.accent);
             drawRange();
         }
 

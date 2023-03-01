@@ -54,11 +54,6 @@ public interface PressureAbleBuild {
         return this.asBlock().pressureDamage();
     }
 
-    default Effect pressureFx() {
-        this.checkComp();
-        return this.asBlock().damageFx();
-    }
-
     default boolean online() {
         return true;
     }
@@ -187,7 +182,7 @@ public interface PressureAbleBuild {
 
         if(this.isPressureDamages()) {
             float overload = this.pressure() / this.maxPressure();
-            return this.pressureDamage() * overload;
+            return this.pressureDamage() + overload;
         }
 
         return 0F;

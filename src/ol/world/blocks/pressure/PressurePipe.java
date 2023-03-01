@@ -38,7 +38,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
     /** draw connections? */
     public boolean mapDraw = true;
 
-    int timer = timers++;
+    //int timer = timers++;
 
     public PressurePipe(String name){
         super(name);
@@ -229,13 +229,13 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
         public void updateTile(){
             super.updateTile();
 
-            if(this.isPressureDamages()) {
+            /*if(this.isPressureDamages()) {
                 float random = Mathf.random(-3, 3);
 
                 if(timer(PressurePipe.this.timer, Mathf.random(35, 65))) {
-                    OlFx.pressureDamage.at(x + random / 2, y + random / 2, this.totalProgress() * random, Layer.blockUnder);
+                    OlFx.pressureDamage.at(x + random / 2, y + random / 2, this.totalProgress() * random);
                 }
-            }
+            }*/
         }
 
         public boolean avalible(Building b) {

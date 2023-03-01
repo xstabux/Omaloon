@@ -20,11 +20,6 @@ public interface PressureAble {
 
     /** how much damage was taken by pressure */
     default float pressureDamage() {
-        return 1F;
-    }
-
-    /** that effect was tick when pressure damages */
-    default Effect damageFx() {
-        return OlFx.pressureDamage;
+        return 0.2F;
     }
 }
