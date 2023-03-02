@@ -11,20 +11,24 @@ import mindustry.gen.Building;
 
 import ol.utils.Angles;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
-import org.jetbrains.annotations.NotNull;
 
 public class PressureReleaser extends PressurePipe {
     public float releasePower = 2.5f;
 
     public PressureReleaser(String name) {
         super(name);
-
-        this.mapDraw = true;
     }
 
-    @Override public boolean inBuildPlanNet(@NotNull BuildPlan s, int x, int y, int ignored) {
-        int ox = s.x - x;
-        int oy = s.y - y;
+    @Override
+    public boolean acceptJointPlan(BuildPlan s, BuildPlan o) {
+        if(s == null || o == null) return false;
+
+        if(!checkType(s, o)) {
+            return false;
+        }
+
+        int ox = s.x - o.x;
+        int oy = s.y - o.y;
 
         if(ox == 0 && oy == 0) {
             return true;

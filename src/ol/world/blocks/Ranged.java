@@ -13,10 +13,16 @@ public interface Ranged extends Teamc {
     }
 
     default void drawRange(float x, float y) {
-        Drawf.dashCircle(x, y, range(), color());
+        if(enabledRange()) {
+            Drawf.dashCircle(x, y, range(), color());
+        }
     }
 
     default void drawRange() {
         drawRange(getX(), getY());
+    }
+
+    default boolean enabledRange() {
+        return true;
     }
 }

@@ -1,23 +1,22 @@
 package ol.content.blocks;
 
-import arc.util.OS;
 import mindustry.entities.effect.RadialEffect;
 import mindustry.gen.Sounds;
 import mindustry.graphics.Layer;
 import mindustry.type.*;
 import mindustry.world.*;
-
 import mindustry.world.draw.DrawDefault;
 import mindustry.world.draw.DrawFrames;
 import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.BuildVisibility;
+
 import ol.content.OlFx;
 import ol.content.OlLiquids;
 import ol.world.blocks.crafting.PressureCrafter;
 import ol.world.blocks.pressure.*;
 import ol.world.blocks.sandbox.SandboxCompressor;
-import org.jetbrains.annotations.NotNull;
 
+import org.jetbrains.annotations.NotNull;
 import static mindustry.Vars.tilesize;
 
 public class OlPressure {
@@ -137,7 +136,7 @@ public class OlPressure {
         pressureBridge = new PressureBridge("pressure-bridge") {{
             tmp1(this);
             maxPressure = 50;
-            range = 5.0f*tilesize;
+            rangeRadius = 5.0f*tilesize;
             tier = 1;
         }};
 
@@ -164,7 +163,7 @@ public class OlPressure {
         improvedPressureBridge = new PressureBridge("improved-pressure-bridge"){{
             tmp1(this);
             maxPressure = 125;
-            range = 5.0f*tilesize;
+            rangeRadius = 5.0f*tilesize;
             tier = 2;
         }};
 
@@ -185,7 +184,7 @@ public class OlPressure {
         reinforcedPressureBridge = new PressureBridge("reinforced-pressure-bridge"){{
             tmp1(this);
             maxPressure = 240;
-            range = 5.0f*tilesize;
+            rangeRadius = 5.0f*tilesize;
             tier = 3;
         }};
 

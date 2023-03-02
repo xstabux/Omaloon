@@ -1,6 +1,5 @@
 package ol.world.blocks.pressure;
 
-import arc.Events;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
@@ -31,21 +30,29 @@ public class PressureCounter extends PressurePipe implements ImageGenerator {
 
     public PressureCounter(String name) {
         super(name);
-        mapDraw = true;
     }
 
     @Override
     public void load() {
         super.load();
 
-        arrowRegion = RegionUtils.getRegion(this.name + "-arrow",
-                RegionUtils.getRegion("pressure-counter-arrow")
-        );
+        arrowRegion = this.regionFinder.getRegion("-arrow");
+
+        if(RegionUtils.isErrorRegion(arrowRegion)) {
+            arrowRegion = RegionUtils.getRegion("pressure-counter-arrow");
+        }
     }
 
-    @Override public boolean inBuildPlanNet(@NotNull BuildPlan s, int x, int y, int ignored) {
-        int ox = s.x - x;
-        int oy = s.y - y;
+    @Override
+    public boolean acceptJointPlan(BuildPlan s, BuildPlan o) {
+        if(s == null || o == null) return false;
+
+        if(!checkType(s, o)) {
+            return false;
+        }
+
+        int ox = s.x - o.x;
+        int oy = s.y - o.y;
 
         if(ox == 0 && oy == 0) {
             return true;
