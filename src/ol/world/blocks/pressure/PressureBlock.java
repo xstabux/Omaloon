@@ -7,7 +7,6 @@ import mindustry.ui.*;
 import mindustry.world.*;
 
 import ol.utils.pressure.*;
-import ol.world.blocks.GraphBlock;
 import ol.world.blocks.pressure.meta.PressureAble;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
 import ol.world.blocks.pressure.meta.PressureModule;
@@ -16,7 +15,7 @@ import ol.world.meta.*;
 import static arc.Core.*;
 import static ol.graphics.OlPal.*;
 
-public class PressureBlock extends GraphBlock implements PressureAble {
+public class PressureBlock extends Block implements PressureAble {
     public float dangerPressure = -1;
     public float maxPressure = 100;
     public boolean canExplode = true;
@@ -69,7 +68,7 @@ public class PressureBlock extends GraphBlock implements PressureAble {
         return this.tier;
     }
 
-    public class PressureBlockBuild extends GraphBlockBuild implements PressureAbleBuild {
+    public class PressureBlockBuild extends Building implements PressureAbleBuild {
         public PressureModule pressureModule = new PressureModule();
 
         public boolean isDanger() {

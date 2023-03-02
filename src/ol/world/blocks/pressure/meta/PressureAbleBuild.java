@@ -1,5 +1,6 @@
 package ol.world.blocks.pressure.meta;
 
+import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.world.Tile;
 

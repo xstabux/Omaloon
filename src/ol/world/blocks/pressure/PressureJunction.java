@@ -6,15 +6,22 @@ import arc.graphics.g2d.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.*;
-import ol.world.blocks.GraphBlock;
 
-public class PressureJunction extends GraphBlock {
+public class PressureJunction extends Block {
     public PressureJunction(String name) {
         super(name);
+
+        this.destructible = true;
     }
 
     @Override
-    public boolean canReplace(Block other) {
+    public void setBars(){
+        super.setBars();
+        barMap.remove("pressure");
+    }
+
+    @Override
+    public boolean canReplace(Block other){
         return other instanceof PressurePipe;
     }
 
@@ -38,7 +45,7 @@ public class PressureJunction extends GraphBlock {
     }
 
     @SuppressWarnings("all") //IDEA
-    public class PressureJunctionBuild extends GraphBlockBuild {
+    public class PressureJunctionBuild extends Building {
         public Building getInvert(Building other){
             return nearby((relativeTo(other) + 2) % 4);
         }

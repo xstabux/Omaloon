@@ -12,22 +12,33 @@ import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
 import mindustry.gen.*;
+import mindustry.graphics.*;
 import mindustry.world.*;
 import mindustry.world.meta.*;
 
+import ol.content.*;
 import ol.content.blocks.*;
+import ol.graphics.OlGraphics;
 import ol.input.*;
+import ol.utils.*;
 import ol.utils.Angles;
-import ol.utils.OlPlans;
 import ol.utils.pressure.*;
-import ol.world.blocks.GraphBlock;
 import ol.world.blocks.pressure.meta.MirrorBlock;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
 
+import java.util.function.*;
 import static mindustry.Vars.*;
 
 public class PressurePipe extends PressureBlock implements PressureReplaceable {
+    public final RegionUtils.BlockRegionFinder finder = new RegionUtils.BlockRegionFinder(this);
+
+    public TextureRegion[] cache; //null if headless
     public @Nullable Block junctionReplacement, bridgeReplacement;
+
+    /** draw connections? */
+    public boolean mapDraw = true;
+
+    //int timer = timers++;
 
     public PressurePipe(String name){
         super(name);
@@ -36,7 +47,6 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
         drawArrow = solid = squareSprite = false;
         group = BlockGroup.power;
         priority = TargetPriority.transport;
-        drawStyle = DrawStyle.ENABLE_JOINS_MAP;
     }
 
     public void drawT(int x, int y, int rotation) {
@@ -55,6 +65,11 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             Draw.rect(pressureIcon, dx + ds, dy, 180);
             Draw.rect(pressureIcon, dx - ds, dy, 0);
         }
+    }
+
+    @Override public void load() {
+        cache = OlGraphics.getRegions(this.finder.getRegion("-sheet"), 4, 4, 32);
+        super.load();
     }
 
     @Override public void drawPlace(int x, int y, int rotation, boolean valid) {
@@ -89,114 +104,21 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
         }
     }
 
-    public boolean checkType(BuildPlan s, @NotNull BuildPlan o) {
-        Block block = o.block;
-
-        if(block instanceof PressureJunction) {
-            return true;
-        }
-
-        if(block instanceof PressureBlock pressureBlock) {
-            boolean valid = PressureAPI.tierAble(pressureBlock.tier, tier);
-
-            if(block instanceof PressurePipe pipe) {
-                try {
-                    valid &= pipe.acceptJointPlan(o, s);
-                } catch(StackOverflowError ignored) {
-                }
-            }
-
-            return valid;
-        }
-
-        return false;
-    }
-
-    @Override
-    public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list) {
-        if(drawStyle == DrawStyle.ENABLE_JOINS_MAP) {
-            OlPlans.set(plan, list);
-
-            BuildPlan
-                    top    = OlPlans.get(0, 1),
-                    bottom = OlPlans.get(0, -1),
-                    left   = OlPlans.get(-1, 0),
-                    right  = OlPlans.get(1, 0);
-
-            boolean
-                    validTop    = top != null,
-                    validBottom = bottom != null,
-                    validLeft   = left != null,
-                    validRight  = right != null;
-
-            Func<BuildPlan, Boolean> canWork = plnFunc -> {
-                Block block = plnFunc.block;
-
-                if(block instanceof PressureBlock pressureBlock) {
-                    boolean valid = PressureAPI.tierAble(pressureBlock.tier, tier);
-
-                    if(block instanceof PressurePipe pipe) {
-                        valid &= pipe.acceptJointPlan(plan, plnFunc);
-                    }
-
-                    return valid;
-                }
-
-                return block instanceof PressureJunction;
-            };
-
-            if(validTop) {
-                validTop = canWork.get(top);
-            }
-
-            if(validBottom) {
-                validBottom = canWork.get(bottom);
-            }
-
-            if(validLeft) {
-                validLeft = canWork.get(left);
-            }
-
-            if(validRight) {
-                validRight = canWork.get(right);
-            }
-
-            TextureRegion reg = sprites[GraphBlock.of(validTop, validBottom, validLeft, validRight)];
-            Draw.rect(reg, plan.drawx(), plan.drawy());
-
-            if(plan.worldContext && player != null && teamRegion != null && teamRegion.found()){
-                if(teamRegions[player.team().id] == teamRegion){
-                    Draw.color(player.team().color);
-                }
-
-                Draw.rect(teamRegions[player.team().id], plan.drawx(), plan.drawy());
-                Draw.color();
-            }
-
-            drawPlanConfig(plan, list);
-        }else{
-            super.drawPlanRegion(plan, list);
-        }
-    }
-
-    @Override
-    public boolean acceptJointPlan(BuildPlan s, BuildPlan o) {
-        if(s == null || o == null) return false;
-
-        if(!checkType(s, o)) {
+    public boolean inBuildPlanNet(BuildPlan s, int x, int y, int rotation) {
+        if(s == null) {
             return false;
         }
 
-        int ox = s.x - o.x;
-        int oy = s.y - o.y;
+        int ox = s.x - x;
+        int oy = s.y - y;
 
         if(ox == 0 && oy == 0){
             return true;
         }
 
         ox = ox < 0 ? -ox : ox;
-        return (ox == 1) ? (Angles.alignX(o.rotation) || Angles.alignX(s.rotation))
-                : (Angles.alignY(o.rotation) || Angles.alignY(s.rotation));
+        return (ox == 1) ? (Angles.alignX(rotation) || Angles.alignX(s.rotation))
+                   : (Angles.alignY(rotation) || Angles.alignY(s.rotation));
     }
 
     @Override public Block getReplacement(BuildPlan req, Seq<BuildPlan> plans){
@@ -224,10 +146,110 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
         OLPlacement.calculateBridges(plans, (PressureBridge)bridgeReplacement);
     }
 
+    @Override
+    public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list) {
+        if(this.mapDraw) {
+            OlPlans.set(plan, list);
+
+            BuildPlan
+                top    = OlPlans.get(0, 1),
+                bottom = OlPlans.get(0, -1),
+                left   = OlPlans.get(-1, 0),
+                right  = OlPlans.get(1, 0);
+
+            boolean
+                validTop    = top != null,
+                validBottom = bottom != null,
+                validLeft   = left != null,
+                validRight  = right != null;
+
+            Function<BuildPlan, Boolean> canWork = plnFunc -> {
+                Block block = plnFunc.block;
+
+                if(block instanceof PressureBlock pressureBlock) {
+                    boolean valid = PressureAPI.tierAble(pressureBlock.tier, tier);
+
+                    if(block instanceof PressurePipe pipe) {
+                        valid &= pipe.inBuildPlanNet(plan, plnFunc.x, plnFunc.y, plnFunc.rotation);
+                    }
+
+                    return valid;
+                }
+
+                return block instanceof PressureJunction;
+            };
+
+            if(validTop) {
+                validTop = canWork.apply(top);
+            }
+
+            if(validBottom) {
+                validBottom = canWork.apply(bottom);
+            }
+
+            if(validLeft) {
+                validLeft = canWork.apply(left);
+            }
+
+            if(validRight) {
+                validRight = canWork.apply(right);
+            }
+
+            TextureRegion reg = getRegion(validTop, validBottom, validLeft, validRight);
+            Draw.rect(reg, plan.drawx(), plan.drawy());
+
+            if(plan.worldContext && player != null && teamRegion != null && teamRegion.found()){
+                if(teamRegions[player.team().id] == teamRegion){
+                    Draw.color(player.team().color);
+                }
+
+                Draw.rect(teamRegions[player.team().id], plan.drawx(), plan.drawy());
+                Draw.color();
+            }
+
+            drawPlanConfig(plan, list);
+        }else{
+            super.drawPlanRegion(plan, list);
+        }
+    }
+
+    @Contract(pure = true)
+    private TextureRegion getRegion(boolean top, boolean bottom, boolean left, boolean right){
+        int
+            b = bottom ? 0b0001 : 0,
+            t = top    ? 0b0010 : 0,
+            r = right  ? 0b0100 : 0,
+            l = left   ? 0b1000 : 0;
+
+        return cache[l | r | t | b];
+    }
+
     public class PressurePipeBuild extends PressureBlockBuild {
+        @Override
+        public void updateTile(){
+            super.updateTile();
+
+            /*if(this.isPressureDamages()) {
+                float random = Mathf.random(-3, 3);
+
+                if(timer(PressurePipe.this.timer, Mathf.random(35, 65))) {
+                    OlFx.pressureDamage.at(x + random / 2, y + random / 2, this.totalProgress() * random);
+                }
+            }*/
+        }
+
         public boolean avalible(Building b) {
             return PressureAPI.netAble(this, b);
         }
+
+        /**
+         * pipes name based on connections <name>-[L*8+R*4+T*2+B]
+         * <p>
+         * example: if connected to all sides when loaded 15
+         * if connected only right when loaded 4
+         * ...
+         * if connected only right and left when loaded 12...
+         */
 
         public boolean avalibleX() {
             return true;
@@ -244,8 +266,9 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
 
         @Override
         public void draw(){
-            if(drawStyle != DrawStyle.ENABLE_JOINS_MAP) {
+            if(!mapDraw) {
                 super.draw();
+                this.drawTeamTop();
                 return;
             }
 
@@ -265,14 +288,13 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
                     (avalibleX() && bRight ? 1 : 0)) == 0 ?
                     Angles.alignY(this.rotation) ? -90 : 0 : 0;
 
-            byte comb = GraphBlock.of(
+            TextureRegion region = getRegion(
                     avalibleY() && bTop,
                     avalibleY() && bBottom,
                     avalibleX() && bLeft,
                     avalibleX() && bRight
             );
 
-            TextureRegion region = sprites[comb];
             if(this.isPressureDamages()) {
                 if(state.is(GameState.State.paused)) {
                     Draw.rect(region, this.x, this.y, angle);

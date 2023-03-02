@@ -50,7 +50,8 @@ public class SandboxCompressor extends PressurePipe {
         copyConfig = true;
 
         configurable = true;
-        drawStyle = DrawStyle.DEFAULT;
+
+        mapDraw = false;
 
         config(Integer.class, (SandboxCompressorBuild b, Integer i) -> b.val = i);
 

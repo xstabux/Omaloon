@@ -38,6 +38,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
     @Load("@-bridge") public TextureRegion bridge;
     @Load("@-end")    public TextureRegion bridgeEnd;
     @Load("@-end2")   public TextureRegion bridgeEnd2;
+    public float range = 2.5f * tilesize;
 
     public PressureBridge(String name){
         super(name);
@@ -52,8 +53,6 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
         priority = TargetPriority.transport;
         swapDiagonalPlacement = true;
         group = BlockGroup.transportation;
-        enableRange = true;
-        rangeRadius = 20;
 
         config(Integer.class, (PressureBridgeBuild c, Integer link) -> {
             if(c.link == link) {
@@ -69,7 +68,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
     }
 
     @Contract(pure = true)
-    public static boolean collision(float x1, float y1, float x2, float y2, float radius) {
+    public static boolean collision(float x1, float y1, float x2, float y2, float radius){
         return Mathf.within(x1, y1, x2, y2, radius + 1f);
     }
 
@@ -139,16 +138,14 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
     @Override public void setStats(){
         super.setStats();
 
-        stats.add(Stat.linkRange, rangeRadius / tilesize, StatUnit.blocks);
+        stats.add(Stat.linkRange, range / tilesize, StatUnit.blocks);
     }
 
     @Override public void drawPlanConfigTop(BuildPlan plan, Eachable<BuildPlan> list){
         otherReq = null;
 
         list.each(other -> {
-            if(other.block == this && plan != other && plan.config instanceof Point2 p &&
-                    p.equals(other.x - plan.x, other.y - plan.y))
-            {
+            if(other.block == this && plan != other && plan.config instanceof Point2 p && p.equals(other.x - plan.x, other.y - plan.y)){
                 otherReq = other;
             }
         });
@@ -190,7 +187,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             return false;
         }
 
-        return collision(x, y, other.x, other.y, rangeRadius / tilesize);
+        return collision(x, y, other.x, other.y, range / tilesize);
     }
 
     public boolean validLink(Building other, int x, int y) {
@@ -211,15 +208,15 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             return false;
         }
 
-        return collision(b2.x, b2.y, other.x, other.y, rangeRadius) && other instanceof PressureBridgeBuild b &&
+        return collision(b2.x, b2.y, other.x, other.y, range) && other instanceof PressureBridgeBuild b &&
                    (PressureAPI.tierAble(b2.tier(), b.tier()));
     }
 
     public boolean positionsValid(int x1, int y1, int x2, int y2){
         if(x1 == x2) {
-            return Math.abs(y1 - y2) <= rangeRadius / tilesize;
+            return Math.abs(y1 - y2) <= range / tilesize;
         }else if(y1 == y2) {
-            return Math.abs(x1 - x2) <= rangeRadius / tilesize;
+            return Math.abs(x1 - x2) <= range / tilesize;
         }else {
             return false;
         }
@@ -228,7 +225,7 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
     @Override public void drawPlace(int x, int y, int rotation, boolean valid){
         super.drawPlace(x, y, rotation, valid);
 
-        Drawf.dashCircle(x * 8, y * 8, rangeRadius, Pal.accent);
+        Drawf.dashCircle(x * 8, y * 8, range, Pal.accent);
     }
 
     public int length(float x1, float y1, float x2, float y2){
@@ -250,11 +247,11 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
     public boolean overlaps(@Nullable Tile src, @Nullable Tile other){
         if(src == null || other == null) return true;
 
-        return Intersector.overlaps(Tmp.cr1.set(src.worldx() + offset, src.worldy() + offset, rangeRadius),
+        return Intersector.overlaps(Tmp.cr1.set(src.worldx() + offset, src.worldy() + offset, range),
             Tmp.r1.setSize(size).setCenter(other.worldx() + offset, other.worldy() + offset));
     }
 
-    public class PressureBridgeBuild extends PressureBlockBuild {
+    public class PressureBridgeBuild extends PressureBlockBuild implements Ranged {
         public int link = -1;
 
         @Override
@@ -420,6 +417,10 @@ public class PressureBridge extends PressureBlock implements PressureReplaceable
             }
 
             return childs;
+        }
+
+        @Override public float range(){
+            return range;
         }
 
         @Override public Point2 config(){
