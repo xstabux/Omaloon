@@ -20,6 +20,7 @@ import ol.ui.CustomCategory;
 import ol.ui.ModMetaDialogFinder;
 import ol.ui.dialogs.*;
 import ol.utils.*;
+import ol.world.blocks.pressure.meta.MirrorBlock;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -44,6 +45,7 @@ public class Omaloon extends MMAMod{
                 }
             });
 
+            MirrorBlock.updateChildren();
             CustomCategory.loadIcons();
             CustomCategory.load();
         });

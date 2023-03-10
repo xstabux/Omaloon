@@ -1,5 +1,6 @@
 package ol.world.blocks.pressure;
 
+import arc.util.Time;
 import mindustry.content.Liquids;
 import mindustry.gen.Building;
 import mindustry.type.Liquid;
@@ -44,6 +45,13 @@ public class PressureLeveler extends MirrorBlock {
                 aa.liquids.remove(liquidStack[0].liquid, pressure * liquidConsumption);
                 consume(liquidStack[0]);
             }
+        }
+
+        @Override
+        public boolean canConsume() {
+            var stack = getLiquid()[0];
+            if(stack == null) return false;
+            return super.canConsume() && liquids.get(stack.liquid) > stack.amount;
         }
 
         @Override

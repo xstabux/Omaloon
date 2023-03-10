@@ -1,9 +1,11 @@
 package ol.world.blocks.pressure.meta;
 
+import arc.Events;
 import arc.graphics.g2d.*;
 import arc.util.*;
 
 import mindustry.entities.units.*;
+import mindustry.game.EventType;
 import mindustry.gen.*;
 import mindustry.world.*;
 import mindustry.world.consumers.*;
@@ -26,6 +28,30 @@ public class MirrorBlock extends Block {
         rotate = true;
         quickRotate = true;
         rotateDraw = false;
+    }
+
+    // Update child buildings
+    public static void updateChildren() {
+        Events.run(EventType.Trigger.update, () -> {
+            // Loop through each building in the map
+            OlMapInvoker.eachBuild(building -> {
+                // If the building is a mirror block, process it
+                if(building instanceof MirrorBlockBuild) {
+                    var cast = (MirrorBlockBuild) building;
+                    Building aa = building.nearby(building.rotation);
+                    Building bb = cast.getAntiNearby();
+
+                    // If the opposite building is not null and both buildings can consume pressure
+                    if(bb != null && aa instanceof PressureAbleBuild && building.canConsume()) {
+                        if (bb instanceof PressureAbleBuild && cast.isActive()) {
+                            cast.updateNearby();
+                            cast.updateAntiNearby();
+                            cast.updateBoth(aa, bb);
+                        }
+                    }
+                }
+            });
+        });
     }
 
     // Load textures
@@ -69,27 +95,6 @@ public class MirrorBlock extends Block {
         // Update both nearby and opposite buildings
         public void updateBoth(Building aa, Building bb) {}
 
-        // Update child buildings
-        public void updateChildren() {
-            // Loop through each building in the map
-            OlMapInvoker.eachBuild(building -> {
-                // If the building is a mirror block, process it
-                if(building instanceof MirrorBlockBuild) {
-                    Building aa = building.nearby(building.rotation);
-                    Building bb = this.getAntiNearby();
-
-                    // If the opposite building is not null and both buildings can consume pressure
-                    if(bb != null && aa instanceof PressureAbleBuild && building.canConsume()) {
-                        if (bb instanceof PressureAbleBuild && this.isActive()) {
-                            this.updateNearby();
-                            this.updateAntiNearby();
-                            this.updateBoth(aa, bb);
-                        }
-                    }
-                }
-            });
-        }
-
         // Determine the status of the block
         @Override
         public BlockStatus status() {
@@ -100,7 +105,7 @@ public class MirrorBlock extends Block {
         @Override
         public boolean canConsume() {
             for(Consume consume : consumers) {
-                if(consume.efficiency(this) == 0) {
+                if(consume.efficiency(this) < 1) {
                     return false;
                 }
             }
