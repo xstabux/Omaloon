@@ -11,6 +11,7 @@ import mindustry.entities.Effect;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 
+import mindustry.graphics.Layer;
 import ol.utils.Angles;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +60,7 @@ public class PressureReleaser extends PressurePipe {
                     this.pressureModule.pressure -= releasePower;
                 }
 
-                if(timer(pshTimer,8)){
+                if(timer(pshTimer,10)){
                     releaseEffect.at(this.x, this.y, switch(this.rotation) {
                         case 1, 3 -> 90;
                         case 0, 2 -> 180;
