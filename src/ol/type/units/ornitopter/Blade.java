@@ -3,29 +3,51 @@ package ol.type.units.ornitopter;
 import arc.*;
 import arc.graphics.g2d.*;
 
+import mindustry.Vars;
+import mindustry.annotations.Annotations;
+import mindustry.content.Fx;
+import mindustry.gen.*;
 import mindustry.io.*;
 
 public class Blade {
     public final String spriteName;
     public TextureRegion bladeRegion, blurRegion, bladeOutlineRegion, shadeRegion;
 
-    /** Rotor offsets from the unit */
+    /**
+     * Rotor offsets from the unit
+     */
     public float x = 0f, y = 0f;
-    /** Rotor Size Scaling */
+    /**
+     * Rotor Size Scaling
+     */
     public float bladeSizeScl = 1, shadeSizeScl = 1;
-    /** Blade base movement speed */
+    /**
+     * Blade base movement speed
+     */
     public float bladeMoveSpeed = 12;
-    /** Minimum Movement Speed for blade, the blade speed won't go below this value, even when dying */
+    /**
+     * Minimum Movement Speed for blade, the blade speed won't go below this value, even when dying
+     */
     public float minimumBladeMoveSpeed = 0f;
-    /** On what bladeLayer is the Blade drawn at */
+    /**
+     * On what bladeLayer is the Blade drawn at
+     */
     public float bladeLayer = 0.5f;
-    /** How fast does the blur region moves, multiplied by default bladeMoveSpeed */
+    /**
+     * How fast does the blur region moves, multiplied by default bladeMoveSpeed
+     */
     public float bladeBlurSpeedMultiplier = 0.25f;
-    /** Multiplier for blurs alpha */
+    /**
+     * Multiplier for blurs alpha
+     */
     public float bladeBlurAlphaMultiplier = 0.9f;
-    /** Duplicates the initial blade and moves it on the opposite dirrection */
+    /**
+     * Duplicates the initial blade and moves it on the opposite dirrection
+     */
     public boolean doubleBlade = false;
-    /** How many blades generated on the unit */
+    /**
+     * How many blades generated on the unit
+     */
     public int bladeCount = 1;
 
     public Blade(String name) {
@@ -47,7 +69,8 @@ public class Blade {
         bladeRegion = Core.atlas.find(spriteName);
         blurRegion = Core.atlas.find(spriteName + "-blur");
         bladeOutlineRegion = Core.atlas.find(spriteName + "-outline");
-        shadeRegion = Core.atlas.find(spriteName + "-shade");}
+        shadeRegion = Core.atlas.find(spriteName + "-shade");
+    }
 
     // For mirroring
     public Blade copy() {

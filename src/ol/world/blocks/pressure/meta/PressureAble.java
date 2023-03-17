@@ -20,6 +20,6 @@ public interface PressureAble {
 
     /** how much damage was taken by pressure */
     default float pressureDamage() {
-        return 0.2F;
+        return 0.02F;
     }
 }

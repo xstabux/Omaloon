@@ -1,12 +1,16 @@
 package ol.entites;
 
+import arc.graphics.g2d.TextureRegion;
 import arc.math.*;
 import arc.math.geom.Vec2;
 import arc.util.*;
+import mindustry.Vars;
+import mindustry.annotations.Annotations;
 import mindustry.annotations.Annotations.*;
 import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
+import ol.content.OlFx;
 import ol.gen.*;
 import ol.type.units.ornitopter.*;
 import ol.type.units.ornitopter.Blade.*;

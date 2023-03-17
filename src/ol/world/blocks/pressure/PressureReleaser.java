@@ -84,7 +84,7 @@ public class PressureReleaser extends PressurePipe {
         @Override public void draw() {
             super.draw();
 
-            Draw.rect(Core.atlas.find("ol-ajgsio"), x, y, angle + this.drawrot());
+            Draw.rect(Core.atlas.find(block.name + "-valve"), x, y, angle + this.drawrot());
         }
 
         @Override public void write(Writes write) {

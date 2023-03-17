@@ -1,9 +1,11 @@
 package ol.world.blocks.pressure.meta;
 
-import mindustry.entities.Effect;
+import arc.math.Mathf;
+import arc.util.Time;
 import mindustry.gen.Building;
 import mindustry.world.Tile;
 
+import ol.content.OlFx;
 import ol.utils.Angles;
 import ol.utils.pressure.PressureAPI;
 
@@ -171,22 +173,18 @@ public interface PressureAbleBuild {
         module.update(self);
     }
 
-    /** return how many pressure bigger then maxPressure */
-    default float pressureOverload() {
-        return this.pressure() - this.maxPressure();
-    }
-
     /** returns damage to building including build health and pressure overload */
     default float dynamicPressureDamage() {
         this.checkComp();
 
         if(this.isPressureDamages()) {
-            float overload = this.pressure() / this.maxPressure();
-            return this.pressureDamage() + overload;
+            float overload = this.pressure() / this.maxPressure() + Mathf.random(2.5f, 0.5f);
+            return this.pressureDamage() + overload/10;
         }
 
         return 0F;
     }
+
 
     /**
      * @return true, if block to damage itself, false if not need to damage

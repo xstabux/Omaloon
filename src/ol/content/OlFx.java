@@ -5,13 +5,12 @@ import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
 
-import mindustry.gen.Groups;
-import mindustry.gen.WeatherState;
+import arc.util.Tmp;
 import mindustry.graphics.*;
 import mindustry.entities.*;
 
-import mindustry.type.weather.ParticleWeather;
 import ol.graphics.*;
+import ol.type.units.ornitopter.Blade;
 
 import static arc.graphics.g2d.Draw.*;
 import static arc.graphics.g2d.Lines.*;
@@ -62,18 +61,18 @@ public class OlFx {
     });
 
     public static final Effect pressureDamage = new Effect(150f, ef -> {
-                color(Color.white);
-                alpha(0.6f);
+        color(Color.white);
+        alpha(0.6f);
 
-                rand.setSeed(ef.id);
-                for(int i = 0; i < 3; i++) {
-                    float len = rand.random(6f), rot = rand.range(40f) + ef.rotation;
+        rand.setSeed(ef.id);
+           for(int i = 0; i < 3; i++) {
+               float len = rand.random(6f), rot = rand.range(40f) + ef.rotation;
 
-                    ef.scaled(ef.lifetime * rand.random(0.3f, 1f), b -> {
-                        vec.trns(rot, len * b.finpow());
-                        Fill.circle(ef.x + vec.x, ef.y + vec.y, 1.2f * b.fslope() + 0.2f);
-                    });
-                }
+               ef.scaled(ef.lifetime * rand.random(0.3f, 1f), b -> {
+                   vec.trns(rot, len * b.finpow());
+                   Fill.circle(ef.x + vec.x, ef.y + vec.y, 1.2f * b.fslope() + 0.2f);
+               });
+           }
     });
     public static final Effect zoneTrail = new Effect(30, e -> {
         color(Pal.heal, Pal.heal, e.fin() * e.fin());
