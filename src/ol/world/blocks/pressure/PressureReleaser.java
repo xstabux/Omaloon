@@ -6,6 +6,8 @@ import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 
+import mindustry.content.Fx;
+import mindustry.entities.Effect;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 
@@ -15,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class PressureReleaser extends PressurePipe {
     public float releasePower = 2.5f;
+    public Effect releaseEffect = Fx.none;
+    int pshTimer = timers++;
 
     public PressureReleaser(String name) {
         super(name);
@@ -55,9 +59,19 @@ public class PressureReleaser extends PressurePipe {
                     this.pressureModule.pressure -= releasePower;
                 }
 
+                if(timer(pshTimer,8)){
+                    releaseEffect.at(this.x, this.y, switch(this.rotation) {
+                        case 1, 3 -> 90;
+                        case 0, 2 -> 180;
+
+                        //unreachable
+                        default -> throw new RuntimeException();
+                    });
+                }
+
                 this.needAngle = switch(this.rotation) {
-                    case 0, 1 -> -90;
-                    case 2, 3 -> 90;
+                    case 0, 3 -> -90;
+                    case 1, 2 -> 90;
 
                     //unreachable
                     default -> throw new RuntimeException();

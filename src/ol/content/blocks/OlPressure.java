@@ -122,8 +122,15 @@ public class OlPressure {
 
         pressureReleaser = new PressureReleaser("pressure-releaser") {{
             tmp1(this);
-            dangerPressure = 44;
+            dangerPressure = 42;
+            releasePower = 0.5f;
             maxPressure = 50;
+            releaseEffect = new RadialEffect() {{
+                effect = OlFx.release;
+                amount = 2;
+                rotationSpacing = 180;
+                lengthOffset = 2;
+            }};
             tier = 1;
         }};
 

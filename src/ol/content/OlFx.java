@@ -74,6 +74,14 @@ public class OlFx {
                });
            }
     });
+
+    public static final Effect release = new Effect(23, e -> {
+        randLenVectors(e.id, 5, e.fin() * 4f, (x, y) -> {
+            color(Color.lightGray, Color.gray, e.fin());
+            Fill.circle(e.x + x, e.y + y, e.fout());
+        });
+    });
+
     public static final Effect zoneTrail = new Effect(30, e -> {
         color(Pal.heal, Pal.heal, e.fin() * e.fin());
         stroke(0.5f + e.fout() * 1.5f);
