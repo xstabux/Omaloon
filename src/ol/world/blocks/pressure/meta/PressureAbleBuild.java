@@ -178,7 +178,8 @@ public interface PressureAbleBuild {
         this.checkComp();
 
         if(this.isPressureDamages()) {
-            float overload = this.pressure() / this.maxPressure() + Mathf.random(2.5f, 0.5f);
+            float pressure = this.pressure();
+            float overload = Math.max(pressure, -pressure) / this.maxPressure();
             return this.pressureDamage() + overload/10;
         }
 

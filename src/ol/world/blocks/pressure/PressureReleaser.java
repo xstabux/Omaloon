@@ -40,17 +40,22 @@ public class PressureReleaser extends PressurePipe {
     }
 
     public class PressureReleaserBuild extends PressurePipeBuild {
+        public static final int angleSpeed = 5;
+
         public boolean opened = false;
         public boolean auto = false;
         public int needAngle = 0;
+        public int angle = minrun();
 
-        public int angle = switch(this.rotation) {
-            case 0, 3 -> 0;
-            case 1, 2 -> 180;
+        public int minrun() {
+            return switch(this.rotation) {
+                case 0, 3 -> 0;
+                case 1, 2 -> 180;
 
-            //unreachable
-            default -> throw new RuntimeException();
-        };
+                //unreachable
+                default -> throw new RuntimeException();
+            };
+        }
 
         @Override public void updateTile() {
             super.updateTile();
@@ -78,21 +83,15 @@ public class PressureReleaser extends PressurePipe {
                     default -> throw new RuntimeException();
                 };
             } else {
-                needAngle = switch(this.rotation) {
-                    case 0, 3 -> 0;
-                    case 1, 2 -> 180;
-
-                    //unreachable
-                    default -> throw new RuntimeException();
-                };
+                needAngle = minrun();
             }
 
             if(angle < needAngle) {
-                angle++;
+                angle += angleSpeed;
             }
 
             if(angle > needAngle) {
-                angle--;
+                angle -= angleSpeed;
             }
         }
 

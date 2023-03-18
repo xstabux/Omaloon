@@ -1,10 +1,10 @@
 package ol.world.blocks.pressure;
 
-import arc.util.Time;
 import mindustry.content.Liquids;
 import mindustry.gen.Building;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
+
 import ol.content.OlLiquids;
 import ol.world.blocks.pressure.meta.MirrorBlock;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
@@ -24,7 +24,7 @@ public class PressureLeveler extends MirrorBlock {
             Building anti = getAntiNearby();
             if (anti instanceof PressureAbleBuild build && build.tier() >= 2) {
                 Liquid liquid = build.tier() == 2 ? OlLiquids.angeirum : Liquids.slag;
-                return LiquidStack.with(liquid, 0.4f);
+                return LiquidStack.with(liquid, 0.004f);
             } else {
                 return LiquidStack.with(OlLiquids.nothing, 0);
             }
