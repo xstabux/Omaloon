@@ -77,7 +77,14 @@ public class OlFx {
 
     public static final Effect release = new Effect(23, e -> {
         randLenVectors(e.id, 5, e.fin() * 4f, (x, y) -> {
-            color(Color.lightGray, Color.gray, e.fin());
+            color(Color.white, e.fin());
+            Fill.circle(e.x + x, e.y + y, e.fout());
+        });
+    });
+
+    public static final Effect improvedRelease = new Effect(23, e -> {
+        randLenVectors(e.id, 5, e.fin() * 4f, (x, y) -> {
+            color(Color.valueOf("5e929d"), e.fin());
             Fill.circle(e.x + x, e.y + y, e.fout());
         });
     });

@@ -1,6 +1,6 @@
 package ol.world.blocks.pressure.meta;
 
-import arc.Events;
+import arc.*;
 import arc.graphics.g2d.*;
 import arc.util.*;
 
@@ -36,8 +36,7 @@ public class MirrorBlock extends Block {
             // Loop through each building in the map
             OlMapInvoker.eachBuild(building -> {
                 // If the building is a mirror block, process it
-                if(building instanceof MirrorBlockBuild) {
-                    var cast = (MirrorBlockBuild) building;
+                if(building instanceof MirrorBlockBuild cast) {
                     Building aa = building.nearby(building.rotation);
                     Building bb = cast.getAntiNearby();
 
@@ -58,7 +57,7 @@ public class MirrorBlock extends Block {
     @Override
     public void load() {
         super.load();
-        regions = OlGraphics.getRegions(regionFinder.getRegion("-sprites"), 4, 1, 32);
+        regions = OlGraphics.getRegions(regionFinder.getRegion("-sprites"), 4, 1, 32*this.size);
     }
 
     // Draw the plan region

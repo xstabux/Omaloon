@@ -35,10 +35,12 @@ public class OlPressure {
             pressureSmaller,
             //tier 2
             improvedPressurePipe,
+            improvedPressureReleaser,
             improvedPressureCounter,
             improvedPressureBridge,
             //tier 3
             reinforcedPressurePipe,
+            reinforcedPressureReleaser,
             reinforcedPressureCounter,
             reinforcedPressureBridge,
             //sandbox
@@ -161,6 +163,20 @@ public class OlPressure {
             tier = 2;
         }};
 
+        improvedPressureReleaser = new PressureReleaser("improved-pressure-releaser"){{
+            tmp1(this);
+            dangerPressure = 119;
+            releasePower = 0.5f;
+            maxPressure = 125;
+            releaseEffect = new RadialEffect() {{
+                effect = OlFx.improvedRelease;
+                amount = 2;
+                rotationSpacing = 180;
+                lengthOffset = 2;
+            }};
+            tier = 2;
+        }};
+
         improvedPressureCounter = new PressureCounter("improved-pressure-counter"){{
             tmp1(this);
             maxPressure = 125;
@@ -236,9 +252,10 @@ public class OlPressure {
 
         pressureLeveler = new PressureLeveler("pressure-leveler") {{
             tmp1(this);
+            size = 2;
             liquidCapacity = 10;
             consumePower(0.5f);
-            liquidConsumption = 4f;
+            liquidConsumption = 4f/60f;
             hasLiquids = true;
         }};
         //end other

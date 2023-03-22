@@ -1,14 +1,12 @@
 package ol.world.blocks.pressure;
 
-import mindustry.content.Liquids;
-import mindustry.gen.Building;
-import mindustry.type.Liquid;
-import mindustry.type.LiquidStack;
+import mindustry.content.*;
+import mindustry.gen.*;
+import mindustry.type.*;
 
-import ol.content.OlLiquids;
-import ol.world.blocks.pressure.meta.MirrorBlock;
-import ol.world.blocks.pressure.meta.PressureAbleBuild;
-import ol.world.consumers.ConsumeLiquidDynamic;
+import ol.content.*;
+import ol.world.blocks.pressure.meta.*;
+import ol.world.consumers.*;
 
 public class PressureLeveler extends MirrorBlock {
     public float liquidConsumption;
@@ -35,15 +33,20 @@ public class PressureLeveler extends MirrorBlock {
             PressureAbleBuild inputBuild = (PressureAbleBuild) aa;
             PressureAbleBuild outputBuild = (PressureAbleBuild) bb;
 
-            float pressure = inputBuild.pressure();
-            if (pressure > 1) {
-                outputBuild.pressure(pressure);
+            float inputPressure = inputBuild.pressure();
+            float outputPressure = outputBuild.pressure();
+            float pressureDifference = Math.abs(inputPressure - outputPressure);
+
+            if (inputPressure > outputPressure) {
+                outputBuild.pressure(inputPressure);
+            } else if (outputPressure > inputPressure) {
+                inputBuild.pressure(outputPressure);
             }
 
             LiquidStack[] liquidStack = getLiquid();
-            if (liquids != null && liquidStack.length > 0 && liquidStack[0].amount > 0) {
-                liquids.remove(liquidStack[0].liquid, pressure * liquidConsumption);
-                consume(liquidStack[0]);
+            if (liquids != null && liquidStack.length > 0 && liquidStack[0].amount > 0 && pressureDifference > 0) {
+                consume(liquidStack[0], pressureDifference);
+                liquids.remove(liquidStack[0].liquid, pressureDifference * liquidConsumption);
             }
         }
 
@@ -60,9 +63,10 @@ public class PressureLeveler extends MirrorBlock {
             return liquid == getLiquid()[0].liquid;
         }
 
-        private void consume(LiquidStack liquidStack) {
+        private void consume(LiquidStack liquidStack, float pressureDifference) {
             if (liquidConsumption > 0 && liquidStack.amount > 0) {
-                liquidStack.amount -= liquidConsumption;
+                float consumption = pressureDifference * liquidConsumption;
+                liquidStack.amount -= consumption;
             }
         }
     }
