@@ -9,12 +9,24 @@ import ol.graphics.*;
 
 public class OlEnvironment {
     public static Block
-            oreOmalite,
+            oreGrumon, oreOmalite,
             gravelDalanii, dalanii, deepDalanii,
             grun, grunWall;
 
     public static void load() {
         //region Ores
+        oreGrumon = new OreBlock("grumon-ore"){{
+            oreDefault = true;
+            variants = 3;
+            oreThreshold = 45F;
+            oreScale = 0.3F;
+            itemDrop = OlItems.grumon;
+
+            localizedName = itemDrop.localizedName;
+            mapColor.set(itemDrop.color);
+            useColor = true;
+        }};
+
         oreOmalite = new OreBlock("omalite-ore"){{
             oreDefault = true;
             variants = 3;
