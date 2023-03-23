@@ -80,6 +80,15 @@ public class MirrorBlock extends Block {
             };
         }
 
+        @Override
+        public Building nearby(int rotation) {
+            var b = super.nearby(rotation);
+            if(b instanceof MirrorBlockBuild && size > 1) {
+                return b.nearby(rotation);
+            }
+            return b;
+        }
+
         // Determine if the block is active
         public boolean isActive() {
             return true;
