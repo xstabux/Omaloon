@@ -23,7 +23,6 @@ import mindustry.world.meta.*;
 import mindustry.world.consumers.*;
 
 import ol.ui.*;
-import ol.utils.*;
 import ol.world.blocks.pressure.meta.ConsumePressureDynamic;
 import ol.world.consumers.ConsumeLiquidDynamic;
 import ol.world.meta.*;
@@ -81,7 +80,6 @@ public class MultiCrafter extends PressureCrafter {
                 warmupSpeed = 0f,
                 craftTime = 0f,
 
-                downScl = 0.25f,
                 pressureConsume = 0,
                 pressureProduce = 0,
                 maxPressure2 = -1;
@@ -473,6 +471,12 @@ public class MultiCrafter extends PressureCrafter {
                     dumpLiquid(output.liquid);
                 }
             }
+        }
+
+        @Override
+        public void consume() {
+            super.consume();
+            this.pressure(this.pressure() - this.pressureConsume());
         }
 
         @Override

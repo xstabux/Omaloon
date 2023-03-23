@@ -2,6 +2,7 @@ package ol.world.blocks.pressure;
 
 import arc.util.Time;
 import mindustry.gen.Building;
+import ol.utils.pressure.PressureAPI;
 import ol.world.blocks.pressure.meta.MirrorBlock;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
 
@@ -19,10 +20,12 @@ public class PressureSmaller extends MirrorBlock {
     public class PressureSmallerBuild extends MirrorBlockBuild {
         @Override
         public void updateBoth(Building aa, Building bb) {
-            if(Math.floor(Time.globalTime) % 30 == 0) {
-                PressureAbleBuild pab = (PressureAbleBuild) aa;
-                PressureAbleBuild pbb = (PressureAbleBuild) bb;
+            PressureAbleBuild pab = (PressureAbleBuild) aa;
+            PressureAbleBuild pbb = (PressureAbleBuild) bb;
 
+            if(Math.floor(Time.globalTime) % 30 == 0 &&
+                    PressureAPI.tierAble(pab.tier(), pbb.tier()))
+            {
                 pab.pressure(-pbb.pressure());
                 pbb.pressure(pbb.pressure() - 1);
             }

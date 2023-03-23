@@ -1,7 +1,6 @@
 package ol.world.blocks.pressure.meta;
 
-import arc.math.Mathf;
-import arc.util.Time;
+import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.world.Tile;
 
@@ -11,6 +10,7 @@ import ol.utils.pressure.PressureAPI;
 
 import arc.struct.Seq;
 import ol.world.blocks.pressure.PressureJunction;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import static mindustry.Vars.world;
@@ -173,6 +173,10 @@ public interface PressureAbleBuild {
         module.update(self);
     }
 
+    default @NotNull Effect effect32() {
+        return this.pressure() < 0 ? null : OlFx.pressureDamage;
+    }
+
     /** returns damage to building including build health and pressure overload */
     default float dynamicPressureDamage() {
         this.checkComp();
@@ -180,7 +184,7 @@ public interface PressureAbleBuild {
         if(this.isPressureDamages()) {
             float pressure = this.pressure();
             float overload = Math.max(pressure, -pressure) / this.maxPressure();
-            return this.pressureDamage() + overload/10;
+            return this.pressureDamage() + overload/10 + (float) Math.random();
         }
 
         return 0F;

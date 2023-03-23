@@ -1,8 +1,5 @@
 package ol.world.blocks.pressure.meta;
 
-import mindustry.entities.Effect;
-
-import ol.content.OlFx;
 import ol.utils.pressure.PressureAPI;
 
 /** interface of the PressureBlock, or for pressure things that can`t be extends on PressureBlock */

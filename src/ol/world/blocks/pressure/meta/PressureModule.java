@@ -9,8 +9,6 @@ import arc.util.io.Writes;
 import mindustry.gen.Building;
 import mindustry.world.modules.BlockModule;
 
-import ol.content.OlFx;
-
 import org.jetbrains.annotations.NotNull;
 
 public class PressureModule extends BlockModule {
@@ -33,9 +31,9 @@ public class PressureModule extends BlockModule {
         if(build instanceof PressureAbleBuild building) {
             float random = Mathf.random(-3, +3);
             if(building.isPressureDamages()) {
-                Time.run(5f, () -> {
-                    OlFx.pressureDamage.at(build.x + random, build.y + random, build.totalProgress() * random);
-                });
+                if(Math.floor(Time.globalTime) % 10 == 0) {
+                    building.effect32().at(build.x + random, build.y + random, build.totalProgress() * random);
+                }
                 build.damage(building.dynamicPressureDamage());
             }
         }
