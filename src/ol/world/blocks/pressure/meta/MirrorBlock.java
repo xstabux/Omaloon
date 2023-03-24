@@ -82,11 +82,15 @@ public class MirrorBlock extends Block {
 
         @Override
         public Building nearby(int rotation) {
-            var b = super.nearby(rotation);
-            if(b instanceof MirrorBlockBuild && size > 1) {
-                return b.nearby(rotation);
+            try {
+                var b = super.nearby(rotation);
+                if(b.block == MirrorBlock.this && size > 1 && b != this) {
+                    return b.nearby(rotation);
+                }
+                return b;
+            } catch(StackOverflowError ignored) {
+                throw new ArcRuntimeException("i don`t know how fix this and all");
             }
-            return b;
         }
 
         // Determine if the block is active
