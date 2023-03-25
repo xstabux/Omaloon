@@ -3,18 +3,15 @@ package ol.world.blocks.pressure.meta;
 import arc.*;
 import arc.graphics.g2d.*;
 import arc.util.*;
-
 import mindustry.entities.units.*;
 import mindustry.game.EventType;
 import mindustry.gen.*;
 import mindustry.world.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
-
 import ol.graphics.*;
 import ol.utils.*;
 import ol.utils.RegionUtils.*;
-
 import org.jetbrains.annotations.*;
 
 public class MirrorBlock extends Block {
@@ -84,7 +81,7 @@ public class MirrorBlock extends Block {
         public Building nearby(int rotation) {
             try {
                 var b = super.nearby(rotation);
-                if(b.block == MirrorBlock.this && size > 1 && b != this) {
+                if(b != null && b.block == MirrorBlock.this && size > 1 && b != this) {
                     return b.nearby(rotation);
                 }
                 return b;
