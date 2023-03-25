@@ -3,7 +3,6 @@ package ol.world.blocks.pressure.meta;
 import arc.*;
 import arc.graphics.g2d.*;
 import arc.math.geom.Geometry;
-import arc.math.geom.Point2;
 import arc.util.*;
 
 import mindustry.Vars;

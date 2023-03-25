@@ -9,9 +9,10 @@ import ol.graphics.*;
 
 public class OlEnvironment {
     public static Block
-            oreGrumon, oreOmalite,
+            oreGrumon, oreOmalite, oreTungsten,
             gravelDalanii, dalanii, deepDalanii,
-            grun, grunWall;
+            grun, grunWall,
+            gravel, gravelWall;
 
     public static void load() {
         //region Ores
@@ -23,6 +24,17 @@ public class OlEnvironment {
             itemDrop = OlItems.grumon;
 
             localizedName = itemDrop.localizedName;
+            mapColor.set(itemDrop.color);
+            useColor = true;
+        }};
+
+        oreTungsten = new OreBlock("tungsten-ore"){{
+            oreDefault = true;
+            variants = 3;
+            oreThreshold = 25F;
+            oreScale = 0.3F;
+            itemDrop = Items.tungsten;
+
             mapColor.set(itemDrop.color);
             useColor = true;
         }};
@@ -95,6 +107,15 @@ public class OlEnvironment {
 
         grunWall = new StaticWall("grun-wall"){{
            variants = 3;
+        }};
+
+        gravel = new Floor("gravel"){{
+           variants = 3;
+           wall = gravelWall;
+        }};
+
+        gravelWall = new StaticWall("gravel-wall"){{
+           variants = 2;
         }};
     }
 }
