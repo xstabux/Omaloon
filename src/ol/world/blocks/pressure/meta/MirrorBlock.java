@@ -2,8 +2,11 @@ package ol.world.blocks.pressure.meta;
 
 import arc.*;
 import arc.graphics.g2d.*;
+import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
 import arc.util.*;
 
+import mindustry.Vars;
 import mindustry.entities.units.*;
 import mindustry.game.EventType;
 import mindustry.gen.*;
@@ -80,17 +83,26 @@ public class MirrorBlock extends Block {
             };
         }
 
+        public Building tmp(int x, int y) {
+            var b = Vars.world.build(tileX() + x, tileY() + y);
+            if(b != null && b.block == MirrorBlock.this) {
+                int x2 = x == 0 ? 0 : x + 1;
+                int y2 = y == 0 ? 0 : y + 1;
+
+                return ((MirrorBlockBuild) b).tmp(x2, y2);
+            } else {
+                return b;
+            }
+        }
+
         @Override
         public Building nearby(int rotation) {
-            try {
-                var b = super.nearby(rotation);
-                if(b.block == MirrorBlock.this && size > 1 && b != this) {
-                    return b.nearby(rotation);
-                }
-                return b;
-            } catch(StackOverflowError ignored) {
-                throw new ArcRuntimeException("i don`t know how fix this and all");
+            if(size <= 1) {
+                return super.nearby(rotation);
             }
+
+            var p = Geometry.d4(rotation);
+            return tmp(p.x, p.y);
         }
 
         // Determine if the block is active
