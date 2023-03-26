@@ -204,22 +204,6 @@ public class MirrorBlock extends Block {
         public void draw() {
             Draw.rect(regions[rotation], x, y);
             drawTeamTop();
-
-            if(size > 1) {
-                Draw.color(Color.red);
-                Draw.alpha(0.5f);
-                Lines.stroke(2);
-                Lines.rect(x, y, 8, 8);
-
-                Draw.color(Color.cyan);
-                Draw.alpha(0.5f);
-                Tile[] cache = _func_539530(rotation);
-                for(var tile : cache) {
-                    Draw.rect(Core.atlas.find("router"), tile.drawx(), tile.drawy());
-                }
-
-                Draw.reset();
-            }
         }
     }
 }
