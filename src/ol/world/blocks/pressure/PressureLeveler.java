@@ -1,5 +1,6 @@
 package ol.world.blocks.pressure;
 
+import arc.struct.Seq;
 import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -19,13 +20,25 @@ public class PressureLeveler extends MirrorBlock {
 
     public class PressureLevelerBuild extends MirrorBlockBuild {
         public LiquidStack[] getLiquid() {
-            Building anti = getAntiNearby();
-            if (anti instanceof PressureAbleBuild build && build.tier() >= 2) {
-                Liquid liquid = build.tier() == 2 ? OlLiquids.angeirum : Liquids.slag;
-                return LiquidStack.with(liquid, 0.004f);
-            } else {
-                return LiquidStack.with(OlLiquids.nothing, 0);
+            Building[] a = getAntiNearby();
+            var valid = new Seq<Building>();
+            boolean consumesLiquid = false;
+            for(var anti : a) {
+                if(anti instanceof PressureAbleBuild build && build.tier() >= 2) {
+                    valid.add(anti);
+                    consumesLiquid = true;
+                }
             }
+            if(consumesLiquid) {
+                LiquidStack[] stacks = new LiquidStack[valid.size];
+                final int[] i = {0};
+                valid.forEach((b) -> {
+                    Liquid liquid = ((PressureAbleBuild) b).tier() == 2 ? OlLiquids.angeirum : Liquids.slag;
+                    stacks[i[0]++] = LiquidStack.with(liquid, 0.04f)[0];
+                });
+                return stacks;
+            }
+            return LiquidStack.with(OlLiquids.nothing, 0);
         }
 
         @Override
