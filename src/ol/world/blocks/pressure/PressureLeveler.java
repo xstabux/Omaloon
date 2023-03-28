@@ -65,9 +65,13 @@ public class PressureLeveler extends MirrorBlock {
             }
 
             LiquidStack[] liquidStack = getLiquid();
-            if (liquids != null && liquidStack.length > 0 && liquidStack[0].amount > 0 && tmp) {
-                consume(liquidStack[0]);
-                liquids.remove(liquidStack[0].liquid, liquidConsumption);
+            if(liquids != null && tmp) {
+                for(var stack : liquidStack) {
+                    if (stack.amount > 0) {
+                        consume(stack);
+                        liquids.remove(stack.liquid, stack.amount);
+                    }
+                }
             }
         }
 
@@ -86,7 +90,7 @@ public class PressureLeveler extends MirrorBlock {
 
         private void consume(LiquidStack liquidStack) {
             if (liquidConsumption > 0 && liquidStack.amount > 0) {
-                liquidStack.amount -= liquidConsumption;
+                liquidStack.amount = 0;
             }
         }
     }
