@@ -12,11 +12,9 @@ import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
 import mindustry.gen.*;
-import mindustry.graphics.*;
 import mindustry.world.*;
 import mindustry.world.meta.*;
 
-import ol.content.*;
 import ol.content.blocks.*;
 import ol.graphics.OlGraphics;
 import ol.input.*;
@@ -228,28 +226,11 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
         @Override
         public void updateTile(){
             super.updateTile();
-
-            /*if(this.isPressureDamages()) {
-                float random = Mathf.random(-3, 3);
-
-                if(timer(PressurePipe.this.timer, Mathf.random(35, 65))) {
-                    OlFx.pressureDamage.at(x + random / 2, y + random / 2, this.totalProgress() * random);
-                }
-            }*/
         }
 
         public boolean avalible(Building b) {
             return PressureAPI.netAble(this, b);
         }
-
-        /**
-         * pipes name based on connections <name>-[L*8+R*4+T*2+B]
-         * <p>
-         * example: if connected to all sides when loaded 15
-         * if connected only right when loaded 4
-         * ...
-         * if connected only right and left when loaded 12...
-         */
 
         public boolean avalibleX() {
             return true;

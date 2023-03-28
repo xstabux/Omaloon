@@ -2,12 +2,12 @@ package ol.world.blocks.pressure.meta;
 
 import arc.*;
 import arc.graphics.g2d.*;
-import arc.math.geom.Point2;
+import arc.math.geom.*;
 import arc.util.*;
 
 import mindustry.Vars;
 import mindustry.entities.units.*;
-import mindustry.game.EventType;
+import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.world.*;
 import mindustry.world.consumers.*;
@@ -32,6 +32,7 @@ public class MirrorBlock extends Block {
         rotate = true;
         quickRotate = true;
         rotateDraw = false;
+        drawArrow = false;
     }
     // Update child buildings
     public static void updateChildren() {
