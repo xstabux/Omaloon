@@ -1,10 +1,7 @@
 package ol.world.blocks.pressure.meta;
 
 import arc.*;
-import arc.func.Boolf;
-import arc.graphics.Color;
 import arc.graphics.g2d.*;
-import arc.math.geom.Geometry;
 import arc.math.geom.Point2;
 import arc.util.*;
 
@@ -45,16 +42,31 @@ public class MirrorBlock extends Block {
             OlMapInvoker.eachBuild(building -> {
                 // If the building is a mirror block, process it
                 if(building instanceof MirrorBlockBuild cast) {
-                    Building[] aa2 = cast.nearbyA(cast.rotation);
-                    Building[] bb2 = cast.getAntiNearby();
+                    Building[] a2 = cast.nearbyA(cast.rotation);
+                    Building[] b2 = cast.getAntiNearby();
 
-                    cast.updateNearby();
-                    cast.updateAntiNearby();
+                    PressureAbleBuild[] aa2 = new PressureAbleBuild[a2.length];
+                    PressureAbleBuild[] bb2 = new PressureAbleBuild[b2.length];
 
-                    for(Building aa : aa2) {
-                        for(Building bb : bb2) {
-                            if(bb != null && aa instanceof PressureAbleBuild && building.canConsume()) {
-                                if (bb instanceof PressureAbleBuild && cast.isActive()) {
+                    for(int i = 0; i < a2.length; i++) {
+                        if(a2[i] instanceof PressureAbleBuild) {
+                            aa2[i] = (PressureAbleBuild) a2[i];
+                        }
+                    }
+
+                    for(int i = 0; i < b2.length; i++) {
+                        if(b2[i] instanceof PressureAbleBuild) {
+                            bb2[i] = (PressureAbleBuild) b2[i];
+                        }
+                    }
+
+                    if(cast.canConsume() && cast.isActive()) {
+                        //TODO change aa2 to bb2 and bb2 to aa2
+                        cast.updateBoth(aa2, bb2);
+                        //TODO change aa to bb and bb to aa
+                        for(PressureAbleBuild aa : aa2) {
+                            for(PressureAbleBuild bb : bb2) {
+                                if(aa != null && bb != null) {
                                     cast.updateBoth(aa, bb);
                                 }
                             }
@@ -80,6 +92,7 @@ public class MirrorBlock extends Block {
 
     // Inner class that represents the building instance of the mirror block
     public class MirrorBlockBuild extends Building {
+        @Deprecated
         public int notificator = new Random().nextInt(Integer.MAX_VALUE);
 
         // Get the opposite building based on the current rotation
@@ -173,14 +186,11 @@ public class MirrorBlock extends Block {
             return true;
         }
 
-        // Update nearby buildings
-        public void updateNearby() {}
-
-        // Update the opposite building
-        public void updateAntiNearby() {}
+        @Deprecated
+        public void updateBoth(PressureAbleBuild aa, PressureAbleBuild bb) {}
 
         // Update both nearby and opposite buildings
-        public void updateBoth(Building aa, Building bb) {}
+        public void updateBoth(PressureAbleBuild[] aa, PressureAbleBuild[] bb) {}
 
         // Determine the status of the block
         @Override
