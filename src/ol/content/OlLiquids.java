@@ -5,7 +5,6 @@ import arc.graphics.*;
 import mindustry.content.*;
 import mindustry.type.*;
 
-import ol.type.NothingLiquid;
 import ol.type.liquids.*;
 
 public class OlLiquids{
@@ -48,7 +47,5 @@ public class OlLiquids{
 
 			canStayOn.add(Liquids.water);
 		}};
-
-		nothing = new NothingLiquid();
 	}
 }
