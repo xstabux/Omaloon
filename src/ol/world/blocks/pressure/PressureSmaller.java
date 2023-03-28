@@ -19,10 +19,11 @@ public class PressureSmaller extends MirrorBlock {
 
     public class PressureSmallerBuild extends MirrorBlockBuild {
         @Override
-        public void updateBoth(PressureAbleBuild pab, PressureAbleBuild pbb) {
+        public void updateBoth(Building aa, Building bb) {
+            PressureAbleBuild pab = (PressureAbleBuild) aa;
+            PressureAbleBuild pbb = (PressureAbleBuild) bb;
             if(Math.floor(Time.globalTime) % 30 == 0 &&
-                    PressureAPI.tierAble(pab.tier(), pbb.tier()))
-            {
+                    PressureAPI.tierAble(pab.tier(), pbb.tier())) {
                 pab.pressure(-pbb.pressure());
                 pbb.pressure(pbb.pressure() - 1);
             }

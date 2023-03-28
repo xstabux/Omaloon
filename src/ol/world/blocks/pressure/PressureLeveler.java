@@ -1,6 +1,7 @@
 package ol.world.blocks.pressure;
 
 import arc.struct.Seq;
+
 import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -10,11 +11,11 @@ import ol.world.blocks.pressure.meta.*;
 import ol.world.consumers.*;
 
 public class PressureLeveler extends MirrorBlock {
+
     public float liquidConsumption;
 
     public PressureLeveler(String name) {
         super(name);
-
         consume(new ConsumeLiquidDynamic(PressureLevelerBuild::getLiquid));
     }
 
@@ -29,6 +30,7 @@ public class PressureLeveler extends MirrorBlock {
                     consumesLiquid = true;
                 }
             }
+
             if(consumesLiquid) {
                 LiquidStack[] stacks = new LiquidStack[valid.size];
                 final int[] i = {0};
@@ -42,35 +44,25 @@ public class PressureLeveler extends MirrorBlock {
         }
 
         @Override
-        public void updateBoth(PressureAbleBuild[] aa, PressureAbleBuild[] bb) {
-            //PressureAbleBuild inputBuild = (PressureAbleBuild) aa;
-            //PressureAbleBuild outputBuild = (PressureAbleBuild) bb;
+        public void updateBoth(Building aa, Building bb) {
+            PressureAbleBuild inputBuild = (PressureAbleBuild) aa;
+            PressureAbleBuild outputBuild = (PressureAbleBuild) bb;
 
-            float inputPressure = 0;
-            for(PressureAbleBuild inputBuild : aa) {
-                if(inputBuild != null) {
-                    inputPressure += inputBuild.pressure();
-                }
+            float inputPressure = inputBuild.pressure();
+            float outputPressure = outputBuild.pressure();
+            float pressureDifference = Math.abs(inputPressure - outputPressure);
+
+            if (inputPressure > outputPressure) {
+                outputBuild.pressure(inputPressure);
+            } else if (outputPressure > inputPressure) {
+                inputBuild.pressure(outputPressure);
             }
 
-            boolean tmp = false;
-            for(PressureAbleBuild outputBuild : bb) {
-                if(outputBuild != null && inputPressure > outputBuild.pressure()) {
-                    outputBuild.pressure(inputPressure);
-                    tmp = true;
-                }
-
-                //inputPressure < outputBuild.pressure()
-                //this is condition is bug.
-            }
-
-            LiquidStack[] liquidStack = getLiquid();
-            if(liquids != null && tmp) {
-                for(var stack : liquidStack) {
-                    if (stack.amount > 0) {
-                        consume(stack);
-                        liquids.remove(stack.liquid, stack.amount);
-                    }
+            if (outputPressure < inputPressure) {
+                LiquidStack[] liquidStack = getLiquid();
+                if (liquids != null && liquidStack.length > 0 && liquidStack[0].amount > 0 && pressureDifference > 0) {
+                    consume(liquidStack[0], pressureDifference);
+                    liquids.remove(liquidStack[0].liquid, pressureDifference * liquidConsumption);
                 }
             }
         }
@@ -82,15 +74,15 @@ public class PressureLeveler extends MirrorBlock {
             if(stack.liquid == OlLiquids.nothing) return super.canConsume();
             return super.canConsume() && liquids.get(stack.liquid) > 0;
         }
-
         @Override
         public boolean acceptLiquid(Building source, Liquid liquid) {
             return liquid == getLiquid()[0].liquid;
         }
 
-        private void consume(LiquidStack liquidStack) {
+        private void consume(LiquidStack liquidStack, float pressureDifference) {
             if (liquidConsumption > 0 && liquidStack.amount > 0) {
-                liquidStack.amount = 0;
+                float consumption = pressureDifference * liquidConsumption;
+                liquidStack.amount -= consumption;
             }
         }
     }

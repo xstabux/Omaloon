@@ -1,5 +1,6 @@
 package ol.world.blocks.pressure.meta;
 
+import arc.math.Mathf;
 import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.world.Tile;
@@ -183,8 +184,8 @@ public interface PressureAbleBuild {
 
         if(this.isPressureDamages()) {
             float pressure = this.pressure();
-            float overload = Math.max(pressure, -pressure) / this.maxPressure();
-            return this.pressureDamage() + overload/10 + (float) Math.random();
+            float overload = pressure / this.maxPressure();
+            return this.pressureDamage() + overload/40 + Mathf.random(0.02f,0.1f);
         }
 
         return 0F;

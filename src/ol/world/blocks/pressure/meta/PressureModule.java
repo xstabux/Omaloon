@@ -31,7 +31,7 @@ public class PressureModule extends BlockModule {
         if(build instanceof PressureAbleBuild building) {
             float random = Mathf.random(-3, +3);
             if(building.isPressureDamages()) {
-                if(Math.floor(Time.globalTime) % 10 == 0) {
+                if(Math.floor(Time.globalTime) % 50 == 0) {
                     building.effect32().at(build.x + random, build.y + random, build.totalProgress() * random);
                 }
                 build.damage(building.dynamicPressureDamage());
