@@ -58,7 +58,7 @@ public class PressureLeveler extends MirrorBlock {
                 inputBuild.pressure(outputPressure);
             }
 
-            if (outputPressure < inputPressure && getLiquid()[0].amount > 0) {
+            if (outputPressure < inputPressure && getLiquid().length > 0 && getLiquid()[0].amount > 0) {
                 float pressureDifference = Math.abs(inputPressure - outputPressure);
                 consume(getLiquid()[0], pressureDifference);
                 liquids.remove(getLiquid()[0].liquid, pressureDifference * liquidConsumption);
@@ -67,9 +67,9 @@ public class PressureLeveler extends MirrorBlock {
 
         @Override
         public boolean canConsume() {
-            var stack = getLiquid()[0];
-            if(stack == null || stack.liquid == OlLiquids.nothing) return super.canConsume();
-            return super.canConsume() && liquids.get(stack.liquid) > 0;
+            var liquidArray = getLiquid();
+            if(liquidArray.length == 0 || liquidArray[0] == null || liquidArray[0].liquid == OlLiquids.nothing) return super.canConsume();
+            return super.canConsume() && liquids.get(liquidArray[0].liquid) > 0;
         }
 
         @Override
