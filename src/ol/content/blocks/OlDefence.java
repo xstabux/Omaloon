@@ -22,7 +22,7 @@ import static mindustry.type.ItemStack.*;
 public class OlDefence {
     public static Block
             //turrets
-            tau, freezing,
+            tau, unitCatapult, freezing,
             //walls
             zariniWall, tungstenWall,
             omaliteAlloyWall,
@@ -71,6 +71,25 @@ public class OlDefence {
             }};
 
             consumePower(1.3f);
+        }};
+
+        unitCatapult = new PayloadAmmoTurret("unit-catapult"){{
+            requirements(Category.turret, empty);
+            size = 3;
+            range = 375f;
+            ammoUseEffect = Fx.none;
+
+            drawer = new DrawTurret("intensified-");
+
+            ammo(OlUnitTypes.nisus, new BasicBulletType(0f, 1){
+                {
+                    shootEffect = Fx.shootBig;
+                    smokeEffect = Fx.shootSmokeMissile;
+                    ammoMultiplier = 1f;
+
+                    spawnUnit = OlUnitTypes.nisus;
+                }}
+            );
         }};
 
         freezing = new PowerTurret("freezing") {{

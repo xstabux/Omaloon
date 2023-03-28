@@ -13,7 +13,6 @@ import mindustry.world.meta.Env;
 import mma.type.*;
 import mma.type.pixmap.*;
 
-import ol.content.OlFx;
 import ol.gen.*;
 
 public class OrnitopterUnitType extends UnitType implements ImageGenerator{

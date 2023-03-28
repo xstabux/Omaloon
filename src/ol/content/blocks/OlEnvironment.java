@@ -12,7 +12,8 @@ public class OlEnvironment {
             oreGrumon, oreOmalite, oreTungsten,
             gravelDalanii, dalanii, deepDalanii,
             grun, grunWall,
-            gravel, gravelWall;
+            gravel, gravelWall,
+            greenite, greeniteWall;
 
     public static void load() {
         //region Ores
@@ -111,10 +112,21 @@ public class OlEnvironment {
 
         gravel = new Floor("gravel"){{
            variants = 3;
+           itemDrop = Items.sand;
            wall = gravelWall;
         }};
 
         gravelWall = new StaticWall("gravel-wall"){{
+           variants = 2;
+            itemDrop = Items.sand;
+        }};
+
+        greenite = new Floor("greenite"){{
+           variants = 3;
+           wall = greeniteWall;
+        }};
+
+        greeniteWall = new StaticWall("greenite-wall"){{
            variants = 2;
         }};
     }

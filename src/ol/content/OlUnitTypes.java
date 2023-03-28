@@ -1,24 +1,48 @@
 package ol.content;
 
 import arc.graphics.Color;
+import mindustry.ai.types.MissileAI;
 import mindustry.annotations.Annotations.*;
 import mindustry.content.Fx;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.MissileBulletType;
 import mindustry.gen.Sounds;
+import mindustry.graphics.Layer;
 import mindustry.type.*;
 
+import ol.ai.types.FlyingKamikadzeAI;
 import ol.gen.*;
 import ol.type.units.ornitopter.Blade;
 import ol.type.units.ornitopter.OrnitopterUnitType;
 
 public class OlUnitTypes {
 
-    public static @EntityDef(value = {Ornitorpterc.class}) UnitType t1;
+    public static @EntityDef(value = {Ornitorpterc.class}) UnitType nisus, effort;
 
     public static void load(){
         OlEntityMapping.init();
-         t1 = new OrnitopterUnitType("t1"){{
+        nisus = new OrnitopterUnitType("nisus"){{
+            speed = 2.8f;
+            accel = 0.08f;
+            drag = 0.04f;
+            flying = true;
+            health = 210;
+            range = 15 * 8f;
+            maxRange = range;
+            rotateSpeed = 3f;
+            fallDriftScl = 60f;
+            controller = u -> new FlyingKamikadzeAI();
+            lifetime = 60f * 1.7f;
+            blades.addAll(
+                    new Blade(this.name + "-blade"){{
+                        x = -5; y = 0;
+                        bladeMoveSpeed = 0;
+                    }}
+            );
+            hitSize = 8;
+        }};
+
+        effort = new OrnitopterUnitType("effort"){{
              speed = 2.7f;
              accel = 0.08f;
              drag = 0.04f;
