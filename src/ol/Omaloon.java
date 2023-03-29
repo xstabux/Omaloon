@@ -16,11 +16,10 @@ import ol.core.*;
 import ol.gen.*;
 import ol.graphics.*;
 import ol.logic.*;
-import ol.ui.CustomCategory;
-import ol.ui.ModMetaDialogFinder;
+import ol.ui.*;
 import ol.ui.dialogs.*;
 import ol.utils.*;
-import ol.world.blocks.pressure.meta.MirrorBlock;
+import ol.world.blocks.pressure.meta.*;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -29,11 +28,6 @@ public class Omaloon extends MMAMod{
 
     public Omaloon(){
         OlVars.load();
-
-        //OlGroups.init();
-        //Events.on(ResetEvent.class, e -> {
-        //    OlGroups.clear();
-        //});
 
         Events.on(EventType.ClientLoadEvent.class, ignored -> {
             OlSettings.init();
@@ -109,6 +103,10 @@ public class Omaloon extends MMAMod{
         //check updates if enabled
         if(SettingsManager.check.get()){
             OlUpdateCheckDialog.check();
+        }
+        //check crashes if enabled
+        if(SettingsManager.checkCrashes.get()){
+            new OlCrashReportDialog().load();
         }
     }
 

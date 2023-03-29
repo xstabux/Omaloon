@@ -68,7 +68,7 @@ public class PressureLeveler extends MirrorBlock {
         @Override
         public boolean canConsume() {
             var liquidArray = getLiquid();
-            if(liquidArray.length == 0 || liquidArray[0] == null || liquidArray[0].liquid == OlLiquids.nothing) return super.canConsume();
+            if(liquidArray.length == 0 || liquidArray[0] == null) return super.canConsume();
             return super.canConsume() && liquids.get(liquidArray[0].liquid) > 0;
         }
 
