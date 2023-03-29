@@ -189,7 +189,7 @@ task mpack(dependsOn: [classes, configurations.runtimeClasspath]) {
         javaexec {
             maxHeapSize = "4048m"
             args("-Xmx4048m")
-            main = "ol.tools.OmaloonImagePacker"
+            main = "ol.tools.Tools"
             classpath = sourceSets.main.runtimeClasspath
             workingDir = genFolder
 //            jvmArgs ("-Xmx2024m")
@@ -256,7 +256,7 @@ task badPack(dependsOn: [classes, configurations.runtimeClasspath]) {
         javaexec {
             maxHeapSize = "4048m"
             args("-Xmx4048m")
-            main = "ol.tools.OmaloonImagePacker"
+            main = "ol.tools.Tools"
             classpath = sourceSets.main.runtimeClasspath
             workingDir = genFolder
 //            jvmArgs ("-Xmx2024m")
@@ -302,7 +302,7 @@ task generateIcons(dependsOn: [classes, configurations.runtimeClasspath]) {
 task genSprites(dependsOn: classes, type: JavaExec) {
 //    finalizedBy 'antialiasGen'
 
-    main = "ol.tools.OmaloonImagePacker"
+    main = "ol.tools.Tools"
     classpath = sourceSets.main.runtimeClasspath
     jvmArgs("-Djava.awt.headless=true")
     standardInput = System.in
