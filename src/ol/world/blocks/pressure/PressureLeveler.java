@@ -1,5 +1,6 @@
 package ol.world.blocks.pressure;
 
+import arc.struct.ObjectMap;
 import arc.struct.Seq;
 
 import mindustry.content.*;
@@ -11,7 +12,6 @@ import ol.world.blocks.pressure.meta.*;
 import ol.world.consumers.*;
 
 public class PressureLeveler extends MirrorBlock {
-
     public float liquidConsumption;
 
     public PressureLeveler(String name) {
@@ -30,7 +30,6 @@ public class PressureLeveler extends MirrorBlock {
                     consumesLiquid = true;
                 }
             }
-
             if(consumesLiquid) {
                 LiquidStack[] stacks = new LiquidStack[valid.size];
                 final int[] i = {0};
@@ -38,10 +37,23 @@ public class PressureLeveler extends MirrorBlock {
                     Liquid liquid = ((PressureAbleBuild) b).tier() == 2 ? OlLiquids.angeirum : Liquids.slag;
                     stacks[i[0]++] = LiquidStack.with(liquid, 0.04f)[0];
                 });
-                return stacks;
-            } else {
-                return LiquidStack.empty;
+                ObjectMap<Liquid, Seq<LiquidStack>> map = new ObjectMap<>();
+                for(var stack : stacks) {
+                    if(map.containsKey(stack.liquid)) {
+                        map.get(stack.liquid).add(stack);
+                    } else {
+                        map.put(stack.liquid, Seq.with(stack));
+                    }
+                }
+                var keys = map.keys().toSeq();
+                LiquidStack[] len = new LiquidStack[keys.size];
+                int j = 0;
+                for(var key : keys) {
+                    len[j++] = new LiquidStack(key, map.get(key).sumf(s -> s.amount));
+                }
+                return len;
             }
+            return LiquidStack.empty;
         }
 
         @Override
@@ -55,13 +67,20 @@ public class PressureLeveler extends MirrorBlock {
             if (inputPressure > outputPressure) {
                 outputBuild.pressure(inputPressure);
             } else if (outputPressure > inputPressure) {
+                //will be created bug
                 inputBuild.pressure(outputPressure);
             }
 
-            if (outputPressure < inputPressure && getLiquid().length > 0 && getLiquid()[0].amount > 0) {
+            var l = getLiquid();
+            if(outputPressure < inputPressure && l.length > 0) {
                 float pressureDifference = Math.abs(inputPressure - outputPressure);
-                consume(getLiquid()[0], pressureDifference);
-                liquids.remove(getLiquid()[0].liquid, pressureDifference * liquidConsumption);
+
+                for(LiquidStack stack : l) {
+                    if(stack.amount > 0) {
+                        consume(stack, pressureDifference);
+                        liquids.remove(stack.liquid, pressureDifference * liquidConsumption);
+                    }
+                }
             }
         }
 

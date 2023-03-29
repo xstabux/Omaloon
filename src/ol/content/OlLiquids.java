@@ -11,7 +11,6 @@ public class OlLiquids{
 	public static Liquid
 			liquidOmalite,
 			angeirum,
-			nothing,
 			dalanii;
 
 	public static void load() {
