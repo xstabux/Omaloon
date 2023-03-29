@@ -20,6 +20,7 @@ public class OlSettings{
             table.checkPref(SettingsManager.check.key, SettingsManager.check.def());
             table.checkPref(SettingsManager.clarrows.key, SettingsManager.clarrows.def());
             table.checkPref(SettingsManager.checkCrashes.key, SettingsManager.checkCrashes.def());
+            table.checkPref(SettingsManager.olCategory.key, SettingsManager.olCategory.def());
         });
     }
 }

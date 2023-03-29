@@ -18,6 +18,9 @@ object SettingsManager {
     @JvmField
     var checkCrashes = BooleanSettingKey("mod.ol.check-crashes") { true }
 
+    @JvmField
+    var olCategory = BooleanSettingKey("mod.ol.category") {true}
+
     init {
         SettingKey.allKeys.each { it.setDefault() }
     }

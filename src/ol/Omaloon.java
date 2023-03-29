@@ -40,8 +40,11 @@ public class Omaloon extends MMAMod{
             });
 
             MirrorBlock.updateChildren();
-            CustomCategory.loadIcons();
-            CustomCategory.load();
+            //ads pressure category if enabled
+            if(SettingsManager.olCategory.get()) {
+                CustomCategory.loadIcons();
+                CustomCategory.load();
+            }
         });
 
         ModVars.modLog("Loaded Omaloon constructor.");
