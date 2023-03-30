@@ -10,10 +10,11 @@ import ol.graphics.*;
 public class OlEnvironment {
     public static Block
             oreGrumon, oreOmalite, oreTungsten,
-            gravelDalanii, dalanii, deepDalanii,
+            gravelDalanii, greeniteDalanii, darkGreeniteDalanii, dalanii, deepDalanii,
             grun, grunWall,
             gravel, gravelWall,
-            greenite, greeniteWall;
+            greenite, greeniteWall,
+            darkGreenite, darkGreeniteWall;
 
     public static void load() {
         //region Ores
@@ -55,6 +56,38 @@ public class OlEnvironment {
         gravelDalanii = new Floor("gravel-dalanii") {{
             itemDrop = Items.sand;
             playerUnmineable = true;
+            speedMultiplier = 0.8f;
+            variants = 3;
+
+            status = OlStatusEffects.slime;
+
+            statusDuration = 6f;
+            supportsOverlay = true;
+            albedo = 0.9f;
+            isLiquid = true;
+
+            liquidDrop = OlLiquids.dalanii;
+            liquidMultiplier = 1.5f;
+            cacheLayer = OlCacheLayer.dalaniteLayer;
+        }};
+
+        greeniteDalanii = new Floor("greenite-dalanii"){{
+            speedMultiplier = 0.8f;
+            variants = 3;
+
+            status = OlStatusEffects.slime;
+
+            statusDuration = 6f;
+            supportsOverlay = true;
+            albedo = 0.9f;
+            isLiquid = true;
+
+            liquidDrop = OlLiquids.dalanii;
+            liquidMultiplier = 1.5f;
+            cacheLayer = OlCacheLayer.dalaniteLayer;
+        }};
+
+        darkGreeniteDalanii = new Floor("dark-greenite-dalanii"){{
             speedMultiplier = 0.8f;
             variants = 3;
 
@@ -128,6 +161,15 @@ public class OlEnvironment {
 
         greeniteWall = new StaticWall("greenite-wall"){{
            variants = 2;
+        }};
+
+        darkGreenite = new Floor("dark-greenite"){{
+           variants = 3;
+           wall = darkGreeniteWall;
+        }};
+
+        darkGreeniteWall = new StaticWall("dark-greenite-wall"){{
+            variants = 2;
         }};
     }
 }

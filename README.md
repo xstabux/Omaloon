@@ -18,6 +18,7 @@ You can contribute on development by:
 * Providing input regarding content balancing
 
 ## Compiling
+
 1. Clone project 
 ```
 https://github.com/xStaBUx/Omaloon-public.git
@@ -42,6 +43,8 @@ gradlew mjar
 ```
 gradlew mrun
 ```
+
+**YOU MUST USE JAVA 16 OR ABOVE TO COMPILE OMALOON**
 
 ## Contributors
 

@@ -14,7 +14,6 @@ import mindustry.ctype.*;
 import mindustry.mod.*;
 import mindustry.mod.Mods.*;
 import ol.Omaloon;
-import ol.*;
 import ol.tools.GenAtlas.*;
 
 import java.nio.file.*;
