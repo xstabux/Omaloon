@@ -34,6 +34,54 @@ public class MirrorBlock extends Block {
         rotateDraw = false;
         drawArrow = false;
     }
+    @Override public void drawPlace(int x, int y, int rotation, boolean valid) {
+        super.drawPlace(x, y, rotation, valid);
+        var pressureIcon = Core.atlas.find("ol-arrow");
+
+        float dx = x * 8;
+        float dy = y * 8;
+        float ds = size * 8;
+
+        if(size == 2) {
+            if(rotation == 0) {
+                Draw.rect(pressureIcon, dx+ds-3, dy, 0);
+                Draw.rect(pressureIcon, dx-ds/2, dy, 0);
+                Draw.rect(pressureIcon, dx+ds-3, dy+8, 0);
+                Draw.rect(pressureIcon, dx-ds/2, dy+8, 0);
+            }
+
+            if(rotation == 1) {
+                Draw.rect(pressureIcon, dx, dy+ds-3, 90);
+                Draw.rect(pressureIcon, dx, dy-ds/2, 90);
+                Draw.rect(pressureIcon, dx+8, dy+ds-3, 90);
+                Draw.rect(pressureIcon, dx+8, dy-ds/2, 90);
+            }
+
+            if(rotation == 2) {
+                Draw.rect(pressureIcon, dx+ds, dy, 180);
+                Draw.rect(pressureIcon, dx-ds/2+3, dy, 180);
+                Draw.rect(pressureIcon, dx+ds, dy+8, 180);
+                Draw.rect(pressureIcon, dx-ds/2+3, dy+8, 180);
+            }
+
+            if(rotation == 3) {
+                Draw.rect(pressureIcon, dx, dy+ds, -90);
+                Draw.rect(pressureIcon, dx, dy-ds/2+3, -90);
+                Draw.rect(pressureIcon, dx+8, dy+ds, -90);
+                Draw.rect(pressureIcon, dx+8, dy-ds/2+3, -90);
+            }
+        } else {
+            if(rotation == 1 || rotation == 3){
+                Draw.rect(pressureIcon, dx, dy + ds, -90);
+                Draw.rect(pressureIcon, dx, dy - ds, 90);
+            }
+
+            if(rotation == 0 || rotation == 2){
+                Draw.rect(pressureIcon, dx + ds, dy, 180);
+                Draw.rect(pressureIcon, dx - ds, dy, 0);
+            }
+        }
+    }
     // Update child buildings
     public static void updateChildren() {
         Events.run(EventType.Trigger.update, () -> {
