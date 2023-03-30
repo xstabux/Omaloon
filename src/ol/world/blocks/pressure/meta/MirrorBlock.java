@@ -72,13 +72,15 @@ public class MirrorBlock extends Block {
             }
         } else {
             if(rotation == 1 || rotation == 3){
-                Draw.rect(pressureIcon, dx, dy + ds, -90);
-                Draw.rect(pressureIcon, dx, dy - ds, 90);
+                float r = rotation == 3 ? -90 : 90;
+                Draw.rect(pressureIcon, dx, dy + ds, r);
+                Draw.rect(pressureIcon, dx, dy - ds, r);
             }
 
             if(rotation == 0 || rotation == 2){
-                Draw.rect(pressureIcon, dx + ds, dy, 180);
-                Draw.rect(pressureIcon, dx - ds, dy, 0);
+                float r = rotation * 90;
+                Draw.rect(pressureIcon, dx + ds, dy, r);
+                Draw.rect(pressureIcon, dx - ds, dy, r);
             }
         }
     }
