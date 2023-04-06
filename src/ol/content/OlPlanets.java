@@ -22,6 +22,7 @@ public class OlPlanets {
             bloom = true;
             accessible = false;
             hasAtmosphere = true;
+            solarSystem = this;
 
             meshLoader = () -> new SunMesh(
                     this, 4, 5, 0.3f, 1.0f, 1.2f, 1, 1.3f,
@@ -54,6 +55,7 @@ public class OlPlanets {
 
             orbitRadius = 60f;
             startSector = 12;
+            solarSystem = amsha;
 
             accessible = true;
             alwaysUnlocked = true;
