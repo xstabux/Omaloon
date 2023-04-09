@@ -263,6 +263,24 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
             boolean bTop    = avalible(top)    || isCorrectType(top);
             boolean bBottom = avalible(bottom) || isCorrectType(bottom);
 
+            if(Angles.alignX(rotation)) {
+                if(top instanceof MirrorBlock.MirrorBlockBuild && Angles.alignX(top.rotation)) {
+                    bTop = false;
+                }
+
+                if(bottom instanceof MirrorBlock.MirrorBlockBuild && Angles.alignX(bottom.rotation)) {
+                    bBottom = false;
+                }
+            } else {
+                if(left instanceof MirrorBlock.MirrorBlockBuild && Angles.alignY(left.rotation)) {
+                    bLeft = false;
+                }
+
+                if(right instanceof MirrorBlock.MirrorBlockBuild && Angles.alignY(right.rotation)) {
+                    bRight = false;
+                }
+            }
+
             float angle = ((avalibleY() && bTop ? 1 : 0) +
                     (avalibleY() && bBottom ? 1 : 0) +
                     (avalibleX() && bLeft ? 1 : 0) +
