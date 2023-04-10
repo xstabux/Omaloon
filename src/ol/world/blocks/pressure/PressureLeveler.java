@@ -66,9 +66,6 @@ public class PressureLeveler extends MirrorBlock {
 
             if (inputPressure > outputPressure) {
                 outputBuild.pressure(inputPressure);
-            } else if (outputPressure > inputPressure) {
-                //will be created bug
-                inputBuild.pressure(outputPressure);
             }
 
             var l = getLiquid();
