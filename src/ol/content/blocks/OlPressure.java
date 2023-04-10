@@ -152,7 +152,7 @@ public class OlPressure {
 
         pressureSmaller = new PressureSmaller("pressure-smaller") {{
             tmp1(this);
-          //tier = 1;
+            tier = 1;
             consumePower(1);
         }};
 

@@ -36,13 +36,14 @@ public class MirrorBlock extends Block {
     }
     @Override public void drawPlace(int x, int y, int rotation, boolean valid) {
         super.drawPlace(x, y, rotation, valid);
-        var pressureIcon = Core.atlas.find("ol-arrow");
-
-        float dx = x * 8;
-        float dy = y * 8;
-        float ds = size * 8;
 
         if(size == 2) {
+            var pressureIcon = Core.atlas.find("ol-arrow");
+
+            float dx = x * 8;
+            float dy = y * 8;
+            float ds = size * 8;
+
             if(rotation == 0) {
                 Draw.rect(pressureIcon, dx+ds-3, dy, 0);
                 Draw.rect(pressureIcon, dx-ds/2, dy, 0);
@@ -69,18 +70,6 @@ public class MirrorBlock extends Block {
                 Draw.rect(pressureIcon, dx, dy-ds/2+3, -90);
                 Draw.rect(pressureIcon, dx+8, dy+ds, -90);
                 Draw.rect(pressureIcon, dx+8, dy-ds/2+3, -90);
-            }
-        } else {
-            if(rotation == 1 || rotation == 3){
-                float r = rotation == 3 ? -90 : 90;
-                Draw.rect(pressureIcon, dx, dy + ds, r);
-                Draw.rect(pressureIcon, dx, dy - ds, r);
-            }
-
-            if(rotation == 0 || rotation == 2){
-                float r = rotation * 90;
-                Draw.rect(pressureIcon, dx + ds, dy, r);
-                Draw.rect(pressureIcon, dx - ds, dy, r);
             }
         }
     }

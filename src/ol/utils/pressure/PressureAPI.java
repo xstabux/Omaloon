@@ -5,8 +5,15 @@ import ol.world.blocks.pressure.PressureJunction.PressureJunctionBuild;
 import ol.world.blocks.pressure.meta.PressureAbleBuild;
 import org.jetbrains.annotations.Contract;
 
+import java.util.Objects;
+
 public class PressureAPI {
     public static final int NULL_TIER = -1;
+
+    @Contract("null, _ -> fail; _, null -> fail")
+    public static boolean tierAble(PressureAbleBuild a, PressureAbleBuild b) {
+        return tierAble(Objects.requireNonNull(a).tier(), Objects.requireNonNull(b).tier());
+    }
 
     @Contract(pure = true)
     public static boolean tierAble(int tierA, int tierB) {
