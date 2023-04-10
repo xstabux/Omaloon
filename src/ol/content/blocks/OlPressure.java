@@ -26,7 +26,6 @@ public class OlPressure {
             mechanicalCompressor,
             electricCompressor,
             improvedCompressor,
-            sandboxCompressor,
             //tier 1
             pressurePipe,
             pressureReleaser,
@@ -49,6 +48,7 @@ public class OlPressure {
             sandboxPressureCounter,
             sandboxPressureBridge,
             */
+            sandboxCompressor,
             //other
             pressureJunction,
             pressureLeveler,

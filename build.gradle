@@ -1,3 +1,5 @@
+import arc.files.Fi
+
 import java.time.format.DateTimeFormatter
 
 buildscript{
@@ -111,23 +113,25 @@ allprojects{
         sourceCompatibility = JavaVersion.VERSION_16
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    tasks.withType(JavaCompile) {
-        targetCompatibility = "$java_version"
-        sourceCompatibility = JavaVersion.VERSION_16
-        options.encoding = "UTF-8"
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            targetCompatibility = "$java_version"
+            sourceCompatibility = JavaVersion.VERSION_16
+            options.encoding = "UTF-8"
 //        options.encoding = "windows-1251"
-        options.compilerArgs += ["-Xlint:deprecation"]
+            options.compilerArgs += ["-Xlint:deprecation"]
 
-        options.forkOptions.jvmArgs.addAll([
-                '--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
-                '--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
-                '--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
-                '--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
-                '--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
-                '--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
-                '--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
-                '--add-opens=java.base/sun.reflect.annotation=ALL-UNNAMED'
-        ])
+            options.forkOptions.jvmArgs.addAll([
+                    '--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+                    '--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+                    '--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
+                    '--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
+                    '--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
+                    '--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+                    '--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+                    '--add-opens=java.base/sun.reflect.annotation=ALL-UNNAMED'
+            ])
+        }
     }
 }
 
@@ -144,23 +148,27 @@ allprojects{
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }*/
 configure(project(":annotations")){
-    tasks.withType(JavaCompile){
-        targetCompatibility = "$java_version"
-        sourceCompatibility = "$java_version"
-        options.fork = true
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            targetCompatibility = "$java_version"
+            sourceCompatibility = "$java_version"
+            options.fork = true
+        }
     }
 }
 
 //compile with java 8 compatibility for everything except the annotation project
 configure(subprojects - project(":annotations")){
-    tasks.withType(JavaCompile){
+    tasks.withType(JavaCompile).configureEach {
         options.compilerArgs.addAll(['--release', "$java_version"])
     }
 
-    tasks.withType(Javadoc){
-        options{
-            addStringOption('Xdoclint:none', '-quiet')
-            addStringOption('-release', '16')
+    tasks.withType(Javadoc).tap {
+        configureEach {
+            options {
+                addStringOption('Xdoclint:none', '-quiet')
+                addStringOption('-release', '16')
+            }
         }
     }
 }
@@ -185,9 +193,9 @@ project(":core"){
     compileJava.options.fork = true
 
 
-    task preGen{
+    tasks.register('preGen') {
 
-        outputs.upToDateWhen{ false }
+        outputs.upToDateWhen { false }
 
 //        generateLocales()
 //        writeVersion()
@@ -212,7 +220,7 @@ project(":core"){
         compileJava.dependsOn(preGen)
 
         implementation arcLibModule("settings")
-//        implementation "com.github.Zelaux.ZelauxArcLib:utils:$arcLibVersion"
+//        implementation "com.github.Zelaux.ZelauxModCore:customBlockShape:$modCoreVersion"
 //        implementation "com.github.Zelaux.ZelauxArcLib:tooltips:$arcLibVersion"
 //        implementation "com.github.Zelaux.ZelauxArcLib:components:$arcLibVersion"
 //        implementation "com.github.Zelaux.ZelauxArcLib:listeners:$arcLibVersion"
@@ -312,42 +320,42 @@ configure(project(":core")){
     }
 }
 
-task jarAndroid{
+tasks.register('jarAndroid') {
     dependsOn "core:jar"
 
-    doLast{
+    doLast {
         //collect dependencies needed for desugaring
         def files = (
                 project(":core").configurations.compileClasspath.asList() +
                         project(":core").configurations.runtimeClasspath.asList() +
                         [new File("$sdkRoot/platforms/android-$sdkVersion/android.jar")]
         )
-        def dependencies = files.collect{ "--classpath $it.path" }.join(" ")
+        def dependencies = files.collect { "--classpath $it.path" }.join(" ")
 
         //dex and desugar files - this requires d8 in your PATH
         doExec("d8 $dependencies --min-api 14 --output ${project.archivesBaseName}Android.jar ${project.archivesBaseName}Desktop.jar")
     }
 }
-task deploy(type: Jar){
+tasks.register('deploy', Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     dependsOn jarAndroid
     dependsOn "core:jar"
     archiveFileName = "${parentBuildDir.absolutePath}/libs/${project.archivesBaseName}.jar"
 
-    from{ [zipTree("$parentBuildDir/libs/${project.archivesBaseName}Desktop.jar"), zipTree("$parentBuildDir/libs/${project.archivesBaseName}Android.jar")] }
+    from { [zipTree("$parentBuildDir/libs/${project.archivesBaseName}Desktop.jar"), zipTree("$parentBuildDir/libs/${project.archivesBaseName}Android.jar")] }
 
-    doLast{
-        println new arc.files.Fi(parentBuildDir).list().join(", ")
-        println new arc.files.Fi(buildDir).list().join(", ")
-        delete{ delete "$parentBuildDir/libs/${project.archivesBaseName}Desktop.jar" }
-        delete{ delete "$parentBuildDir/libs/${project.archivesBaseName}Android.jar" }
+    doLast {
+        println new Fi(parentBuildDir).list().join(", ")
+        println new Fi(buildDir).list().join(", ")
+        delete { delete "$parentBuildDir/libs/${project.archivesBaseName}Desktop.jar" }
+        delete { delete "$parentBuildDir/libs/${project.archivesBaseName}Android.jar" }
     }
 }
-task resolveDependencies{
-    doLast{
-        rootProject.allprojects{ project ->
+tasks.register('resolveDependencies') {
+    doLast {
+        rootProject.allprojects { project ->
             Set<Configuration> configurations = project.buildscript.configurations + project.configurations
-            configurations.findAll{ c -> c.canBeResolved }.forEach{ c -> c.resolve() }
+            configurations.findAll { c -> c.canBeResolved }.forEach { c -> c.resolve() }
         }
     }
 }
@@ -384,37 +392,37 @@ static def getdatadir(){ //Returns Mindustry data directory path
     return ret
 }
 
-task mjar(){
+tasks.register('mjar') {
     dependsOn "core:jar"
-    doFirst{}
-    ext{
+    doFirst {}
+    ext {
         acopy = { String intoPath ->
-            delete{
+            delete {
                 delete "${intoPath}/${project.archivesBaseName}Desktop.jar"
             }
-            copy{
+            copy {
                 from "$parentBuildDir/libs/${project.archivesBaseName}Desktop.jar"
                 into intoPath
             }
             println "Moved to ${intoPath}/${project.archivesBaseName}Desktop.jar"
         }
     }
-    doLast{
+    doLast {
         def modsDirectories = [];
         def file = new File(rootDir, "modsDirectories.txt");
-        if(file.exists()){
+        if (file.exists()) {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             reader.lines().forEach(line -> modsDirectories.add(line))
             reader.close();
-        }else{
+        } else {
             modsDirectories.add("classic");
         }
-        for(String directory : modsDirectories){
-            if(directory.startsWith("#") || directory.startsWith("//")){
+        for (String directory : modsDirectories) {
+            if (directory.startsWith("#") || directory.startsWith("//")) {
                 println "Directory \"$directory\" was skipped."
                 continue
             }
-            if(directory.equals("classic")){
+            if (directory.equals("classic")) {
                 directory = getdatadir() + "mods";
             }
             acopy(directory);
@@ -424,20 +432,20 @@ task mjar(){
     }
 }
 
-task mrun{
+tasks.register('mrun') {
     dependsOn mjar
-    doLast{
+    doLast {
         def gamePath = temporaryDir.absolutePath + "\\Mindustry$mindustryVersion" + ".jar"
         def gameUrl = mindustryVersion.startsWith("v") ?
                 "https://github.com/Anuken/Mindustry/releases/download/$mindustryVersion/Mindustry.jar" :
                 "https://github.com/Anuken/MindustryBuilds/releases/download/$mindustryVersion/Mindustry-BE-Desktop-$mindustryVersion.jar"
         def gameFile = new File(gamePath)
-        if(!gameFile.exists()){
+        if (!gameFile.exists()) {
             println "Downloading Mindustry $mindustryVersion from ${gameUrl} to ${gamePath}"
-            new URL(gameUrl).withInputStream{ i -> gameFile.withOutputStream{ it << i } }
+            new URL(gameUrl).withInputStream { i -> gameFile.withOutputStream { it << i } }
             println "Done"
         }
-        javaexec{ classpath = files(gamePath) }
+        javaexec { classpath = files(gamePath) }
     }
 }
 compileKotlin{
