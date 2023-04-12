@@ -90,7 +90,8 @@ public class PressureLeveler extends MirrorBlock {
 
         @Override
         public boolean acceptLiquid(Building source, Liquid liquid) {
-            return liquid == getLiquid()[0].liquid;
+            LiquidStack[] liquidArray = getLiquid();
+            return liquidArray.length > 0 && liquid == liquidArray[0].liquid;
         }
 
         private void consume(LiquidStack liquidStack, float amount) {
