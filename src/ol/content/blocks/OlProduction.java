@@ -1,7 +1,6 @@
 package ol.content.blocks;
 
 import arc.graphics.*;
-import arc.util.Tmp;
 
 import mindustry.content.*;
 import mindustry.entities.effect.*;
@@ -306,13 +305,6 @@ public class OlProduction {
 
                     new DrawRegion("-top")
             );
-
-            onCraft = tile -> {
-                Tmp.v1.setToRandomDirection().setLength(27f / 3.4f);
-
-                Fx.pulverize.at(tile.x + Tmp.v1.x, tile.y + Tmp.v1.y);
-                Fx.hitLancer.at(tile.x + Tmp.v1.x, tile.y + Tmp.v1.y);
-            };
 
             consumePower(14f);
 

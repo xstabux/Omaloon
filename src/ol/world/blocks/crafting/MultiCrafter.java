@@ -240,8 +240,8 @@ public class MultiCrafter extends PressureCrafter {
         super.init();
 
         this.consume(new ConsumePressureDynamic(build -> {
-            if(build instanceof MultiCrafterBuild crafter) {
-                return crafter.pressureConsume();
+            if(build instanceof MultiCrafterBuild) {
+                return pressureConsume;
             }
 
             return 0F;
@@ -411,7 +411,7 @@ public class MultiCrafter extends PressureCrafter {
                     progress %= 1f;
 
                     label60: {
-                        if(pressureConsume() > 0 && efficenty() == 0) {
+                        if(pressureConsume > 0 && efficenty() == 0) {
                             break label60;
                         }
 
@@ -476,7 +476,7 @@ public class MultiCrafter extends PressureCrafter {
         @Override
         public void consume() {
             super.consume();
-            this.pressure(this.pressure() - this.pressureConsume());
+            this.pressure(this.pressure() - pressureConsume);
         }
 
         @Override

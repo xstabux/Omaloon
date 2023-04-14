@@ -4,18 +4,12 @@ import arc.math.*;
 import arc.struct.*;
 import arc.util.io.*;
 
-import mindustry.content.*;
-import mindustry.entities.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.meta.*;
 
-import ol.gen.*;
-import ol.world.blocks.pressure.meta.ConsumePressure;
-import ol.world.blocks.pressure.meta.PressureAble;
-import ol.world.blocks.pressure.meta.PressureAbleBuild;
-import ol.world.blocks.pressure.meta.PressureModule;
+import ol.world.blocks.pressure.meta.*;
 import ol.world.meta.*;
 
 import static arc.Core.*;
@@ -70,23 +64,17 @@ public class PressureCrafter extends GenericCrafter implements PressureAble {
         super.setBars();
 
         if(!showPressure && pressureConsume > 0) {
-            addBar("pressure", (PressureCrafterBuild b) -> {
-                float pressure = b.pressure() / b.maxPressure();
-                return new Bar(
-                        () -> bundle.format("bar.pressureEfficient", (int) Math.floor(b.pressure()), (int) (b.efficenty() * 100 + 0.0001f)),
-                        () -> mixcol(oLPressureMin, oLPressure, pressure),
-                        () -> pressure
-                );
-            });
+            this.addBar("pressure", (PressureCrafterBuild b) -> new Bar(
+                    () -> bundle.format("bar.pressureEfficient", (int) Math.floor(b.pressure()), (int) (b.efficenty() * 100 + 0.0001f)),
+                    () -> oLPressure,
+                    b::getPressure
+            ));
         } else {
-            addBar("pressure", (PressureCrafterBuild b) ->{
-                float pressure = b.pressure() / b.maxPressure();
-                return new Bar(
-                        () -> bundle.get("bar.pressure") + " " + (int)(b.pressure()),
-                        () -> mixcol(oLPressureMin, oLPressure, pressure),
-                        () -> pressure
-                );
-            });
+            addBar("pressure", (PressureCrafterBuild b) -> new Bar(
+                    () -> bundle.get("bar.pressure") + " " + (int) (b.pressure()),
+                    () -> oLPressure,
+                    b::getPressure
+            ));
         }
     }
 
@@ -157,6 +145,10 @@ public class PressureCrafter extends GenericCrafter implements PressureAble {
 
         public float downPercent() {
             return downPercent;
+        }
+
+        public float getPressure(){
+            return this.pressure() / this.maxPressure();
         }
 
         public float pressureThread() {
