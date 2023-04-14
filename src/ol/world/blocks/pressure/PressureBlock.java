@@ -32,15 +32,11 @@ public class PressureBlock extends Block implements PressureAble {
         super.setBars();
 
         if(canExplode) {
-            addBar("pressure", (PressureBlockBuild build) -> {
-                float delta = build.pressure() / build.maxPressure();
-
-                return new Bar(
-                        () -> bundle.get("bar.pressure") + " " + (int) build.pressure(),
-                        () -> mixcol(oLPressureMin, oLPressure, delta),
-                        () -> delta
-                );
-            });
+            this.addBar("pressure", (PressureBlockBuild build) -> new Bar(
+                    () -> bundle.get("bar.pressure") + " " + (int) build.pressure(),
+                    () -> oLPressure,
+                    build::getPressure
+            ));
         }
     }
 
@@ -77,6 +73,10 @@ public class PressureBlock extends Block implements PressureAble {
             }
 
             return this.pressure() >= dangerPressure;
+        }
+
+        public float getPressure(){
+            return (this.pressure() / this.maxPressure());
         }
 
         @Override public void write(Writes write) {

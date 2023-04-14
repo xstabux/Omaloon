@@ -1,7 +1,6 @@
 package ol.world.blocks.pressure;
 
-import arc.struct.ObjectMap;
-import arc.struct.Seq;
+import arc.struct.*;
 
 import mindustry.content.*;
 import mindustry.gen.*;
