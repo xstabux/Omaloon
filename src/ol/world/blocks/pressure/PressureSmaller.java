@@ -47,7 +47,8 @@ public class PressureSmaller extends MirrorBlock {
 
             float tmp = pbb.pressure()-pressure;
             if(PressureAPI.tierAble(pab.tier(), tier) && -pab.pressure() < tmp && !Vars.state.isPaused()
-                    && Math.floor(Time.globalTime) % delta == 0 && PressureAPI.tierAble(pab, pbb))
+                    && Math.floor(Time.globalTime) % delta == 0 && PressureAPI.tierAble(pab, pbb) &&
+                    !       pab.isPressureDamages() && !pbb.isPressureDamages())
             {
                 pab.pressure(Math.min(-tmp, 0));
                 pbb.pressure(Math.max(pbb.pressure() - 1, 0));
