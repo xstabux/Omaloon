@@ -14,6 +14,7 @@ import mma.type.*;
 import mma.type.pixmap.*;
 
 import ol.gen.*;
+import ol.world.draw.Outliner;
 
 public class OrnitopterUnitType extends UnitType implements ImageGenerator{
     public final Seq<Blade> blades = new Seq<>();
@@ -28,7 +29,6 @@ public class OrnitopterUnitType extends UnitType implements ImageGenerator{
         envDisabled = Env.space;
     }
 
-    // Drawing Rotors
     public void drawRotor(Unit unit){
         float z = unit.elevation > 0.5f ? (lowAltitude ? Layer.flyingUnitLow : Layer.flyingUnit) : groundLayer + Mathf.clamp(hitSize / 4000f, 0, 0.01f);
 
@@ -125,15 +125,12 @@ public class OrnitopterUnitType extends UnitType implements ImageGenerator{
     }
 
     @Override
-    public Pixmap generate(Pixmap icon, PixmapProcessor processor){
-        for(Blade blade : blades){
-            Pixmap bladeOutline = PixmapProcessor.outline(processor.get(blade.bladeRegion).copy());
-            processor.save(bladeOutline, blade.spriteName + "-outline");
-            processor.save(PixmapProcessor.outline(processor.get(blade.shadeRegion).copy()), blade.spriteName + "-top-outline");
-            icon = PixmapProcessor.drawScaleAt(icon, bladeOutline, (int)(blade.x / Draw.scl + icon.width / 2f - bladeOutline.width / 2f), (int)(-blade.y / Draw.scl + icon.height / 2f - bladeOutline.height / 2f));
-            icon = PixmapProcessor.drawScaleAt(icon, bladeOutline.flipX(), (int)(-blade.x / Draw.scl + icon.width / 2f - bladeOutline.width / 2f), (int)(-blade.y / Draw.scl + icon.height / 2f - bladeOutline.height / 2f));
+    public void createIcons(MultiPacker packer) {
+        super.createIcons(packer);
+        for (Blade blade : blades) {
+            Outliner.outlineRegion(packer, blade.bladeRegion, outlineColor, blade.spriteName + "-outline", outlineRadius);
+            Outliner.outlineRegion(packer, blade.shadeRegion, outlineColor, blade.spriteName + "-top-outline", outlineRadius);
         }
-        return icon;
     }
 
     @Override
@@ -141,7 +138,6 @@ public class OrnitopterUnitType extends UnitType implements ImageGenerator{
         super.draw(unit);
         drawRotor(unit);
     }
-
 
     @Override
     public void load(){

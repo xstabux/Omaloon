@@ -1,12 +1,16 @@
 package ol.type.units.ornitopter;
 
 import arc.*;
+import arc.graphics.Color;
+import arc.graphics.Pixmaps;
 import arc.graphics.g2d.*;
 
 import mindustry.Vars;
 import mindustry.annotations.Annotations;
 import mindustry.content.Fx;
 import mindustry.gen.*;
+import mindustry.graphics.Drawf;
+import mindustry.graphics.MultiPacker;
 import mindustry.io.*;
 
 public class Blade {
@@ -34,10 +38,6 @@ public class Blade {
      */
     public float bladeLayer = 0.5f;
     /**
-     * How fast does the blur region moves, multiplied by default bladeMoveSpeed
-     */
-    public float bladeBlurSpeedMultiplier = 0.25f;
-    /**
      * Multiplier for blurs alpha
      */
     public float bladeBlurAlphaMultiplier = 0.9f;
@@ -45,10 +45,6 @@ public class Blade {
      * Duplicates the initial blade and moves it on the opposite dirrection
      */
     public boolean doubleBlade = false;
-    /**
-     * How many blades generated on the unit
-     */
-    public int bladeCount = 1;
 
     public Blade(String name) {
         this.spriteName = name;
@@ -70,6 +66,21 @@ public class Blade {
         blurRegion = Core.atlas.find(spriteName + "-blur");
         bladeOutlineRegion = Core.atlas.find(spriteName + "-outline");
         shadeRegion = Core.atlas.find(spriteName + "-shade");
+    }
+
+    void makeOutline(MultiPacker.PageType page, MultiPacker packer, TextureRegion region, boolean makeNew, Color outlineColor, int outlineRadius){
+        if(region instanceof TextureAtlas.AtlasRegion at && region.found()){
+            String name = at.name;
+            if(!makeNew || !packer.has(name + "-outline")){
+                String regName = name + (makeNew ? "-outline" : "");
+                if(packer.registerOutlined(regName)){
+                    PixmapRegion base = Core.atlas.getPixmap(region);
+                    var result = Pixmaps.outline(base, outlineColor, outlineRadius);
+                    Drawf.checkBleed(result);
+                    packer.add(page, regName, result);
+                }
+            }
+        }
     }
 
     // For mirroring

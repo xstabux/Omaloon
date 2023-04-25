@@ -24,7 +24,7 @@ public class GenAtlas extends TextureAtlas{
     /** The name should be prefixed with {@code unity-} */
     public GenRegion addRegion(Fi file){
         String name = file.nameWithoutExtension();
-        if(!file.path().contains("sprites/vanilla/")) name = "unity-" + name;
+        if(!file.path().contains("sprites/vanilla/")) name = "omaloon-" + name;
 
         GenRegion reg = new GenRegion(name, new Pixmap(file));
 
@@ -153,7 +153,7 @@ public class GenAtlas extends TextureAtlas{
             Fi dir = spritesDir.child(relativePath);
             dir.mkdirs();
 
-            Fi file = dir.child(name.replaceFirst("unity-", "") + ".png");
+            Fi file = dir.child(name.replaceFirst("omaloon-", "") + ".png");
             file.writePng(pixmap);
 
             if(add) atlas.addRegion(name, this);
