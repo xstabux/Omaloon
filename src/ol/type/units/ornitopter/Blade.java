@@ -1,16 +1,8 @@
 package ol.type.units.ornitopter;
 
 import arc.*;
-import arc.graphics.Color;
-import arc.graphics.Pixmaps;
 import arc.graphics.g2d.*;
 
-import mindustry.Vars;
-import mindustry.annotations.Annotations;
-import mindustry.content.Fx;
-import mindustry.gen.*;
-import mindustry.graphics.Drawf;
-import mindustry.graphics.MultiPacker;
 import mindustry.io.*;
 
 public class Blade {

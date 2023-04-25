@@ -8,13 +8,12 @@ import arc.struct.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
-import mindustry.world.meta.Env;
+import mindustry.world.meta.*;
 
 import mma.type.*;
-import mma.type.pixmap.*;
 
 import ol.gen.*;
-import ol.world.draw.Outliner;
+import ol.world.draw.*;
 
 public class OrnitopterUnitType extends UnitType implements ImageGenerator{
     public final Seq<Blade> blades = new Seq<>();
