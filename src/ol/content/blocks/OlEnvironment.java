@@ -10,10 +10,10 @@ import ol.graphics.*;
 public class OlEnvironment {
     public static Block
             oreGrumon, oreOmalite, oreTungsten,
-            gravelDalanii, greeniteDalanii, darkGreeniteDalanii, dalanii, deepDalanii,
+            gravelDalanii, greeniteDalanii, dalanii, deepDalanii,
             grun, grunWall,
             gravel, gravelWall,
-            greenite, greeniteWall,
+            coastalGreenite, greenite, greeniteBoulder, greeniteWall,
             darkGreenite, darkGreeniteWall;
 
     public static void load() {
@@ -87,22 +87,6 @@ public class OlEnvironment {
             cacheLayer = OlCacheLayer.dalaniteLayer;
         }};
 
-        darkGreeniteDalanii = new Floor("dark-greenite-dalanii"){{
-            speedMultiplier = 0.8f;
-            variants = 3;
-
-            status = OlStatusEffects.slime;
-
-            statusDuration = 6f;
-            supportsOverlay = true;
-            albedo = 0.9f;
-            isLiquid = true;
-
-            liquidDrop = OlLiquids.dalanii;
-            liquidMultiplier = 1.5f;
-            cacheLayer = OlCacheLayer.dalaniteLayer;
-        }};
-
         dalanii = new Floor("flor-dalanii") {{
             speedMultiplier = 0.5f;
             variants = 0;
@@ -154,9 +138,20 @@ public class OlEnvironment {
             itemDrop = Items.sand;
         }};
 
+        coastalGreenite = new Floor("coastal-greenite"){{
+            variants = 3;
+            wall = greeniteWall;
+        }};
+
         greenite = new Floor("greenite"){{
            variants = 3;
            wall = greeniteWall;
+        }};
+
+        greeniteBoulder = new Prop("greenite-boulder"){{
+            variants = 3;
+            greenite.asFloor().decoration = this;
+            coastalGreenite.asFloor().decoration = this;
         }};
 
         greeniteWall = new StaticWall("greenite-wall"){{
