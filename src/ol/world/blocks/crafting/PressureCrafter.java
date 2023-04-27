@@ -21,6 +21,7 @@ public class PressureCrafter extends GenericCrafter implements PressureAble {
     public float pressureConsume = 0;
     /**how many pressure produce*/
     public float pressureProduce = 0;
+    public float volume = 0.25f;
 
     public float maxPressure;
     public boolean canExplode = true;
@@ -163,7 +164,7 @@ public class PressureCrafter extends GenericCrafter implements PressureAble {
             }
 
             super.craft();
-            this.pressureModule.pressure += this.pressureThread();
+            this.pressureModule.pressure += this.pressureThread() * netLen() * volume;
         }
 
         @Override

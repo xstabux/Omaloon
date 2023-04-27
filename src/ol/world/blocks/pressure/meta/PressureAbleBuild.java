@@ -65,6 +65,29 @@ public interface PressureAbleBuild {
         return new Seq<>();
     }
 
+    default int netLen() {
+        return net(new Seq<>()).size;
+    }
+
+    default Seq<Building> net(Seq<Building> res) {
+        Building self = asBuilding();
+        res.add(self);
+
+        for(var b : self.proximity()) {
+            if(!res.contains(b) && b instanceof PressureAbleBuild build && PressureAPI.netAble(b, self)) {
+                build.net(res);
+            }
+        }
+
+        for(var b : proximityNeighbor()) {
+            if(!res.contains(b) && b instanceof PressureAbleBuild build && PressureAPI.netAble(b, self)) {
+                build.net(res);
+            }
+        }
+
+        return res;
+    }
+
     default boolean COUNTER_IN_NET_CALL(Building b, PressureAbleBuild p, boolean junction) {
         Building self = asBuilding();
 
