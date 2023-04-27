@@ -1,6 +1,7 @@
 package ol.world.blocks.pressure.meta;
 
 import arc.math.Mathf;
+import arc.struct.ObjectMap;
 import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.world.Tile;
@@ -26,6 +27,10 @@ public interface PressureAbleBuild {
 
     /** get`s self but as building */
     Building asBuilding();
+
+    default float priority() {
+        return 1;
+    }
 
     default float pressure() {
         this.checkComp();
@@ -186,12 +191,19 @@ public interface PressureAbleBuild {
         }
 
         modules.add(module);
-        float[] total = new float[1];
-        total[0] = modules.sumf(PressureModule::getPressure);
-        total[0] /= modules.size;
+        float cluster = modules.sumf(PressureModule::getPressure) / modules.size;
+        ObjectMap<PressureModule, Float> clusters = new ObjectMap<>();
+        for(var mod : modules) {
+            float prop = mod.priority();
+            if(prop != module.priority()) {
+                float cl = prop * cluster;
+                cluster += cluster - cl;
+            }
+            clusters.put(mod, cluster);
+        }
 
         modules.each(module32 -> {
-            module32.pressure = total[0];
+            module32.pressure = clusters.get(module32);
         });
 
         module.update(self);

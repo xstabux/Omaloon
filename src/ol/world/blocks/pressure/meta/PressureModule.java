@@ -12,6 +12,7 @@ import mindustry.world.modules.BlockModule;
 import org.jetbrains.annotations.NotNull;
 
 public class PressureModule extends BlockModule {
+    public final Building owner;
     public float pressure;
     public Timekeeper timer;
 
@@ -19,8 +20,13 @@ public class PressureModule extends BlockModule {
         return this.pressure;
     }
 
-    public PressureModule() {
+    public float priority() {
+        return ((PressureAbleBuild) owner).priority();
+    }
+
+    public PressureModule(Building owner) {
         this.timer = new Timekeeper(6000);
+        this.owner = owner;
     }
 
     public void update(Building build) {

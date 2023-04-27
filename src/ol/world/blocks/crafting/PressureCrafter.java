@@ -102,7 +102,7 @@ public class PressureCrafter extends GenericCrafter implements PressureAble {
     }
 
     public class PressureCrafterBuild extends GenericCrafterBuild implements PressureAbleBuild {
-        public PressureModule pressureModule = new PressureModule();
+        public PressureModule pressureModule = new PressureModule(this);
         public float effect;
         public float effectx;
 

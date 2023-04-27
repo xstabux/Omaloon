@@ -18,6 +18,7 @@ import static ol.graphics.OlPal.*;
 public class PressureBlock extends Block implements PressureAble {
     public float dangerPressure = -1;
     public float maxPressure = 100;
+    public float netPriority = 1;
     public boolean canExplode = true;
     public int tier = PressureAPI.NULL_TIER;
 
@@ -65,7 +66,7 @@ public class PressureBlock extends Block implements PressureAble {
     }
 
     public class PressureBlockBuild extends Building implements PressureAbleBuild {
-        public PressureModule pressureModule = new PressureModule();
+        public PressureModule pressureModule = new PressureModule(this);
 
         public boolean isDanger() {
             if(dangerPressure == -1) {
@@ -77,6 +78,11 @@ public class PressureBlock extends Block implements PressureAble {
 
         public float getPressure(){
             return (this.pressure() / this.maxPressure());
+        }
+
+        @Override
+        public float priority() {
+            return netPriority;
         }
 
         @Override public void write(Writes write) {

@@ -45,6 +45,7 @@ public class PressurePipe extends PressureBlock implements PressureReplaceable {
         drawArrow = solid = squareSprite = false;
         group = BlockGroup.power;
         priority = TargetPriority.transport;
+        netPriority = 1.2f;
     }
 
     public void drawT(int x, int y, int rotation) {
