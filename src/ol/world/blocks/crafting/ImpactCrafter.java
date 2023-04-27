@@ -7,6 +7,7 @@ import mindustry.content.*;
 import mindustry.entities.*;
 import mindustry.ui.*;
 import mindustry.world.meta.*;
+import ol.content.OlFx;
 
 public class ImpactCrafter extends PressureCrafter{
     public static float startAcceleration = 0.000001F;
@@ -114,6 +115,8 @@ public class ImpactCrafter extends PressureCrafter{
                 enabled(false);
                 setDeadDisabled(true);
 
+                OlFx.psh.at(this);
+                pressure(pressure() - 0.2f);
                 setDeadlineTimer(getDeadlineTimer() - 1F);
             }
 
@@ -130,7 +133,6 @@ public class ImpactCrafter extends PressureCrafter{
             }
 
             super.updateTile();
-
             progress = getAcceleration();
         }
 
