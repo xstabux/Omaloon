@@ -1,3 +1,4 @@
+### ⚠️v0.6.1 is an archive of the old Omaloon
 ![Logo](img.png)
 
 [![Build](https://img.shields.io/github/actions/workflow/status/xStaBUx/Omaloon-public/gradle.yml?label=BUILD%20STATE&style=for-the-badge)](https://github.com/xStaBUx/Omaloon-public/actions)
