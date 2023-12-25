@@ -38,7 +38,7 @@ public class OlDistributionBlocks {
 
         tubeJunction = new TubeJunction("tube-junction"){{
             requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-            speed = 24;
+            speed = 25;
             capacity = 4;
             health = 65;
             drawer = new DrawMulti(
@@ -63,7 +63,7 @@ public class OlDistributionBlocks {
             requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
             fadeIn = moveArrows = false;
             range = 4;
-            speed = 65f;
+            speed = 74f;
             arrowSpacing = 6f;
             bufferCapacity = 14;
         }};

@@ -30,7 +30,7 @@ public class TubeItemBridge extends ItemBridge {
     public Prov<Seq<Block>> connectBlocksGetter = Seq::new;
     Seq<Block> connectibleBlocks = new Seq<>();
     public Boolf<Building> connectFilter = (building) -> connectibleBlocks.contains(building.block());
-    byte maxConnections = 10;
+    byte maxConnections = 3;
 
     public final int timerAccept;
     public float speed;
@@ -81,18 +81,25 @@ public class TubeItemBridge extends ItemBridge {
     @Override
     public void setBars(){
         super.setBars();
-        addBar("connections", (TubeItemBridgeBuild entity) -> new Bar(() -> {
-            //in bundle: Connections: {0}/{1}
-            return Core.bundle.format("bar.cross-item-bridge-lines", cast(entity).realConnections(), this.maxConnections);
-        }, () -> Pal.items, () -> (float) cast(entity).realConnections() / (float) this.maxConnections));
+        addBar("connections", entity -> new Bar(() ->
+                Core.bundle.format("bar.powerlines", cast(entity).realConnections(), maxConnections),
+                () -> Pal.items,
+                () -> (float) cast(entity).realConnections() / (float)maxConnections
+        ));
     }
 
     @Override
     public void drawBridge(BuildPlan req, float ox, float oy, float flip){
-        Lines.stroke(8.0F);
+        float angle = Angles.angle(req.drawx(), req.drawy(), ox, oy) + flip;
+        boolean reverse = angle >= 90 && angle <= 260;
+        Lines.stroke(8f);
         v1.set(ox, oy).sub(req.drawx(), req.drawy()).setLength(4.0F);
-        Lines.line(bridgeRegion, req.drawx() + v1.x, req.drawy() + v1.y, ox - v1.x, oy - v1.y, false);
-        Draw.rect(arrowRegion, (req.drawx() + ox) / 2.0F, (req.drawy() + oy) / 2.0F, Angles.angle(req.drawx(), req.drawy(), ox, oy) + flip);
+        if(!reverse){
+            Lines.line(bridgeRegion, req.drawx() + v1.x, req.drawy() + v1.y, ox - v1.x, oy - v1.y, false);
+        }else{
+            Lines.line(bridgeRegion, ox - v1.x, oy - v1.y, req.drawx() + v1.x, req.drawy() + v1.y, false);
+        }
+        Draw.rect(arrowRegion, (req.drawx() + ox) / 2.0F, (req.drawy() + oy) / 2.0F, angle);
     }
 
     public Tile findLink(int x, int y){
@@ -347,7 +354,7 @@ public class TubeItemBridge extends ItemBridge {
             }
 
             Draw.alpha(Renderer.bridgeOpacity);
-            boolean reverse = angle >= 90 && angle <= 270;
+            boolean reverse = angle >= 90 && angle <= 260;
             TextureRegion end = reverse ? endRegion : end1Region;
             TextureRegion st = reverse ? end1Region : endRegion;
             Draw.rect(st, x - v1.x, y - v1.y, angle);
@@ -362,13 +369,13 @@ public class TubeItemBridge extends ItemBridge {
 
             int dist = Math.max(Math.abs(other.x - tile.x), Math.abs(other.y - tile.y)) - 1;
             Draw.color();
-            int arrows = (int)(dist * tilesize / arrowSpacing/* - (angle == 45f ? 2 : 0) - (angle == 225f ? 2 : 0) - (angle == 270f ? 2 : 0) - (angle == 315f ? 2 : 0) - (angle == 135f ? 2 : 0)*/);
+            int arrows = (int)(dist * tilesize / arrowSpacing);
             v2.trns(angle - 45f, 1f, 1f);
             for(float a = 0; a < arrows; ++a){
                 Draw.alpha(Mathf.absin(a - time / arrowTimeScl, arrowPeriod, 1f) * warmup * Renderer.bridgeOpacity);
                 float arrowX, arrowY;
-                arrowX = x - v1.x + v2.x * (tilesize / 2f + a * arrowSpacing + arrowOffset);
-                arrowY = y - v1.y + v2.y * (tilesize / 2f + a * arrowSpacing + arrowOffset);
+                arrowX = x - v1.x + v2.x * (tilesize / 2.5f + a * arrowSpacing + arrowOffset);
+                arrowY = y - v1.y + v2.y * (tilesize / 2.5f + a * arrowSpacing + arrowOffset);
                 Draw.rect(arrowRegion, arrowX, arrowY, angle);
             }
             Draw.reset();
