@@ -16,7 +16,7 @@ public interface HasPressure extends Buildingc {
 	}
 
 	/**
-	 * can recieve/send pressure to another plac e
+	 * can receive/send pressure to another place
 	 */
 	default boolean acceptsPressure(HasPressure from, float pressure) {
 		return getPressure() + pressure <= from.getPressure() - pressure;
@@ -25,6 +25,16 @@ public interface HasPressure extends Buildingc {
 		return to.getPressure() + pressure <= getPressure() - pressure;
 	}
 
+	/**
+	 * if something tries dumping into this, dump pressure into something else
+	 */
+	default HasPressure getPressureDestination(HasPressure from) {
+		return this;
+	}
+
+	/**
+	 * transfers pressure between 2 buildings
+	 */
 	default void transferPressure(HasPressure to, float pressure) {
 		if (to.acceptsPressure(this, pressure)) {
 			pressure().pressure -= pressure;
@@ -37,6 +47,7 @@ public interface HasPressure extends Buildingc {
 	 */
 	default void dumpPressure() {
 		for(HasPressure other : proximity().copy().select(building -> building instanceof HasPressure).<HasPressure>as()) {
+			other = other.getPressureDestination(this);
 			float diff = getPressure() - (getPressure() + other.getPressure())/2f;
 			if (canDumpPressure(other, diff)) transferPressure(other, diff);
 		}
