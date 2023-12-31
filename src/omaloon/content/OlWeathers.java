@@ -13,7 +13,7 @@ public class OlWeathers {
     public static Weather hailStone;
 
     public static void load(){
-        hailStone = new HailStormWeather("hailStone"){{
+        hailStone = new HailStormWeather("hail-storm"){{
             attrs.set(Attribute.light, -2f);
 
             drawParticles = drawNoise = false;
@@ -40,7 +40,7 @@ public class OlWeathers {
                         despawnEffect = Fx.none;
                         splashDamage = 95f;
                         splashDamageRadius = 16;
-                    }}, 1/1600f,
+                    }}, 1/2600f,
 
                     new HailStoneBulletType("omaloon-hailstone-middle", 2){{
                         hitEffect = Fx.dynamicWave.layer(Layer.power);
