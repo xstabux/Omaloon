@@ -35,11 +35,16 @@ public class PressureLiquidDuct extends LiquidRouter {
 		public int tiling = 0;
 		PressureModule pressure = new PressureModule();
 
+		public boolean connects(Building to) {
+			boolean isNotSide = (front() == to || back() == to);
+			return
+				to instanceof PressureLiquidDuctBuild build ?
+					(build.front() == this || build.back() == this || isNotSide) :
+					to.block.hasLiquids;
+		}
 
 		@Override public boolean canDumpLiquid(Building to, Liquid liquid) {
-			return
-			(to == front() || to == back() || to instanceof PressureLiquidDuctBuild)
-			&& to instanceof HasPressure toPressure && canDumpPressure(toPressure, 0);
+			return super.canDumpLiquid(to, liquid) && connects(to);
 		}
 
 		@Override
@@ -50,7 +55,7 @@ public class PressureLiquidDuct extends LiquidRouter {
 				Draw.rect(liquidRegion, x, y);
 				Draw.color();
 			}
-			Draw.rect(topRegions[tiling], x, y);
+			Draw.rect(topRegions[tiling], x, y, tiling != 0 ? 0 : (rotdeg() + 90) % 180 - 90);
 		}
 
 		@Override
@@ -60,10 +65,9 @@ public class PressureLiquidDuct extends LiquidRouter {
 			for (int i = 0; i < 4; i++) {
 				Building build = nearby(i);
 				if (
-					build instanceof PressureLiquidDuctBuild
+					build != null && connects(build)
 				) tiling |= (1 << i);
 			}
-			tiling |= (1 << rotation);
 		}
 
 		@Override public PressureModule pressure() {
