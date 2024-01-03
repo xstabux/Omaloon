@@ -1,4 +1,4 @@
-package omaloon.world.blocks.distribution.pressure;
+package omaloon.world.blocks.liquid;
 
 import arc.graphics.g2d.*;
 import arc.util.io.*;
@@ -6,8 +6,8 @@ import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.world.blocks.liquid.*;
 import omaloon.utils.*;
-import omaloon.world.blocks.meta.*;
 import omaloon.world.interfaces.*;
+import omaloon.world.meta.*;
 import omaloon.world.modules.*;
 
 public class PressureLiquidDuct extends LiquidRouter {

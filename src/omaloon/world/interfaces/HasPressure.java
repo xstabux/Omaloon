@@ -2,7 +2,7 @@ package omaloon.world.interfaces;
 
 import arc.math.*;
 import mindustry.gen.*;
-import omaloon.world.blocks.meta.*;
+import omaloon.world.meta.*;
 import omaloon.world.modules.*;
 
 public interface HasPressure extends Buildingc {
