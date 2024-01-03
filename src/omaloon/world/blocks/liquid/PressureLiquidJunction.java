@@ -1,4 +1,4 @@
-package omaloon.world.blocks.distribution.pressure;
+package omaloon.world.blocks.liquid;
 
 import arc.*;
 import arc.graphics.g2d.*;
@@ -6,8 +6,8 @@ import arc.util.io.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.blocks.liquid.*;
-import omaloon.world.blocks.meta.*;
 import omaloon.world.interfaces.*;
+import omaloon.world.meta.*;
 import omaloon.world.modules.*;
 
 public class PressureLiquidJunction extends LiquidJunction {

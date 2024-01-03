@@ -6,7 +6,7 @@ import mindustry.world.*;
 import mindustry.world.draw.*;
 import mindustry.world.meta.*;
 import omaloon.world.blocks.distribution.*;
-import omaloon.world.blocks.distribution.pressure.*;
+import omaloon.world.blocks.liquid.*;
 
 import static mindustry.type.ItemStack.*;
 

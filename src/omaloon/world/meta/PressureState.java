@@ -1,4 +1,4 @@
-package omaloon.world.blocks.meta;
+package omaloon.world.meta;
 
 public enum PressureState {
 	overPressure,
