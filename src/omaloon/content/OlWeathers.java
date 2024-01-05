@@ -13,7 +13,7 @@ public class OlWeathers {
     public static Weather hailStone;
 
     public static void load(){
-        hailStone = new HailStormWeather("hailStone"){{
+        hailStone = new HailStormWeather("hail-storm"){{
             attrs.set(Attribute.light, -2f);
 
             drawParticles = inBounceCam = drawNoise = false;
