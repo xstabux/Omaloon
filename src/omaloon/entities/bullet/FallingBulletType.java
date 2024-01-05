@@ -82,7 +82,7 @@ public class FallingBulletType extends BulletType {
         Drawf.shadow(region, b.x, b.y, rot);
         Draw.scl();
 
-        Draw.z(layer + Math3D.layerOffset(pos.x, pos.y));
+        Draw.z(Layer.flyingUnit + Math3D.layerOffset(pos.x, pos.y));
         Draw.color(col);
         Draw.alpha(Mathf.clamp(b.fin() * 1.5f));
         Draw.scl(sclFall);
