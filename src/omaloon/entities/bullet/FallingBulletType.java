@@ -114,7 +114,12 @@ public class FallingBulletType extends BulletType {
 
             if (target != null && pos.dst(target.x(), target.y()) < minDistanceFallingCollide){
                 hitFalling(b);
-                b.remove();
+
+                if (pierce) {
+                    b.collided.add(target.id());
+                }else {
+                    b.remove();
+                }
             }
         }
     }
