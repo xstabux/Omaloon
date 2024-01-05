@@ -4,6 +4,7 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
+import arc.math.Angles;
 import arc.math.Interp;
 import arc.math.Mathf;
 import arc.math.Rand;
@@ -46,9 +47,39 @@ public class OIFx {
     staticStone = new Effect(250f, e -> {
         if(!(e.data instanceof HailStoneBulletType.HailStoneData data)) return;
 
-        Draw.z(Layer.power + 1);
+        Draw.z(Layer.power + 0.1f);
         Draw.alpha(e.fout());
         Draw.color(e.color);
         Draw.rect(data.region, e.x, e.y, Mathf.randomSeed(e.id) * 360);
+    }),
+
+    explosionStone = new Effect(60f, e -> {
+        Angles.randLenVectors(e.id, 12, e.fin() * 50f, (x, y) -> {
+            float elevation = Interp.bounceIn.apply(e.fout() - 0.3f) * (Mathf.randomSeed((int) Angles.angle(x, y), 30f, 60f));
+
+            Draw.z(Layer.power + 0.1f);
+            Draw.color(Pal.shadow);
+            Fill.circle(e.x + x, e.y + y, 12f);
+
+            Draw.z(Layer.power + 0.2f);
+            Draw.color(e.color);
+            Fill.circle(e.x + x, e.y + y + elevation, 12f);
+        });
+
+    }),
+
+    bigExplosionStone = new Effect(80f, e -> {
+        Angles.randLenVectors(e.id, 22, e.fin() * 50f, (x, y) -> {
+            float elevation = Interp.bounceIn.apply(e.fout() - 0.3f) * (Mathf.randomSeed((int) Angles.angle(x, y), 30f, 60f));
+
+            Draw.z(Layer.power + 0.1f);
+            Draw.color(Pal.shadow);
+            Fill.circle(e.x + x, e.y + y, 12f);
+
+            Draw.z(Layer.power + 0.2f);
+            Draw.color(e.color);
+            Fill.circle(e.x + x, e.y + y + elevation, 12f);
+        });
+
     });
 }

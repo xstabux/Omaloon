@@ -1,5 +1,6 @@
 package omaloon.content;
 
+import arc.graphics.Color;
 import arc.util.*;
 import mindustry.content.*;
 import mindustry.gen.*;
@@ -39,11 +40,14 @@ public class OlWeathers {
                         hitSound = OlSounds.bigHailstoneHit;
                         despawnEffect = OIFx.staticStone;
                         splashDamage = 95f;
-                        splashDamageRadius = 8f;
-                        canCollideFalling = true;
+                        splashDamageRadius = 12f;
+
+                        canCollideFalling = pierce = true;
                         fallingDamage = 120f;
                         fallingRadius = 30f;
                         minDistanceFallingCollide = 15f;
+                        hitFallingEffect = OIFx.bigExplosionStone;
+                        hitFallingColor = Color.valueOf("5e9098");
                     }}, 1/1600f,
 
                     new HailStoneBulletType("omaloon-hailstone-middle", 2){{
@@ -56,6 +60,8 @@ public class OlWeathers {
                         fallingDamage = 25f;
                         fallingRadius = 15f;
                         minDistanceFallingCollide = 5f;
+                        hitFallingEffect = OIFx.explosionStone;
+                        hitFallingColor = Color.valueOf("5e9098");
                     }}, 1/12f,
 
                     new HailStoneBulletType("omaloon-hailstone-small", 5){{
