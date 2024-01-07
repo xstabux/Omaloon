@@ -15,7 +15,7 @@ import omaloon.world.modules.*;
 public class PressureLiquidValve extends LiquidBlock {
 	public PressureConfig pressureConfig = new PressureConfig();
 
-	public TextureRegion valveRegion1, valveRegion2;
+	public TextureRegion valveRegion;
 
 	public float pressureLoss = 0.1f;
 
@@ -31,8 +31,7 @@ public class PressureLiquidValve extends LiquidBlock {
 	@Override
 	public void load() {
 		super.load();
-		valveRegion1 = Core.atlas.find(name + "-valve1");
-		valveRegion2 = Core.atlas.find(name + "-valve2");
+		valveRegion = Core.atlas.find(name + "-valve");
 	}
 
 	@Override
@@ -55,13 +54,19 @@ public class PressureLiquidValve extends LiquidBlock {
 
 		@Override
 		public void draw() {
-			super.draw();
-			Drawf.spinSprite(valveRegion1, x, y, draining * 90);
+			float rotation = rotate ? rotdeg() : 0;
+			Draw.rect(bottomRegion, x, y, rotation);
+
+			if(liquids.currentAmount() > 0.001f){
+				Drawf.liquid(liquidRegion, x, y, liquids.currentAmount() / liquidCapacity, liquids.current().color);
+			}
+
+			Draw.rect(region, x, y, rotation);
+			Draw.rect(valveRegion, x, y, draining * -90);
 		}
 
 		@Override
 		public void updateDeath() {
-			HasPressure.super.updateDeath();
 			switch (getPressureState()) {
 				case overPressure -> {
 					removePressure(pressureLoss * Time.delta);
@@ -69,15 +74,16 @@ public class PressureLiquidValve extends LiquidBlock {
 				}
 				case underPressure -> {
 					handlePressure(pressureLoss * Time.delta);
-					draining = Mathf.approachDelta(draining, 0, 0.014f);
+					draining = Mathf.approachDelta(draining, 1, 0.014f);
 				}
-				default -> {}
+				default -> draining = Mathf.approachDelta(draining, 0, 0.014f);
 			}
 		}
 
 		@Override
 		public void updateTile() {
 			super.updateTile();
+			dumpPressure();
 			updateDeath();
 		}
 
