@@ -61,7 +61,8 @@ public class PressureLiquidDuct extends LiquidRouter {
 		}
 
 		@Override public boolean canDumpLiquid(Building to, Liquid liquid) {
-			return super.canDumpLiquid(to, liquid) && to instanceof HasPressure toPressure && canDumpPressure(toPressure, 0);
+			return super.canDumpLiquid(to, liquid) && to instanceof HasPressure toPressure &&
+				       canDumpPressure(toPressure, 0) && !(left() == to || right() == to);
 		}
 
 		@Override

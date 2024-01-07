@@ -7,13 +7,14 @@ import mindustry.world.draw.*;
 import mindustry.world.meta.*;
 import omaloon.world.blocks.distribution.*;
 import omaloon.world.blocks.liquid.*;
+import omaloon.world.meta.*;
 
 import static mindustry.type.ItemStack.*;
 
 public class OlDistributionBlocks {
     public static Block
       tubeConveyor, tubeDistributor, tubeJunction, tubeSorter, tubeGate, tubeBridge,
-      pressureDuct, pressureJunction, /* pressureBridge, pressurePump, pressureValve */
+      pressureDuct, pressureJunction, /* pressureBridge, pressurePump, */pressureValve,
 
     end;
 
@@ -77,6 +78,13 @@ public class OlDistributionBlocks {
         }};
         pressureJunction = new PressureLiquidJunction("pressure-junction") {{
             requirements(Category.liquid, BuildVisibility.sandboxOnly, with());
+        }};
+        pressureValve = new PressureLiquidValve("pressure-valve") {{
+            requirements(Category.liquid, BuildVisibility.sandboxOnly, with());
+            pressureConfig = new PressureConfig() {{
+                minPressure /= 2;
+                maxPressure /= 2;
+            }};
         }};
         //endregion
     }
