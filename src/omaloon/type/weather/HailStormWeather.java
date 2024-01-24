@@ -11,6 +11,7 @@ import mindustry.type.*;
 import omaloon.content.OlLiquids;
 
 import java.util.*;
+import mindustry.Vars;
 
 public class HailStormWeather extends SpawnerWeather {
     public float yspeed = 5f, xspeed = 1.5f, density = 900f, stroke = 0.75f, sizeMin = 8f, sizeMax = 40f, splashTimeScale = 22f;
@@ -39,7 +40,9 @@ public class HailStormWeather extends SpawnerWeather {
     public void spawnAt(WeatherState state, float x, float y) {
         BulletType b = getBullet();
 
-        b.create(null, bulletTeam, x, y, 0f);
+        if(!Vars.net.client()){
+            b.createNet(bulletTeam, x, y, 0, b.damage, 1f, 1f);
+        }
     }
 
     @Override
