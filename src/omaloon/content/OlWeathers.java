@@ -11,7 +11,7 @@ import omaloon.entities.bullet.*;
 import omaloon.type.weather.*;
 
 public class OlWeathers {
-    public static Weather hailStone;
+    public static Weather hailStone, testWeather;
 
     public static void load(){
         hailStone = new HailStormWeather("hail-storm"){{
@@ -71,6 +71,11 @@ public class OlWeathers {
                         splashDamageRadius = 0;
                     }}, 1f
             );
+        }};
+
+
+        testWeather = new jellytest("testWeather"){{
+
         }};
     }
 }
