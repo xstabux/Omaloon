@@ -25,12 +25,11 @@ public class OlFx {
         float x = e.x + (Tmp.v2.x * e.finpow()), y = e.y + (Tmp.v2.y * e.finpow());
 
         Draw.z(Layer.power + 0.1f);
-        Draw.scl();
         Drawf.shadow(data.region, x, y, rot);
 
         Draw.z(Layer.power + 0.2f);
         Draw.color(e.color);
-        Draw.scl();
+        Draw.alpha(e.fout());
         Draw.rect(data.region, x, y + (scl * data.fallTime/2), rot);
     }),
 
