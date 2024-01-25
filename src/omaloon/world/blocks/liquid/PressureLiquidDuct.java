@@ -5,7 +5,6 @@ import arc.graphics.g2d.*;
 import arc.util.*;
 import arc.util.io.*;
 import mindustry.gen.*;
-import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.blocks.liquid.*;
@@ -75,7 +74,7 @@ public class PressureLiquidDuct extends LiquidRouter {
 
 		@Override
 		public boolean connects(HasPressure to) {
-			return to instanceof PressureLiquidDuctBuild ?
+			return to != null && to instanceof PressureLiquidDuctBuild ?
 			  (front() == to || back() == to || to.front() == this || to.back() == this) :
 				to.connects(this);
 		}
@@ -133,7 +132,7 @@ public class PressureLiquidDuct extends LiquidRouter {
 		@Override
 		public void updateTile() {
 			super.updateTile();
-			dumpPressure();
+//			dumpPressure();
 			for (HasPressure build : proximity.select(b -> b instanceof HasPressure && (b == front() || b == back())).<HasPressure>as()) {
 				if (liquids.currentAmount() > 0.0001f) {
 					moveLiquidPressure(build, liquids.current());

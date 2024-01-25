@@ -14,6 +14,7 @@ public class PressureLiquidGraph {
 
 	// TODO temporary, will change depending on the amount of pressure
 	public static int flowRange = 3;
+	public static int flowSteps = 10;
 
 	public PressureLiquidGraph() {
 		entity = PressureUpdater.create();
@@ -41,12 +42,12 @@ public class PressureLiquidGraph {
 		if (!erased) {
 			build.pressure().graph = new PressureLiquidGraph();
 			build.pressureGraph().addBuild(build);
-			if (builds.isEmpty()) entity.remove();
 		} else {
 			for (HasPressure next : build.nextBuilds()) {
 				removeBuild(next, false);
 			}
 		}
+		if (builds.isEmpty()) entity.remove();
 		changed = true;
 	}
 
@@ -55,8 +56,9 @@ public class PressureLiquidGraph {
 	 * list will go visually farther in bigger blocks
 	 */
 	public static ObjectIntMap<HasPressure> floodRange(HasPressure from, int range) {
-		PressureLiquidGraph sourceGraph = from.pressureGraph();
 		ObjectIntMap<HasPressure> out = new ObjectIntMap<>();
+		if (from == null) return out;
+		PressureLiquidGraph sourceGraph = from.pressureGraph();
 		Seq<HasPressure> temp = Seq.with(from);
 		out.put(from, range);
 		range--;
@@ -64,9 +66,7 @@ public class PressureLiquidGraph {
 		while (range > 0 && !temp.isEmpty()) {
 			Seq<HasPressure> temp2 = Seq.with();
 			while (!temp.isEmpty()) {
-				Seq<HasPressure> nextBuilds = temp.pop().nextBuilds().removeAll(b -> {
-					return b.pressureGraph() != sourceGraph;
-				});
+				Seq<HasPressure> nextBuilds = temp.pop().nextBuilds().removeAll(b -> b == null);
 				int finalRange = range;
 				nextBuilds.each(b -> {
 					if (!out.containsKey(b)) {
@@ -85,6 +85,16 @@ public class PressureLiquidGraph {
 		if (changed) {
 			builds.removeAll(b -> b == null || Vars.world.build(b.pos()) == null);
 			changed = false;
+		}
+
+		for (int i = 0; i < flowSteps; i++) {
+			HasPressure mostPressure = builds.max(HasPressure::getPressure);
+			if (mostPressure == null) break;
+			ObjectIntMap<HasPressure> flowMap = floodRange(mostPressure, flowRange);
+			float distributedPressure = mostPressure.getPressure() - flowMap.keys().toArray().sumf(HasPressure::getPressure) / flowMap.keys().toArray().size;
+			Seq<HasPressure> others = flowMap.keys().toArray().removeAll(b -> b == mostPressure);
+			mostPressure.removePressure(distributedPressure);
+			others.each(build -> build.handlePressure(distributedPressure/others.size));
 		}
 	}
 }
