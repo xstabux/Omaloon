@@ -1,10 +1,7 @@
 package omaloon.world.blocks.liquid;
 
-import arc.*;
 import arc.struct.*;
 import arc.util.io.*;
-import mindustry.graphics.*;
-import mindustry.ui.*;
 import mindustry.world.blocks.liquid.*;
 import omaloon.world.interfaces.*;
 import omaloon.world.meta.*;
