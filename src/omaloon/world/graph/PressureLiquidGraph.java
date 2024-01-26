@@ -1,9 +1,10 @@
 package omaloon.world.graph;
 
 import arc.struct.*;
-import mindustry.*;
 import omaloon.gen.*;
 import omaloon.world.interfaces.*;
+
+import java.util.*;
 
 public class PressureLiquidGraph {
 	public PressureUpdater entity;
@@ -66,7 +67,7 @@ public class PressureLiquidGraph {
 		while (range > 0 && !temp.isEmpty()) {
 			Seq<HasPressure> temp2 = Seq.with();
 			while (!temp.isEmpty()) {
-				Seq<HasPressure> nextBuilds = temp.pop().nextBuilds().removeAll(b -> b == null);
+				Seq<HasPressure> nextBuilds = temp.pop().nextBuilds().removeAll(Objects::isNull);
 				int finalRange = range;
 				nextBuilds.each(b -> {
 					if (!out.containsKey(b)) {
@@ -83,15 +84,16 @@ public class PressureLiquidGraph {
 
 	public void update() {
 		if (changed) {
-			builds.removeAll(b -> b == null || Vars.world.build(b.pos()) == null);
+			builds.removeAll(build -> !build.isValid() || build.pressureGraph() != this);
+			if (builds.isEmpty()) entity.remove();
 			changed = false;
 		}
 
 		for (int i = 0; i < flowSteps; i++) {
 			HasPressure mostPressure = builds.max(HasPressure::getPressure);
-			if (mostPressure == null) break;
+			if (builds.size <= 1) break;
 			ObjectIntMap<HasPressure> flowMap = floodRange(mostPressure, flowRange);
-			float distributedPressure = mostPressure.getPressure() - flowMap.keys().toArray().sumf(HasPressure::getPressure) / flowMap.keys().toArray().size;
+			float distributedPressure = mostPressure.getPressure() - flowMap.keys().toArray().sumf(HasPressure::getPressure) / flowMap.keys().toArray().size + 1;
 			Seq<HasPressure> others = flowMap.keys().toArray().removeAll(b -> b == mostPressure);
 			mostPressure.removePressure(distributedPressure);
 			others.each(build -> build.handlePressure(distributedPressure/others.size));
