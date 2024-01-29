@@ -120,7 +120,7 @@ public class TubeItemBridge extends ItemBridge {
 
         Draw.reset();
         Draw.color(Pal.placing);
-        if(link != null && Math.abs(link.x - x) + Math.abs(link.y - y) > 1){
+        if(link != null && Vars.world.build(link.x, link.y) instanceof TubeItemBridgeBuild && Math.abs(link.x - x) + Math.abs(link.y - y) > 1){
             Vec2 end = new Vec2(x, y), start = new Vec2(link.x, link.y);
             float angle = Tmp.v1.set(start).sub(end).angle() + 90;
             float layer = Draw.z();
