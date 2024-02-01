@@ -33,9 +33,9 @@ public class OlDefenceBlocks {
                         width = 7f;
                         height = 7f;
                         lifetime = 25f;
-                        ammoMultiplier = 2;
+                        ammoMultiplier = 3;
 
-                        despawnEffect = Fx.none;
+                        despawnEffect = Fx.hitBulletSmall;
                         hitEffect = Fx.none;
                         hitColor = OlItems.cobalt.color;
 
@@ -55,7 +55,7 @@ public class OlDefenceBlocks {
                             hitColor = OlItems.cobalt.color;
 
                             trailWidth = 0.8f;
-                            trailLength = 3;
+                            trailLength = 10;
                             trailColor = OlItems.cobalt.color;
 
                             backColor = OlItems.cobalt.color;
@@ -64,6 +64,7 @@ public class OlDefenceBlocks {
                         fragOnHit = true;
                         fragBullets = 4;
                         fragRandomSpread = 45f;
+                        fragVelocityMin = 0.7f;
                     }}
             );
 
