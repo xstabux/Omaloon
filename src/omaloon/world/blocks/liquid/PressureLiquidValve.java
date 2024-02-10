@@ -52,11 +52,17 @@ public class PressureLiquidValve extends LiquidBlock {
 		addBar("pressure", entity -> {
 			HasPressure build = (HasPressure) entity;
 			return new Bar(
-				Core.bundle.get("pressure"),
-				Pal.accent,
+				() -> Core.bundle.get("pressure") + Strings.fixed(build.getPressure(), 2),
+				build::getBarColor,
 				build::getPressureMap
 			);
 		});
+	}
+
+	@Override
+	public void setStats() {
+		super.setStats();
+		pressureConfig.addStats(stats);
 	}
 
 	public class PressureLiquidValveBuild extends LiquidBuild implements HasPressure {
