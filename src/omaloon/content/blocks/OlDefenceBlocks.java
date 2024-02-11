@@ -16,6 +16,8 @@ import static mindustry.type.ItemStack.*;
 
 public class OlDefenceBlocks {
     public static Block
+            //projectors
+            mender,
             //turrets
             apex,
             //walls
@@ -24,6 +26,16 @@ public class OlDefenceBlocks {
     end;
 
     public static void load(){
+        //region projectors
+        mender = new MendProjector("mender"){{
+            requirements(Category.effect, BuildVisibility.sandboxOnly, with());
+            consumePower(0.2f);
+            size = 1;
+            reload = 190f;
+            range = 34f;
+            healPercent = 3.5f;
+            health = 80;
+        }};
         //region turrets
         apex = new ItemTurret("apex"){{
             requirements(Category.turret, BuildVisibility.sandboxOnly, with());

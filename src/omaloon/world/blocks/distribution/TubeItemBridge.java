@@ -216,12 +216,7 @@ public class TubeItemBridge extends ItemBridge {
     }
 
     public class TubeItemBridgeBuild extends ItemBridgeBuild{
-        ItemBuffer buffer;
-
-        public TubeItemBridgeBuild(){
-            super();
-            buffer = new ItemBuffer(bufferCapacity);
-        }
+        ItemBuffer buffer = new ItemBuffer(bufferCapacity);
 
         public void drawBase(){
             Draw.rect(this.block.region, this.x, this.y, this.block.rotate ? this.rotdeg() : 0.0F);
@@ -321,7 +316,8 @@ public class TubeItemBridge extends ItemBridge {
             }
         }
 
-        public void updateTransport(Building other) {
+        @Override
+        public void updateTransport(Building other){
             if(buffer.accepts() && items.total() > 0){
                 buffer.accept(items.take());
             }
@@ -332,6 +328,11 @@ public class TubeItemBridge extends ItemBridge {
                 other.handleItem(this, item);
                 buffer.remove();
             }
+        }
+
+        @Override
+        public void doDump(){
+            dump();
         }
 
         public void draw(){
