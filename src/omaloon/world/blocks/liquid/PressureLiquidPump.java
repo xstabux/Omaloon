@@ -2,10 +2,11 @@ package omaloon.world.blocks.liquid;
 
 import arc.*;
 import arc.graphics.g2d.*;
+import arc.math.geom.*;
 import arc.util.*;
 import arc.util.io.*;
+import mindustry.entities.units.*;
 import mindustry.gen.*;
-import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.blocks.liquid.*;
@@ -26,6 +27,33 @@ public class PressureLiquidPump extends LiquidBlock {
 	public PressureLiquidPump(String name) {
 		super(name);
 		rotate = true;
+	}
+
+	@Override
+	public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list) {
+		var tiling = new Object() {
+			int tiling = 0;
+		};
+		Point2
+			front = new Point2(1, 0).rotate(plan.rotation).add(plan.x, plan.y),
+			back = new Point2(-1, 0).rotate(plan.rotation).add(plan.x, plan.y);
+
+		boolean inverted = plan.rotation == 1 || plan.rotation == 2;
+		list.each(next -> {
+			if (new Point2(next.x, next.y).equals(front) &&
+				    (next.build() instanceof HasPressure pressure &&
+					     (pressure.pressureConfig().acceptsPressure || pressure.pressureConfig().outputsPressure)
+				    )
+			) tiling.tiling |= inverted ? 2 : 1;
+			if (new Point2(next.x, next.y).equals(back) &&
+				    (next.build() instanceof HasPressure pressure &&
+					     (pressure.pressureConfig().acceptsPressure || pressure.pressureConfig().outputsPressure)
+				    )
+			) tiling.tiling |= inverted ? 1 : 2;
+		});
+
+		Draw.rect(tiles[tiling.tiling], plan.drawx(), plan.drawy(), (plan.rotation + 1) * 90f % 180 - 90);
+		Draw.rect(topRegion, plan.drawx(), plan.drawy(), (plan.rotation) * 90f);
 	}
 
 	@Override public TextureRegion[] icons() {
