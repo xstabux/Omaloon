@@ -42,6 +42,7 @@ public class OlUnitTypes{
 
         collector = new GlasmoreUnitType("collector"){{
             constructor = LegsMillipedeUnit::create;
+            speed = 0.6f;
             health = 200f;
             regenTime = 15f * 60f;
             splittable = true;
@@ -52,9 +53,8 @@ public class OlUnitTypes{
             segmentLength = 5;
             segmentDamageScl = 8f;
             segmentCast = 8;
-            segmentOffset = 8;
-            engineSize = -1f;
-            maxSegments = 5;
+            segmentOffset = 7.3f;
+            maxSegments = 4;
             preventDrifting = true;
 
             legCount = 2;
@@ -66,14 +66,14 @@ public class OlUnitTypes{
             legMaxLength = 1.1f;
             legMinLength = 0.2f;
             legLengthScl = 0.96f;
-            legForwardScl = 1.1f;
-            legGroupSize = 3;
-            rippleScale = 0.2f;
+            legForwardScl = 0.7f;
+            legGroupSize = 2;
+            rippleScale = 0.7f;
 
             legMoveSpace = 2f;
             allowLegStep = true;
-            hovering = true;
-            legPhysicsLayer = false;
+            hovering = false;
+            legPhysicsLayer = true;
 
             segWeapSeq.add(new Weapon(){{
                 rotate = true;

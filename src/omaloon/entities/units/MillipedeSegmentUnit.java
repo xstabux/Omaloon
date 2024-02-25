@@ -367,7 +367,7 @@ public class MillipedeSegmentUnit extends UnitEntity{
         TextureRegion outline = millipedeType.segmentOutline == null || millipedeType.tailOutline == null ? null : segmentType == 0 ? millipedeType.segmentOutline : millipedeType.tailOutline;
         if(outline != null){
             Draw.color(Color.white);
-            Draw.z(Draw.z()/* - UnitType.outlineSpace*/);
+            Draw.z(Draw.z());
             Draw.rect(outline, this, rotation - 90f);
             Draw.z(z);
         }
