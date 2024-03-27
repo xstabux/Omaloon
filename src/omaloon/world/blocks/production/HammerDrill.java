@@ -98,6 +98,8 @@ public class HammerDrill extends OlDrill {
                     drillEffect.at(x + Mathf.range(drillEffectRnd), y + Mathf.range(drillEffectRnd), dominantItem.color);
                 }
             }
+            updateDeath();
+            dumpPressure();
         }
 
         @Override
