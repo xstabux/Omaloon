@@ -37,25 +37,19 @@ void main(){
     float ip= i/(k*dot_);
     float unitDistance=b/(k*dot_);
     vec4 col=vec4(1.0);
-    if (length(point-p4)>length(p2-p4)){
-        //        col=vec4(1.0);
-    } else {
+
+    if(length(point-p4)>length(p2-p4)){
+    }else{
         float ci=clamp(i, -1.0, 1.0);
-        if (i<=0){
-            //        col = vec4(vec3(1.0-(1.0-smoothstep(0,1,ip)*cip)), 1.0);
+        if(i<=0){
             float aip=-ip;
             float scale=0.75;
-            //            col.rgb*=clamp(smoothstep(0,1,1.0-aip)*pow(1.0-aip,10.0),0.0,1.0);
-            //col.rgb*=1.0-(1.0-smoothstep(0,1,ip)*ip);
-//            float it=pow(1.0-smoothstep(0.0,1.0,pow(1.0-abs(unitDistance),0.25))*0.9,1);
             float a=abs(unitDistance)-0.5;
             float it=0.5+(1.0-pow(1.0-abs(a)*2,2))*sign(a)/2;
             col.rgb*=smoothstep(0,1,it);
         }
         col.rgb/=col.r;
         col.rgb*=smoothstep(0.0,1.0,i);
-//        col.rgb*=pow(1.0-pow(1.0-smoothstep(0, 1, i+0.5), 2.0), 2.0);
-
     }
 
     gl_FragColor = color*u_color*v_col*col;
