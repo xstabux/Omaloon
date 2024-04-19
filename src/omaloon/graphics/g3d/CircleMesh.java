@@ -2,21 +2,22 @@ package omaloon.graphics.g3d;
 
 import arc.*;
 import arc.graphics.*;
+import arc.graphics.g2d.*;
 import arc.graphics.gl.*;
 import arc.math.geom.*;
 import arc.util.*;
 import mindustry.graphics.g3d.*;
 import mindustry.type.*;
-import omaloon.*;
 import omaloon.graphics.*;
 
 public class CircleMesh implements GenericMesh{
     public final Mesh mesh;
-    public String texturename = "omaloon-circle-mesh";
+    public TextureRegion region;
     public Texture texture;
     public Color color = Color.white.cpy();
 
-    public CircleMesh(int sides, float radiusIn, float radiusOut, Vec3 axis){
+    public CircleMesh(TextureRegion region ,int sides, float radiusIn, float radiusOut, Vec3 axis){
+        this.region = region;
 
         MeshUtils.begin(sides * 6/*points amount*/ * (3/*pos*/ + 3/*normal*/ + 2/*texCords*/) * 2/*top and bottom normal*/);
 
@@ -103,7 +104,7 @@ public class CircleMesh implements GenericMesh{
             .set(planet.solarSystem.lightColor);
 
         if(texture == null){
-            texture = new Texture(Core.atlas.getPixmap(Core.atlas.find(texturename)).crop());
+            texture = new Texture(Core.atlas.getPixmap(region).crop());
         }
 
         Shader shader = shader();
@@ -127,7 +128,6 @@ public class CircleMesh implements GenericMesh{
     }
 
     private static Shader shader(){
-        Shader shader = OlShaders.planetTextureShader;
-        return shader;
+        return OlShaders.planetTextureShader;
     }
 }

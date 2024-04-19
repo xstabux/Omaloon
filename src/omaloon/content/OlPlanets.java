@@ -12,6 +12,8 @@ import omaloon.maps.ColorPass.*;
 import omaloon.maps.HeightPass.*;
 import omaloon.maps.planets.*;
 
+import static arc.Core.atlas;
+
 public class OlPlanets {
 	public static Planet glassmore;
 
@@ -107,8 +109,15 @@ public class OlPlanets {
 				);
 			}};
 			meshLoader = () -> new HexMesh(this, 7);
+
+			Vec3 ringPos = new Vec3(0,1,0).rotate(Vec3.X, 25);
+
 			cloudMeshLoader = () -> new MultiMesh(
-				new CircleMesh(80, 2f, 2.2f, new Vec3(0,1,0).rotate(Vec3.X, 25)),
+				new CircleMesh(atlas.find("omaloon-ring4"), 80, 2.55f, 2.6f, ringPos),
+				new CircleMesh(atlas.find("omaloon-ring3"), 80, 2.2f, 2.5f, ringPos),
+				new CircleMesh(atlas.find("omaloon-ring2"), 80, 1.9f, 2.1f, ringPos),
+				new CircleMesh(atlas.find("omaloon-ring1"), 80, 1.8f, 1.85f, ringPos),
+
 				new HexSkyMesh(this, 6, -0.5f, 0.14f, 6, OlEnvironmentBlocks.blueIce.mapColor.cpy().a(0.2f), 2, 0.42f, 1f, 0.6f),
 				new HexSkyMesh(this, 1, 0.6f, 0.15f, 6, OlEnvironmentBlocks.blueIce.mapColor.cpy().a(0.2f), 2, 0.42f, 1.2f, 0.5f)
 			);
