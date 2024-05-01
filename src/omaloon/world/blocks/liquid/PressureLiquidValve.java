@@ -32,8 +32,9 @@ public class PressureLiquidValve extends LiquidBlock {
 	public Effect disperseEffect = OlFx.valveSpray;
 	public float disperseEffectInterval = 30;
 
-	public float pressureLoss = 0.05f;
-	public float liquidLoss = 0.05f;
+	public float pressureLoss = 0.05f, liquidLoss = 0.05f;
+
+	public float openMin = -15f, openMax = 15f;
 
 	public float liquidPadding = 3f;
 
@@ -179,19 +180,18 @@ public class PressureLiquidValve extends LiquidBlock {
 
 		@Override
 		public void updateDeath() {
-			switch (getPressureState()) {
-				case overPressure -> {
-					effectInterval += delta();
-					removePressure(pressureLoss * Time.delta);
-					if (liquids.current() != null) liquids.remove(liquids.current(), liquidLoss * delta());
-					draining = Mathf.approachDelta(draining, 1, 0.014f);
-				}
-				case underPressure -> {
-					handlePressure(pressureLoss * Time.delta);
-					draining = Mathf.approachDelta(draining, 1, 0.014f);
-				}
-				default -> draining = Mathf.approachDelta(draining, 0, 0.014f);
+			HasPressure.super.updateDeath();
+			if (getPressure() >= openMax) {
+				effectInterval += delta();
+				removePressure(pressureLoss * Time.delta);
+				if (liquids.current() != null) liquids.remove(liquids.current(), liquidLoss * delta());
+				draining = Mathf.approachDelta(draining, 1, 0.014f);
 			}
+			if (getPressure() <= openMin) {
+				handlePressure(pressureLoss * Time.delta);
+				draining = Mathf.approachDelta(draining, 1, 0.014f);
+			}
+			draining = Mathf.approachDelta(draining, 0, 0.014f);
 			if (effectInterval > disperseEffectInterval && liquids.currentAmount() > 0.1f) {
 				effectInterval = 0;
 				disperseEffect.at(x, y, draining * (rotation%2 == 0 ? -90 : 90) + (rotate ? (90 + rotdeg()) % 180 - 90 : 0), liquids.current());
