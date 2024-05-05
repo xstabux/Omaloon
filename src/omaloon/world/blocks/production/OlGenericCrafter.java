@@ -1,6 +1,5 @@
 package omaloon.world.blocks.production;
 
-import arc.struct.*;
 import arc.util.io.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.consumers.*;
@@ -60,27 +59,9 @@ public class OlGenericCrafter extends GenericCrafter {
 			return super.getProgressIncrease(baseTime) * efficiencyMultiplier();
 		}
 
-		@Override public Seq<HasPressure> nextBuilds(boolean flow) {
-			return HasPressure.super.nextBuilds(flow).retainAll(build -> !(build instanceof OlGenericCrafter));
-		}
-
-		@Override
-		public void onProximityAdded() {
-			super.onProximityAdded();
-			pressureGraph().addBuild(this);
-		}
-
-		@Override
-		public void onProximityRemoved() {
-			super.onProximityRemoved();
-			pressureGraph().removeBuild(this, true);
-		}
-
-		@Override
-		public void onProximityUpdate() {
-			super.onProximityUpdate();
-			pressureGraph().removeBuild(this, false);
-		}
+//		@Override public Seq<HasPressure> nextBuilds(boolean flow) {
+//			return HasPressure.super.nextBuilds(flow).retainAll(build -> !(build instanceof OlGenericCrafter));
+//		}
 
 		@Override public PressureModule pressure() {
 			return pressure;
@@ -90,17 +71,18 @@ public class OlGenericCrafter extends GenericCrafter {
 		}
 
 		@Override
-		public void updateTile() {
-			super.updateTile();
-			updateDeath();
-			dumpPressure();
-		}
-
-		@Override
 		public void read(Reads read, byte revision) {
 			super.read(read, revision);
 			pressure.read(read);
 		}
+
+		@Override
+		public void updateTile() {
+			super.updateTile();
+			updatePressure();
+			dumpPressure();
+		}
+
 		@Override
 		public void write(Writes write) {
 			super.write(write);
