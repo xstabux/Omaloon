@@ -12,8 +12,7 @@ import omaloon.world.interfaces.*;
 public class PressureConfig {
 	public boolean
 		acceptsPressure = true,
-		outputsPressure = true,
-		linksGraph = true, flows = true;
+		outputsPressure = true;
 	public float
 		overPressureDamage = 1f,
 		minPressure = -50,
