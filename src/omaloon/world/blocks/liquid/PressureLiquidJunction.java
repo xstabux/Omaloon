@@ -10,9 +10,7 @@ import omaloon.world.meta.*;
 import omaloon.world.modules.*;
 
 public class PressureLiquidJunction extends LiquidJunction {
-	public PressureConfig pressureConfig = new PressureConfig() {{
-		linksGraph = false;
-	}};
+	public PressureConfig pressureConfig = new PressureConfig();
 
 	public PressureLiquidJunction(String name) {
 		super(name);
@@ -25,6 +23,10 @@ public class PressureLiquidJunction extends LiquidJunction {
 			return false;
 		}
 		@Override public boolean acceptsPressure(HasPressure from, float pressure) {
+			return false;
+		}
+
+		@Override public boolean connects(HasPressure to) {
 			return false;
 		}
 

@@ -22,9 +22,7 @@ import static mindustry.Vars.*;
 import static mindustry.type.Liquid.*;
 
 public class PressureLiquidPump extends LiquidBlock {
-	public PressureConfig pressureConfig = new PressureConfig() {{
-		linksGraph = flows = false;
-	}};
+	public PressureConfig pressureConfig = new PressureConfig();
 
 	public float pressureTransfer = 0.1f;
 
@@ -57,8 +55,9 @@ public class PressureLiquidPump extends LiquidBlock {
 		});
 
 		Draw.rect(bottomRegion, plan.drawx(), plan.drawy(), 0);
+		if (tiling.tiling != 0) Draw.rect(arrowRegion, plan.drawx(), plan.drawy(), (plan.rotation) * 90f);
 		Draw.rect(tiles[tiling.tiling], plan.drawx(), plan.drawy(), (plan.rotation + 1) * 90f % 180 - 90);
-		Draw.rect(topRegion, plan.drawx(), plan.drawy(), (plan.rotation) * 90f);
+		if (tiling.tiling == 0) Draw.rect(topRegion, plan.drawx(), plan.drawy(), (plan.rotation) * 90f);
 	}
 
 	@Override public TextureRegion[] icons() {
@@ -111,9 +110,8 @@ public class PressureLiquidPump extends LiquidBlock {
 			return false;
 		}
 
-		@Override
-		public boolean connects(HasPressure to) {
-			return HasPressure.super.connects(to) && (to == front() || to == back());
+		@Override public boolean connects(HasPressure to) {
+			return HasPressure.super.connects(to) && !(to instanceof PressureLiquidPumpBuild) && (front() == to || back() == to);
 		}
 
 		@Override
@@ -122,8 +120,8 @@ public class PressureLiquidPump extends LiquidBlock {
 			if (tiling != 0) {
 				Draw.rect(bottomRegion, x, y, rotdeg());
 				if (liquids().currentAmount() > 0.01f) {
-					HasPressure front = (front() instanceof HasPressure b && b.pressureConfig().linksGraph) ? b : null;
-					HasPressure back = (back() instanceof HasPressure b && b.pressureConfig().linksGraph) ? b : null;
+					HasPressure front = (front() instanceof HasPressure b && connected(b)) ? b : null;
+					HasPressure back = (back() instanceof HasPressure b && connected(b)) ? b : null;
 					float alpha =
 						(front == null ? 0 : front.liquids().currentAmount()/front.block().liquidCapacity) +
 							(back == null ? 0 : back.liquids().currentAmount()/back.block().liquidCapacity);
@@ -146,13 +144,6 @@ public class PressureLiquidPump extends LiquidBlock {
 		}
 
 		@Override
-		public HasPressure getPressureDestination(HasPressure from, float pressure) {
-			if (from == front()) return back() instanceof HasPressure b ? b : this;
-			if (from == back()) return front() instanceof HasPressure b ? b : this;
-			return this;
-		}
-
-		@Override
 		public Seq<HasPressure> nextBuilds(boolean flow) {
 			return Seq.with();
 		}
@@ -162,8 +153,8 @@ public class PressureLiquidPump extends LiquidBlock {
 			super.onProximityUpdate();
 			tiling = 0;
 			boolean inverted = rotation == 1 || rotation == 2;
-			if (front() instanceof HasPressure front && connects(front)) tiling |= inverted ? 2 : 1;
-			if (back() instanceof HasPressure back && connects(back)) tiling |= inverted ? 1 : 2;
+			if (front() instanceof HasPressure front && connected(front)) tiling |= inverted ? 2 : 1;
+			if (back() instanceof HasPressure back && connected(back)) tiling |= inverted ? 1 : 2;
 		}
 
 		@Override public PressureModule pressure() {
@@ -183,11 +174,14 @@ public class PressureLiquidPump extends LiquidBlock {
 		public void updateTile() {
 			super.updateTile();
 			if (efficiency > 0) {
-				HasPressure front = (front() instanceof HasPressure b && b.pressureConfig().linksGraph) ? b : null;
-				HasPressure back = (back() instanceof HasPressure b && b.pressureConfig().linksGraph) ? b : null;
+				HasPressure front = (front() instanceof HasPressure b && connected(b)) ? b : null;
+				HasPressure back = (back() instanceof HasPressure b && connected(b)) ? b : null;
+
+				float solid = 1;
+				if (front == null && front() != null || back == null && back() != null) solid++;
 
 				float difference = (front == null ? 0 : front.getPressure()) - (back == null ? 0 : back.getPressure());
-				if (difference < pressureDifference) {
+				if (difference < pressureDifference/solid) {
 					if (front != null) front.handlePressure(pressureTransfer * edelta());
 					if (back != null) back.removePressure(pressureTransfer * edelta());
 				}
@@ -195,9 +189,11 @@ public class PressureLiquidPump extends LiquidBlock {
 					if (front != null) {
 						back.moveLiquidPressure(front, back.liquids().current());
 					} else {
-						float leakAmount = back.liquids().get(back.liquids().current()) / 1.5f;
-						Puddles.deposit(tile.nearby(rotation), tile, back.liquids().current(), leakAmount, true, true);
-						back.liquids().remove(back.liquids().current(), leakAmount);
+						if (front() == null) {
+							float leakAmount = back.liquids().get(back.liquids().current()) / 1.5f;
+							Puddles.deposit(tile.nearby(rotation), tile, back.liquids().current(), leakAmount, true, true);
+							back.liquids().remove(back.liquids().current(), leakAmount);
+						}
 					}
 				}
 			}

@@ -129,7 +129,7 @@ public class PressureLiquidValve extends LiquidBlock {
 
 		@Override
 		public boolean connects(HasPressure to) {
-			return to instanceof PressureLiquidValveBuild ?
+			return HasPressure.super.connects(to) && to instanceof PressureLiquidValveBuild ?
 				       (front() == to || back() == to) && (to.front() == this || to.back() == this) :
 				       (front() == to || back() == to);
 		}
@@ -157,8 +157,8 @@ public class PressureLiquidValve extends LiquidBlock {
 			super.onProximityUpdate();
 			tiling = 0;
 			boolean inverted = rotation == 1 || rotation == 2;
-			if (front() instanceof HasPressure front && connects(front)) tiling |= inverted ? 2 : 1;
-			if (back() instanceof HasPressure back && connects(back)) tiling |= inverted ? 1 : 2;
+			if (front() instanceof HasPressure front && connected(front)) tiling |= inverted ? 2 : 1;
+			if (back() instanceof HasPressure back && connected(back)) tiling |= inverted ? 1 : 2;
 		}
 
 		@Override public PressureModule pressure() {
@@ -181,11 +181,11 @@ public class PressureLiquidValve extends LiquidBlock {
 				effectInterval += delta();
 				removePressure(pressureLoss * Time.delta);
 				if (liquids.current() != null) liquids.remove(liquids.current(), liquidLoss * delta());
-				draining = Mathf.approachDelta(draining, 1, 0.014f);
+				draining = Mathf.approachDelta(draining, 1, 0.028f);
 			}
 			if (getPressure() <= openMin) {
 				handlePressure(pressureLoss * Time.delta);
-				draining = Mathf.approachDelta(draining, 1, 0.014f);
+				draining = Mathf.approachDelta(draining, 1, 0.028f);
 			}
 			draining = Mathf.approachDelta(draining, 0, 0.014f);
 			if (effectInterval > disperseEffectInterval && liquids.currentAmount() > 0.1f) {

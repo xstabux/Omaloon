@@ -12,7 +12,6 @@ import mindustry.type.*;
 import mindustry.world.blocks.liquid.*;
 import mindustry.world.blocks.sandbox.*;
 import omaloon.utils.*;
-import omaloon.world.blocks.liquid.PressureLiquidPump.*;
 import omaloon.world.blocks.liquid.PressureLiquidValve.*;
 import omaloon.world.interfaces.*;
 import omaloon.world.meta.*;
@@ -122,9 +121,10 @@ public class PressureLiquidDuct extends LiquidRouter {
 
 		@Override
 		public boolean connects(HasPressure to) {
-			return (to instanceof PressureLiquidDuctBuild || to instanceof PressureLiquidPumpBuild || to instanceof PressureLiquidValveBuild) ?
-			  (front() == to || back() == to || to.front() == this || to.back() == this) :
-				to != null && (to.pressureConfig().outputsPressure || to.pressureConfig().acceptsPressure);
+			return (
+				to instanceof PressureLiquidDuctBuild || to instanceof PressureLiquidValveBuild) ?
+			    (front() == to || back() == to || to.front() == this || to.back() == this) :
+					to != null && HasPressure.super.connects(to);
 		}
 
 		@Override
@@ -155,7 +155,7 @@ public class PressureLiquidDuct extends LiquidRouter {
 			for (int i = 0; i < 4; i++) {
 				HasPressure build = nearby(i) instanceof HasPressure ? (HasPressure) nearby(i) : null;
 				if (
-					build != null && connects(build)
+					build != null && connected(build)
 				) tiling |= (1 << i);
 			}
 		}
