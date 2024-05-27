@@ -62,6 +62,16 @@ public class OlDefenceBlocks {
                         despawnEffect = Fx.hitBulletSmall;
                         hitEffect = Fx.none;
                         hitColor = OlItems.cobalt.color;
+                        smokeEffect = new ParticleEffect(){{
+                            colorFrom = colorTo = OlItems.cobalt.color
+                            line = true;
+                            particles = 8;
+                            lifetime = 20;
+                            lengthFrom = lengthTo = 4;
+                            baseLength = 0;
+                            length = 8;
+                            strokeFrom = strokeTo = 1;
+                                }};
 
                         trailWidth = 1.3f;
                         trailLength = 10;
