@@ -71,6 +71,7 @@ public class OlDefenceBlocks {
                             baseLength = 0;
                             length = 8;
                             strokeFrom = strokeTo = 1;
+                            cone = 5;
                                 }};
 
                         trailWidth = 1.3f;
