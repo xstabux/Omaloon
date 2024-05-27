@@ -59,7 +59,7 @@ public class OlDefenceBlocks {
                         lifetime = 25f;
                         ammoMultiplier = 3;
 
-                        despawnEffect = Fx.hitBulletSmall;
+                        despawnEffect = Fx.hitBulletColor;
                         hitEffect = Fx.none;
                         hitColor = OlItems.cobalt.color;
 
