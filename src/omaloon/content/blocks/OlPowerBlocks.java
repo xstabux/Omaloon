@@ -27,7 +27,7 @@ public class OlPowerBlocks{
                         rotationProvider(WindGeneratorBuild::baseRotation);
                         rotationAroundAxis = -55f;
                         rotateSpeed = baseRotateSpeed = 3.3f;
-                        scale.set(0.5f, 1f, 1f);
+                        scale.set(0.5f, 1f, 0f);
                     }}
             );
             size = 1;
