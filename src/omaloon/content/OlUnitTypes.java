@@ -14,6 +14,7 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
 import omaloon.ai.*;
+import omaloon.entities.abilities.*;
 import omaloon.gen.*;
 import omaloon.type.*;
 
@@ -57,6 +58,7 @@ public class OlUnitTypes {
             segmentOffset = 7.3f;
             maxSegments = 20;
             preventDrifting = true;
+            hidden = true;
 
             legLength = 8f;
             lockLegBase = true;
@@ -250,6 +252,14 @@ public class OlUnitTypes {
                 mirror = true;
                 x = 2.7f; y = 8.6f;
                 outline = true;
+            }});
+
+            abilities.add(new JavelinAbility(100f, 1f, 29f) {{
+                minDamage = 20f;
+                minSpeed = 2;
+                maxSpeed = 4;
+                magX = 0.2f;
+                magY = 0.1f;
             }});
 
             weapons.add(new Weapon(name + "-launcher"){{
