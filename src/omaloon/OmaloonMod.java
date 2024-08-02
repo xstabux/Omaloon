@@ -22,6 +22,11 @@ public class OmaloonMod extends Mod{
     public static EditorListener editorListener;
     public static ShapedEnvPlacerFragment shapedEnvPlacerFragment;
 
+    /**
+     * Buffer radius increase to take splashRadius into account, increase if necessary.
+     */
+    public static float shieldBuffer = 40f;
+
     public OmaloonMod(){
         super();
 
