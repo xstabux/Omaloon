@@ -10,6 +10,7 @@ import arc.struct.*;
 import arc.util.*;
 import arc.util.io.*;
 import arclibrary.graphics.*;
+import mindustry.*;
 import mindustry.content.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
@@ -25,7 +26,6 @@ import omaloon.world.interfaces.*;
 import omaloon.world.meta.*;
 import omaloon.world.modules.*;
 
-import static arc.Core.*;
 import static omaloon.OmaloonMod.*;
 
 public class Shelter extends Block {
@@ -43,7 +43,7 @@ public class Shelter extends Block {
 	public boolean useConsumerMultiplier = true;
 
 	public Color deflectColor = Pal.heal;
-	public float deflectAlpha = 0.7f;
+	public float deflectAlpha = 0.2f;
 
 	public Effect hitEffect = Fx.absorb;
 	public Sound hitSound = Sounds.none;
@@ -56,7 +56,7 @@ public class Shelter extends Block {
 
 	{
 		Events.run(EventType.Trigger.draw, () -> {
-			fieldBuffer.resize(graphics.getWidth(), graphics.getHeight());
+			fieldBuffer.resize(Core.graphics.getWidth(), Core.graphics.getHeight());
 			Seq<Runnable> buffer = runs.copy();
 			runs.clear();
 
@@ -65,7 +65,7 @@ public class Shelter extends Block {
 				fieldBuffer.begin(Color.clear);
 				buffer.each(Runnable::run);
 				fieldBuffer.end();
-				Draw.color(deflectColor, deflectAlpha);
+				Draw.color(deflectColor, Vars.renderer.animateShields ? 1f :  deflectAlpha);
 				EDraw.drawBuffer(fieldBuffer);
 				Draw.flush();
 				Draw.color();
