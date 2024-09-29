@@ -6,6 +6,7 @@ import arc.math.*;
 import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.Vars;
 import mindustry.content.*;
 import mindustry.game.*;
 import mindustry.graphics.g3d.*;
@@ -58,17 +59,14 @@ public class OlPlanets {
 			atmosphereRadOut = 0.3f;
 			atmosphereColor = OlEnvironmentBlocks.glacium.mapColor;
 
-			itemWhitelist.addAll(
-				OlItems.cobalt,
-				OlItems.carborundum,
-				Items.beryllium
-			);
-
-			Events.on(EventType.ContentInitEvent.class, e -> {
-				if(itemWhitelist.size > 0){
-					hiddenItems.addAll(content.items().select(i -> !itemWhitelist.contains(i)));
-				}
-			});
+			hiddenItems.addAll(Items.serpuloItems).addAll(Items.erekirItems).removeAll(OlItems.glasmoreItems);
+			ruleSetter = r -> r.bannedBlocks.addAll(new Seq<Block>().addAll(
+					Vars.content.blocks().select(block -> {
+						boolean notOmaloon = block.minfo.mod == null || !block.minfo.mod.name.equals("omaloon");
+						boolean onlyBeryllium = block.requirements.length == 1 && block.requirements[0].item == Items.beryllium;
+						return notOmaloon && onlyBeryllium;
+					})
+			));
 
 			Vec3 ringPos = new Vec3(0,1,0).rotate(Vec3.X, 25);
 
