@@ -12,7 +12,6 @@ import mindustry.entities.effect.*;
 import mindustry.entities.part.*;
 import mindustry.entities.pattern.*;
 import mindustry.gen.*;
-import mindustry.gen.MechUnit;
 import mindustry.graphics.*;
 import mindustry.type.*;
 import omaloon.ai.*;
@@ -45,7 +44,7 @@ public class OlUnitTypes {
 
     public static @EntityDef({Unitc.class, Dronec.class}) UnitType attackDroneAlpha, actionDroneMono;
 
-    public static @EntityDef({Unitc.class, Mechc.class}) UnitType walker;
+    public static @EntityDef({Unitc.class, Mechc.class, WallMovec.class}) UnitType walker;
 
     public static void load() {
         collector = new MillipedeUnitType("collector"){{
@@ -182,7 +181,7 @@ public class OlUnitTypes {
         }};
 
         walker = new GlassmoreUnitType("walker") {{
-            constructor = MechUnit::create;
+            constructor = WallMoveMechUnit::create;
             aiController = BuilderAI::new;
 
             buildRange = 200f;
@@ -200,6 +199,7 @@ public class OlUnitTypes {
             canBoost = true;
 
             abilities.add(new DroneAbility() {{
+                name = "omaloon-combat-drone";
                 drone = attackDroneAlpha;
                 constructTime = 180;
                 spawnX = 5f;
