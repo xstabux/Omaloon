@@ -43,9 +43,9 @@ public class OlUnitTypes {
     // core
     public static UnitType discovery;
 
-    public static @EntityDef({Unitc.class, Dronec.class}) UnitType attackDroneAlpha, actionDroneMono;
-
     public static @EntityDef({Unitc.class, FloatMechc.class}) UnitType walker;
+
+    public static @EntityDef({Unitc.class, Dronec.class}) UnitType attackDroneAlpha, actionDroneMono;
 
     public static void load() {
         collector = new MillipedeUnitType("collector"){{
@@ -209,9 +209,7 @@ public class OlUnitTypes {
             }});
 
             shadowElevationScl = 0.3f;
-        }
-
-        };
+        }};
 
         discovery = new GlassmoreUnitType("discovery"){{
             controller = u -> new BuilderAI(true, 500f);

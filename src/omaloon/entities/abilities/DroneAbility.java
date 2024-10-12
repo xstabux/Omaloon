@@ -74,6 +74,7 @@ public class DroneAbility extends Ability {
         drones.removeIf(u -> {
             if (!u.isValid()) {
                 data--;
+                timer = 0;
                 return true;
             }
             return false;
@@ -120,9 +121,7 @@ public class DroneAbility extends Ability {
         paramPos.set(spawnX, spawnY).rotate(unit.rotation - 90f).add(unit);
 
         if(data < maxDroneCount && timer <= spawnTime){
-            Draw.draw(layer, () -> {
-                Drawf.construct(paramPos.x, paramPos.y, droneUnit.fullIcon, paramUnit.rotation - 90, timer / spawnTime, 1f, timer);
-            });
+            Draw.draw(layer, () -> Drawf.construct(paramPos.x, paramPos.y, droneUnit.fullIcon, paramUnit.rotation - 90, timer / spawnTime, 1f, timer));
         }
     }
 }
