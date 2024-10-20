@@ -4,48 +4,52 @@ import arc.util.io.*;
 import ent.anno.Annotations.*;
 import mindustry.game.*;
 import mindustry.gen.*;
-import mindustry.type.*;
-import omaloon.gen.*;
+import omaloon.entities.abilities.*;
 
+@SuppressWarnings("unused")
 @EntityComponent
-abstract class DroneComp implements Unitc {
-	@Import Team team;
-	@Import ItemStack stack;
+abstract class DroneComp implements Unitc, Flyingc {
+    @Import Team team;
 
-	@Import float x, y;
+    transient int abilityIndex = -1;
 
-	transient Masterc master;
-	transient int masterID = -1;
+    transient Unit owner;
+    transient int ownerID = -1;
 
-	public boolean hasMaster() {
-		return master != null && master.isValid() && !master.dead() && master.team() == team;
-	}
+    public boolean hasOwner() {
+        return owner != null && owner.isValid() && owner.team() == team;
+    }
 
-	@Override
-	public void read(Reads read) {
-		masterID = read.i();
-	}
+    @Override
+    public void read(Reads read) {
+        ownerID = read.i();
+        abilityIndex = read.i();
+        if (ownerID != -1) {
+            owner = Groups.unit.getByID(ownerID);
+        }
+    }
 
-	@Override
-	public void update() {
-		if (masterID != -1) {
-			master = (Masterc) Groups.unit.getByID(masterID);
-			masterID = -1;
-		}
+    @Override
+    public void update() {
+        if (ownerID != -1 && owner == null) {
+            owner = Groups.unit.getByID(ownerID);
+            ownerID = -1;
 
-		if (!hasMaster()) {
-			Call.unitDespawn(self());
-			return;
-		}
+            if (hasOwner() && abilityIndex < owner.abilities.length && owner.abilities[abilityIndex] instanceof DroneAbility a) {
+                a.drones.add(0, self());
+                a.data++;
+                controller(a.droneController.apply(owner));
+            } else abilityIndex = -1;
+        }
 
-		if (stack.amount > 0 && (master.stack().item == stack.item || master.stack().amount == 0)) {
-			Call.transferItemToUnit(stack.item, x, y, master);
-			stack.amount --;
-		}
-	}
+        if (!hasOwner() || abilityIndex == -1) {
+            Call.unitDespawn(self());
+        }
+    }
 
-	@Override
-	public void write(Writes write) {
-		write.i(hasMaster() ? master.id() : -1);
-	}
+    @Override
+    public void write(Writes write) {
+        write.i(hasOwner() ? owner.id() : -1);
+        write.i(abilityIndex);
+    }
 }

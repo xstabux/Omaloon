@@ -2,6 +2,7 @@ package omaloon.content;
 
 import arc.graphics.*;
 import arc.math.*;
+import arc.math.geom.*;
 import arc.struct.*;
 import ent.anno.Annotations.*;
 import mindustry.ai.types.*;
@@ -14,6 +15,7 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
 import omaloon.ai.*;
+import omaloon.ai.drone.*;
 import omaloon.entities.abilities.*;
 import omaloon.entities.bullet.*;
 import omaloon.entities.part.*;
@@ -41,9 +43,9 @@ public class OlUnitTypes {
     // core
     public static UnitType discovery;
 
-    public static @EntityDef({Unitc.class, Dronec.class}) DroneUnitType attackDroneAlpha, actionDroneMono;
+    public static @EntityDef({Unitc.class, Corec.class, FloatMechc.class}) UnitType walker;
 
-    public static @EntityDef({Unitc.class, Mechc.class, Masterc.class}) MasterUnitType walker;
+    public static @EntityDef({Unitc.class, Dronec.class}) UnitType attackDroneAlpha, actionDroneMono;
 
     public static void load() {
         collector = new MillipedeUnitType("collector"){{
@@ -114,7 +116,7 @@ public class OlUnitTypes {
         //region core
         attackDroneAlpha = new DroneUnitType("combat-drone-alpha") {{
             constructor = DroneUnit::create;
-            controller = u -> new AttackDroneAI();
+            controller = AttackDroneAI::new;
 
             itemCapacity = 0;
             speed = 2.2f;
@@ -155,10 +157,10 @@ public class OlUnitTypes {
             shadowElevationScl = 0.4f;
         }};
 
-        actionDroneMono = new DroneUnitType("main-drone-mono") {{
+        actionDroneMono = new GlassmoreUnitType("main-drone-mono") {{
             constructor = DroneUnit::create;
-            controller = u -> new ActionDroneAI();
-            mineTier = 4;
+            //controller = u -> new ActionDroneAI();
+            mineTier = 3;
             itemCapacity = 1;
 
             speed = 2.2f;
@@ -179,16 +181,13 @@ public class OlUnitTypes {
             shadowElevationScl = 0.4f;
         }};
 
-        walker = new MasterUnitType("walker") {{
-            constructor = MasterMechUnit::create;
+        walker = new GlassmoreUnitType("walker") {{
+            constructor = FloatMechCoreUnit::create;
             aiController = BuilderAI::new;
 
-            droneConstructTime = 180f;
-
-            gunUnitType = attackDroneAlpha;
-            actionUnitType = actionDroneMono;
-
-            buildRange = 200f;
+            buildRange = range = mineRange = 200f;
+            mineSpeed = buildSpeed = 0;
+            mineSound = Sounds.none;
 
             rotateToBuilding = faceTarget = false;
 
@@ -198,13 +197,33 @@ public class OlUnitTypes {
             boostMultiplier = 0.8f;
 
             mineTier = 3;
-            mineRange = 200;
 
-            weapons.add(new Weapon() {{
-                controllable = aiControllable = false;
-                autoTarget = true;
-                minWarmup = 2f;
-            }});
+            abilities.addAll(
+                new DroneAbility() {{
+                    name = "omaloon-combat-drone";
+                    droneUnit = attackDroneAlpha;
+                    droneController = AttackDroneAI::new;
+                    spawnTime = 180f;
+                    spawnX = 5f; spawnY = 0f;
+                    spawnEffect = Fx.spawn;
+                    parentizeEffects = true;
+                    anchorPos = new Vec2[] {
+                        new Vec2(12f, 0f),
+                    };
+                }},
+                new DroneAbility() {{
+                    name = "omaloon-utility-drone";
+                    droneUnit = actionDroneMono;
+                    droneController = UtilityDroneAI::new;
+                    spawnTime = 180f;
+                    spawnX = -5f; spawnY = 0f;
+                    spawnEffect = Fx.spawn;
+                    parentizeEffects = true;
+                    anchorPos = new Vec2[] {
+                        new Vec2(-12f, 0f),
+                    };
+                }}
+            );
 
             shadowElevationScl = 0.3f;
         }};
