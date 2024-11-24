@@ -1,6 +1,5 @@
 package omaloon.ui.dialogs;
 
-import arc.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
@@ -37,10 +36,5 @@ public class OlGameDataDialog extends BaseDialog {
 				() -> Vars.ui.showConfirm("@settings.omaloon-resethints-confirm", EventHints::reset)
 			).growX().marginLeft(8).height(50).row();
 		}).width(400f).row();
-		cont.check(
-			"@settings.omaloon-enable-roomba",
-			Core.settings.getBool("setting.omaloon-enable-roomba", true),
-			b -> Core.settings.put("setting.omaloon-enable-roomba", b)
-		).width(400).left();
 	}
 }

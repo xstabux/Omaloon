@@ -17,7 +17,7 @@ public class SafeClearer implements ApplicationListener {
 	}
 
 	public boolean enabled() {
-		return Core.settings.getBool("setting.omaloon-enable-roomba", true);
+		return Core.settings.getBool("omaloon-enable-soft-cleaner", true);
 	}
 
 	@Override
